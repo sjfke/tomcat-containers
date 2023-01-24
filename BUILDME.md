@@ -133,3 +133,49 @@ Modification to the tutorial
 ## Coding DAO class
 
 * [JDBC CRUD Operations Tutorial:](https://www.codejava.net/java-se/jdbc/jdbc-tutorial-sql-insert-select-update-and-delete-examples)
+
+## Writing Book Listing JSP Page
+
+Create a JSP page for displaying all books from the database in `Bookstore\src\main\webapp`.
+
+Modification to tutorial
+
+* Convert to HTML-5 conventions
+* Make `hard-coded` URL's, "/list" etc, `context directory` agnostic using JSTL `<c:url>` tag
+
+```jsp
+
+	<%-- hard-coded --%>
+	<%-- <a href="/new">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="/list">List All Books</a> --%>
+
+	<h2>
+		<c:url value="/new" var="newUrl" />
+		<c:url value="/list" var="listUrl" />
+		<a href="${newUrl}">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="${listUrl}">List All Books</a>         
+	</h2>
+```
+
+```jsp
+
+	<%-- hard-coded --%>
+	<%-- <td> --%>
+	<%-- 	<a href="/edit?id=<c:out value='${book.id}' />">Edit</a> --%>
+	<%-- 	&nbsp;&nbsp;&nbsp;&nbsp; --%>	
+	<%-- 	<a href="/delete?id=<c:out value='${book.id}' />">Delete</a> --%>
+	<%-- <td> --%>
+	
+	<c:url value="/edit" var="editUrl" />
+	<c:url value="/delete" var="deleteUrl" />
+	<c:forEach var="book" items="${listBook}">
+		<tr>
+			<td><c:out value="${book.id}" /></td>
+			<td><c:out value="${book.title}" /></td>
+			<td><c:out value="${book.author}" /></td>
+			<td><c:out value="${book.price}" /></td>
+			<td><a href="${editUrl}?id=<c:out value='${book.id}' />">Edit</a>
+				&nbsp;&nbsp;&nbsp;&nbsp; <a
+				href="${deleteUrl}?id=<c:out value='${book.id}' />">Delete</a>                     
+			</td>
+		</tr>
+	</c:forEach>
+```
