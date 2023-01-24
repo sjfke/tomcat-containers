@@ -129,3 +129,7 @@ Modification to the tutorial
 		this.price = price;
 	}
 ```
+
+## Coding DAO class
+
+* [JDBC CRUD Operations Tutorial:](https://www.codejava.net/java-se/jdbc/jdbc-tutorial-sql-insert-select-update-and-delete-examples)
