@@ -63,8 +63,57 @@ Password: r00tpa55
 Database: <blank>
 ```
 
-
-# Project Apache Tomcat Preperation
+# Apache Tomcat Preperation
 
 * [Temurin™ for Windows x64 Prebuilt OpenJDK Binaries for Free!](https://adoptium.net/)
+  * Install Temurin™ for Windows https://adoptium.net/ 
+  * Using defaults, and enabled everything, it needed by tomcat (same JRE is bundled in Eclipse JEE)
+  * Installs into "C:\Program Files\Eclipse Adoptium\jdk-17.0.6.10-hotspot", enabled everything
+
 * [Tomcat 9 Software Downloads](https://tomcat.apache.org/download-90.cgi)
+  * Install Tomcat installation required to start 'Dynamic Web Project' (KISS and not force to Docker)
+  * Install everything, including `docs`, `examples`, `host-manager`, and `manager`
+  * Installation propmpts for tomcat users, `user:admin`, `password: admin` for roles `manager-gui,admin-gui`
+  * Installation "C:\Program Files\Apache Software Foundation\Tomcat 9.0"
+  * Creates a service that requires manual starting `Service "Apache Tomcat 9.0 Tomcat9"`
+  
+# Eclipse JEE preparation
+
+Download and install
+
+* [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages/installer)
+* [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages/release/2022-12/r/eclipse-ide-enterprise-java-and-web-developers)
+
+Under `Window` > `Preferences` > `General` > `Appearence` you can enable `theming` like `Dark Mode`
+
+# Creating Eclipse Project
+
+Follow the instructions
+
+## Creating Eclipse Project with Maven
+
+Eclipse: `File` > `New` > `Dynamic Web Project`
+
+For tomcat installation folder select `tomcat`
+
+The POM.XML update stanza goes between `</build>` and `</project>`
+
+```xml
+<project>
+<build>
+  ...
+</build>
+<dependencies>
+  ...
+</dependencies>
+</project>
+```
+
+The remember to create a Java package name for the project, `net.codejava.javaee.bookstore`.
+Eclipse: `Bookstore` > `Java Resources` > `New` > `Package`
+
+* useful pom dependency references, unspecified <scope> is compile (see 2)
+  # [How To Find Maven Dependencies](https://www.baeldung.com/java-find-maven-dependencies)
+  # [Maven Dependency Scopes](https://www.baeldung.com/maven-dependency-scopes)
+
+## Writing Model Class
