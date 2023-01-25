@@ -179,3 +179,25 @@ Modification to tutorial
 		</tr>
 	</c:forEach>
 ```
+
+## Writing Book Form JSP Page
+
+Create a JSP page for creating a new book in `Bookstore\src\main\webapp`.
+
+Modification to tutorial
+
+* Convert to HTML-5 conventions
+* Make `hard-coded` URL's, "/new", "/list", `context directory` agnostic using JSTL `<c:url>` tag
+
+```jsp
+
+	<%-- hard-coded --%>
+	<%-- <a href="/new">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="/list">List All Books</a> --%>
+
+	<h2>
+		<c:url value="/new" var="newUrl" />
+		<c:url value="/list" var="listUrl" />
+		<a href="${newUrl}">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="${listUrl}">List All Books</a>         
+	</h2>
+```
+
