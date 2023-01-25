@@ -201,3 +201,8 @@ Modification to tutorial
 	</h2>
 ```
 
+## Coding Controller Servlet Class
+
+Create a ControllerServlet class in `Bookstore\src\main\java\net\codejava\javaee\bookstore`.
+
+
