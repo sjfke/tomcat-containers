@@ -205,4 +205,14 @@ Modification to tutorial
 
 Create a ControllerServlet class in `Bookstore\src\main\java\net\codejava\javaee\bookstore`.
 
+## Configuring Web.xml
+
+Create Bookstore/src/main/webapp/WEB-INF/web.xml
+
+Modification to tutorial
+
+* change `<param-name>jdbcUsername</param-name>`
+* change `<param-name>jdbcPassword</param-name>`
+
+Example skeleton [web.xml for servlet 3.1](https://gist.github.com/darbyluv2code/dd3781d61c3db5476fbf05ee431ee917)
 
