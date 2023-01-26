@@ -91,6 +91,7 @@ local.properties
 # Typically, this file would be tracked if it contains build/dependency configurations:
 .project
 
-## Exclude Tomcat Installations
-###############################
+## Exclude Project Tomcat Installations
+#######################################
+Servers/
 tomcat/
