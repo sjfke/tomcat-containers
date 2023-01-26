@@ -5,7 +5,7 @@ Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
 
 There are a number of errors in the SQL in the tutorial, and using `root` for an application is problematic.
 
-Aside: the `price` should probably be a `decimal(9,2)` and not `float`.
+Aside: the `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
 
 ## Create the `Bookstore.book` table.
 
