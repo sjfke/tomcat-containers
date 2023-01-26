@@ -216,3 +216,10 @@ Modification to tutorial
 
 Example skeleton [web.xml for servlet 3.1](https://gist.github.com/darbyluv2code/dd3781d61c3db5476fbf05ee431ee917)
 
+## Writing Error JSP page
+
+Create Bookstore/src/main/webapp/Error.jsp
+
+Modification to tutorial
+
+* Make HTML-5
