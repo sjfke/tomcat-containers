@@ -11,7 +11,7 @@ Aside: the `price` should probably be a `decimal(9,2)` and not `float`.
 
 From `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container.
 
-```bash
+```shell
 # mysql -u root -p
 Enter password:
 
@@ -33,7 +33,7 @@ MariaDB [Bookstore]> exit;
 
 ## Create an application account and grant access.
 
-```bash
+```shell
 # mysql -u root -p
 Enter password:
 MariaDB [(none)]> use Bookstore;
@@ -45,7 +45,7 @@ MariaDB [Bookstore]> exit;
 ```
 ## Verify application account access.
 
-```bash
+```shell
 # mysql -u user1 -p Bookstore
 Enter password:
 MariaDB [Bookstore]> select * from book;
@@ -142,6 +142,8 @@ Modification to tutorial
 
 * Convert to HTML-5 conventions
 * Make `hard-coded` URL's, "/list" etc, `context directory` agnostic using JSTL `<c:url>` tag
+  
+  * [Use relative paths without including the context rootname](https://stackoverflow.com/questions/4764405/how-to-use-relative-paths-without-including-the-context-root-name)
 
 ```jsp
 
