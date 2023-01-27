@@ -55,7 +55,7 @@ MariaDB [Bookstore]> exit;
 
 All of the above steps can be done and checked using through [adminer](http://localhost:8395/).
 
-```
+```shell
 System: MySQL
 Server: bookstoredb
 Username: root
@@ -85,6 +85,12 @@ Download and install
 * [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages/release/2022-12/r/eclipse-ide-enterprise-java-and-web-developers)
 
 Under `Window` > `Preferences` > `General` > `Appearence` you can enable `theming` like `Dark Mode`
+
+# MariaDB preparation
+
+For this project a local MariaDB installation was not done, downloads and instructions:  
+
+* [MariaDB Community Downloads](https://mariadb.com/downloads)
 
 # Creating Eclipse Project
 
