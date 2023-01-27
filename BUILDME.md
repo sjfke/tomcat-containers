@@ -5,13 +5,13 @@ Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
 
 There are a number of errors in the SQL in the tutorial, and using `root` for an application is problematic.
 
-Aside: the `price` should probably be a `decimal(9,2)` and not `float`.
+Aside: the `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
 
 ## Create the `Bookstore.book` table.
 
 From `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container.
 
-```bash
+```shell
 # mysql -u root -p
 Enter password:
 
@@ -33,7 +33,7 @@ MariaDB [Bookstore]> exit;
 
 ## Create an application account and grant access.
 
-```bash
+```shell
 # mysql -u root -p
 Enter password:
 MariaDB [(none)]> use Bookstore;
@@ -45,7 +45,7 @@ MariaDB [Bookstore]> exit;
 ```
 ## Verify application account access.
 
-```bash
+```shell
 # mysql -u user1 -p Bookstore
 Enter password:
 MariaDB [Bookstore]> select * from book;
@@ -55,7 +55,7 @@ MariaDB [Bookstore]> exit;
 
 All of the above steps can be done and checked using through [adminer](http://localhost:8395/).
 
-```
+```shell
 System: MySQL
 Server: bookstoredb
 Username: root
@@ -85,6 +85,12 @@ Download and install
 * [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages/release/2022-12/r/eclipse-ide-enterprise-java-and-web-developers)
 
 Under `Window` > `Preferences` > `General` > `Appearence` you can enable `theming` like `Dark Mode`
+
+# MariaDB preparation
+
+For this project a local MariaDB installation was not done, downloads and instructions:  
+
+* [MariaDB Community Downloads](https://mariadb.com/downloads)
 
 # Creating Eclipse Project
 
@@ -142,6 +148,8 @@ Modification to tutorial
 
 * Convert to HTML-5 conventions
 * Make `hard-coded` URL's, "/list" etc, `context directory` agnostic using JSTL `<c:url>` tag
+  
+  * [Use relative paths without including the context rootname](https://stackoverflow.com/questions/4764405/how-to-use-relative-paths-without-including-the-context-root-name)
 
 ```jsp
 
