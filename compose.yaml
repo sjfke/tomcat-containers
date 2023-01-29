@@ -4,8 +4,6 @@ services:
   bookstoredb:
     image: mariadb
     restart: unless-stopped
-    ports:
-      - 3306:3306
     environment:
       MARIADB_ROOT_PASSWORD: r00tpa55
     networks:
@@ -21,6 +19,23 @@ services:
     networks:
       - jspnet
 
+  web:
+    image: tomcat:latest
+    restart: unless-stopped
+    ports:
+      - 8396:8080
+    networks:
+      - jspnet
+
+  tomcat:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8397:8080"
+    networks:
+      - jspnet
+    
 networks:
   jspnet:
     driver: bridge
