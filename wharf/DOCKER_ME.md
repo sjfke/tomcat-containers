@@ -47,7 +47,9 @@ $ docker compose down --rmi local; docker compose build; docker compose up -d
 
 ## Tomcat and Bookstore application in Docker
 
-Consult the `Dockerfile` for details, files which need to be replaced for the Docker deployment are in the `Docker` folder. 
+Consult the `Dockerfile` for details of the deployment.
+
+Any files which need to be replaced for Docker to work are in the `Docker` folder. 
 
 ### Docker Folder
 
@@ -152,7 +154,8 @@ $ docker network ls              # list docker networks by name
 $ docker inspect <network-name>  # details of network.
 ```
 
-A good introduction [Docker-compose bridge network subnet](https://bobcares.com/blog/docker-compose-bridge-network-subnet/), and 
+A good introduction [Docker-compose bridge network subnet](https://bobcares.com/blog/docker-compose-bridge-network-subnet/).
+
 [One compose file solution](https://stackoverflow.com/questions/53949616/networks-created-by-docker-compose-do-not-respect-dockers-subnet-settings), 
 becareful about IP range clashes.
 
