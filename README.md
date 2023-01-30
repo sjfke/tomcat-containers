@@ -15,5 +15,36 @@ The tomcat application is an implementation of [CodeJava Tutorial](https://www.c
 ## Wharf - where are the containerization information is stored.
 
 > Wharf
-A platform along the side of a waterfront for docking, loading, and unloading ships
+>> A platform along the side of a waterfront for docking, loading, and unloading ships
 
+## Wharf Documentation Organization
+
+* `BUILD_ME`  - Notes on setup and build within Eclipse, plus corrections to the `CodeJava Tutorial`.
+* `DOCKER_ME` - Notes on how to build and deploy using Docker, Docker Compose.
+* `MAVEN_ME`  - Notes on how to build using Maven inside Eclipse and deploy.
+
+```
+C:\USERS\SJFKE\TOMCAT-CONTAINERS\WHARF
+│   BUILD_ME.md
+│   DOCKER_ME.md
+│   MAVEN_ME.md
+│
+├───Docker
+│   ├───conf
+│   │       tomcat-users.xml
+│   │
+│   └───webapps
+│       ├───Bookstore
+│       │   └───WEB-INF
+│       │           web.xml
+│       │
+│       ├───host-manager
+│       │   └───META-INF
+│       │           context.xml
+│       │
+│       └───manager
+│           └───META-INF
+│                   context.xml
+│
+└───Podman
+```

@@ -17,56 +17,64 @@ Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
       MARIADB_ROOT_PASSWORD: r00tpa55
     networks:
 ```
-See `wharf/README.md` for docker notes.
+See `wharf/DOCKER_ME.md` for docker notes.
 
 ```
 $ docker compose down --rmi local; docker compose build; docker compose up -d
 ```
 
-See `wharf/README.md` for how to redeploy the docker containers.
+See `wharf/DOCKER_ME.md` for how to redeploy the docker containers.
 
 ## How to add Tomcat server in Eclipse IDE
 
-Follow [How to add Tomcat server in Eclipse IDE](https://www.codejava.net/servers/tomcat/how-to-add-tomcat-server-in-eclipse-ide) instructions,
+Follow [How to add Tomcat server in Eclipse IDE](https://www.codejava.net/servers/tomcat/how-to-add-tomcat-server-in-eclipse-ide) tutorial.
 
-Aside: I used ***Apache Tomcat v9.0***.
+Aside: the project used ***Apache Tomcat v9.0***.
 
-The Tomcat server should be installed see "Apache Tomcat Preperation" in `BUILDME.md` but not running.
+The Tomcat server should be installed see "Apache Tomcat Preparation" in `BUILD_ME.md` but not running.
 
-Creating a new local server does not create `tomcat-users.xsd`, so the `tomcat-users.xml` in the `Servers` folder will show errors.
+Creating a new local server and Eclipse does not create `tomcat-users.xsd`, so the `tomcat-users.xml` in the `Servers` folder will show errors.
 
   * [Download and install ](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) 
 
-The next error is `Tomcat` with something like:
+The next `Tomcat` error maybe be encountered is something like:
+>
 > The server cannot be started because one or more of the ports are invalid. 
 > Open the server editor and correct the invalid ports.
 
-See, [Can't start tomcatv9.0 in Eclipse](https://stackoverflow.com/questions/59471438/cant-start-tomcatv9-0-in-eclipse)
+Most likely this because the `Tomcat admin port` is not configured, see [Can't start tomcatv9.0 in Eclipse](https://stackoverflow.com/questions/59471438/cant-start-tomcatv9-0-in-eclipse)
 
 You can now drag and drop a project into this server in order to deploy and run the project.
 
 So now `http://localhost:8080/Bookstore/` should now connect.
-If it errors out again, displays the `Error.jsp` page, this is ok.
 
+If it errors out again, displays the `Error.jsp` page, this is ok.
+>
 > Error
 > Access denied for user 'bsapp'@'172.22.0.1' (using password: YES)
 
-***Notice*** the IP is not the `localhost` this is because the `MariaDB` server is inside a ***Docker Environment*** which has it's own `jspnet` 
-IP network, and `Windows` does not handle NAT of `localhost`.
+> #### Notice:
+> - IP is not the `localhost` this is because the `MariaDB` server is inside a *Docker Environment*.
+> - Docker is using it's own `jspnet` IP (RFC-1918) network. 
+> - Unlike `Linux`, `Windows` does not always handle NAT of `localhost`.
 
-***Aside:*** Testing the application from within Eclipse avoids `<a href="/new">Add New Book</a>` issues, because the `context directory` is not included 
-in the URL.
 
+***Aside:*** Testing the application from within Eclipse and the `context directory` is not included 
+in the URL, so hard-coded URL's such as `<a href="/new">Add New Book</a>` work. 
 
-## Maven war file build.
+## Building a Maven war file.
 
-Maven requires a minimal `settings.xml` which has to be manually created.
-Check syntax by opening the file in Eclipse.
+To function `Maven` requires a minimal `settings.xml` which may have to be manually created, see:
 
 ```
 $ new-item C:\Users\sjfke\.m2\settings.xml
 $ get-content C:\Users\sjfke\.m2\settings.xml
 ```
+
+1. [Maven plugin in Eclipse - Settings.xml file is missing](https://stackoverflow.com/questions/4626609/maven-plugin-in-eclipse-settings-xml-file-is-missing) very old reference *but* works!
+2. [Apache Maven Project - Settings Reference](https://maven.apache.org/settings.html)
+
+Check syntax by opening the file in Eclipse.
 
 ```xml
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
@@ -86,15 +94,13 @@ $ get-content C:\Users\sjfke\.m2\settings.xml
 </settings>
 ```
 
-* [Maven plugin in Eclipse - Settings.xml file is missing](https://stackoverflow.com/questions/4626609/maven-plugin-in-eclipse-settings-xml-file-is-missing) very old reference *but* works!
-* [Apache Maven Project - Settings Reference](https://maven.apache.org/settings.html)
-
-### Run Configuration to execute Maven
+### To execute Maven, create a Run Configuration 
 
 Eclipse: run > Run Configurations..
 
 Creates m2 Maven Build > New_configuration
 
+```
 Main Tab:
 	Base directory > Workspace > Bookstore #  Base directory: ${workspace_loc:/Bookstore}
 	Goals: clean package
@@ -108,9 +114,9 @@ Common Tab:
 		* [x] Run
 	Encoding
 		* Other: UTF-8
+```
 
-This will generate `Bookstore\target\Bookstore-0.0.1-SNAPSHOT.war` which can be deploed manually.
-
+This will generate `Bookstore\target\Bookstore-0.0.1-SNAPSHOT.war` which can be deployed manually.
 
 ### General Maven Packaging questions
 
