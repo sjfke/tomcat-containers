@@ -19,7 +19,7 @@ Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
 ```
 See `wharf/README.md` for docker notes.
 
-```shell
+```
 $ docker compose down --rmi local; docker compose build; docker compose up -d
 ```
 
@@ -45,15 +45,17 @@ See, [Can't start tomcatv9.0 in Eclipse](https://stackoverflow.com/questions/594
 
 You can now drag and drop a project into this server in order to deploy and run the project.
 
-So now `http://localhost:8080/Bookstore/` will connect but will again error out, using the `Error.jsp` page if running on 'Windows'.
+So now `http://localhost:8080/Bookstore/` should now connect.
+If it errors out again, displays the `Error.jsp` page, this is ok.
 
 > Error
-> Access denied for user 'user1'@'172.22.0.1' (using password: YES)
+> Access denied for user 'bsapp'@'172.22.0.1' (using password: YES)
 
-Notice the IP is not the `localhost` this is because the `MariaDB` server is inside a ***Docker Environment*** which has it's own `jspnet` 
-IP network, and `Windows` does not handle NAT of `localhost`, using a recent Fedora release will local MariaDB installation works.
+***Notice*** the IP is not the `localhost` this is because the `MariaDB` server is inside a ***Docker Environment*** which has it's own `jspnet` 
+IP network, and `Windows` does not handle NAT of `localhost`.
 
-Testing this way avoids `<a href="/new">Add New Book</a>` issues, because the `context directory` is not included in the URL.
+***Aside:*** Testing the application from within Eclipse avoids `<a href="/new">Add New Book</a>` issues, because the `context directory` is not included 
+in the URL.
 
 
 ## Maven war file build.

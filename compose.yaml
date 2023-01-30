@@ -16,7 +16,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - "8397:8080"
+      - "8395:8080"
     networks:
       - jspnet
     
@@ -24,7 +24,7 @@ services:
     image: adminer
     restart: unless-stopped
     ports:
-      - 8395:8080
+      - 8397:8080
     networks:
       - jspnet
 

@@ -30,7 +30,9 @@ COPY ./wharf/Docker/conf/tomcat-users.xml /usr/local/tomcat/conf/
 RUN chmod 644 /usr/local/tomcat/conf/tomcat-users.xml
 
 # Deploy the Bookstore application, using the output of the Maven build
+# Modified web.xml changes jdbc:mysql for Docker, 'jdbc:mysql://SERVICE-NAME:3306/DATABASE-NAME'
 COPY ./Bookstore/target/Bookstore-0.0.1-SNAPSHOT/ /usr/local/tomcat/webapps/Bookstore
+COPY ./wharf/Docker/webapps/Bookstore/WEB-INF/web.xml /usr/local/tomcat/webapps/Bookstore/WEB-INF/web.xml
 
 # TODO (optional): Copy the builder files into /opt/app-root
 # COPY ./<builder_folder>/ /opt/app-root/
