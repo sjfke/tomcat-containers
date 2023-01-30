@@ -5,12 +5,13 @@ Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
 
 There are a number of errors in the SQL in the tutorial, and using `root` for an application is problematic.
 
-Aside: the `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
+***Aside:*** `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
 
 ## Create the `Bookstore.book` table.
 
 From `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container.
-Note: Maria Database root password is in the `compose.yaml` file.
+
+***Note:*** Maria Database root password is in the `compose.yaml` file.
 
 ```shell
 # mysql -u root -p
@@ -34,11 +35,6 @@ MariaDB [Bookstore]> exit;
 
 ## Create an application account and grant access.
 
-> #### Notice: 
->
-> - The *bsapp* account is not IP access restricted, i.e. not 'bsapp'@'localhost'.
-> - *Docker* will allocate a random RFC-1918 IP to the database when it is deployed.
-
 ```
 # mysql -u root -p
 Enter password:
@@ -49,6 +45,10 @@ MariaDB [Bookstore]> flush privileges;
 MariaDB [Bookstore]> show grants for 'bsapp'@'%';
 MariaDB [Bookstore]> exit;
 ```
+> #### Notice: 
+>
+> - The *bsapp* account is not IP access restricted, i.e. not 'bsapp'@'localhost'.
+> - *Docker* will allocate a random RFC-1918 IP to the database when it is deployed.
 
 ## Verify application account access.
 
@@ -71,7 +71,9 @@ Password: r00tpa55
 Database: <blank>
 ```
 
-# Apache Tomcat Preperation (Windows-11 Home)
+# Application Preperation (Windows-11 Home)
+
+## Apache Tomcat Preperation (Windows-11 Home)
 
 * [Temurin™ for Windows x64 Prebuilt OpenJDK Binaries for Free!](https://adoptium.net/)
   * Install Temurin™ for Windows https://adoptium.net/ 
@@ -85,24 +87,24 @@ Database: <blank>
   * Installation "C:\Program Files\Apache Software Foundation\Tomcat 9.0"
   * Creates a service that requires manual starting `Service "Apache Tomcat 9.0 Tomcat9"`
   
-# Eclipse JEE preparation (Windows-11 Home)
+## Eclipse JEE preparation (Windows-11 Home)
 
 Download and install
 
-* [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages/installer)
+* [Eclipse Installer 2022-12 R](https://www.eclipse.org/downloads/packages/installer)
 * [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages/release/2022-12/r/eclipse-ide-enterprise-java-and-web-developers)
 
 Under `Window` > `Preferences` > `General` > `Appearence` you can enable `theming` like `Dark Mode`
 
 # MariaDB preparation
 
-For this project a local MariaDB installation was not done, downloads and instructions:  
+For this project a local MariaDB installation was not installed, downloads and instructions:  
 
 * [MariaDB Community Downloads](https://mariadb.com/downloads)
 
 # Creating Eclipse Project
 
-Following the instructions in the tutorial.
+Follow the instructions in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
 ## Creating Eclipse Project with Maven
 
@@ -124,15 +126,17 @@ The POM.XML update stanza goes between `</build>` and `</project>`
 ```
 
 The remember to create a Java package name for the project, `net.codejava.javaee.bookstore`.
+
+
 Eclipse: `Bookstore` > `Java Resources` > `New` > `Package`
 
 * Useful pom dependency references, unspecified <scope> is compile (see 2)
-  # [How To Find Maven Dependencies](https://www.baeldung.com/java-find-maven-dependencies)
-  # [Maven Dependency Scopes](https://www.baeldung.com/maven-dependency-scopes)
+  1. [How To Find Maven Dependencies](https://www.baeldung.com/java-find-maven-dependencies)
+  2. [Maven Dependency Scopes](https://www.baeldung.com/maven-dependency-scopes)
 
 ## Writing Model Class
 
-Modification to the tutorial
+Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
 ```java
 	public Book(int id, String title, String author, float price) {
@@ -146,13 +150,17 @@ Modification to the tutorial
 
 ## Coding DAO class
 
+Follow the instructions in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
+
+For additional help:
+
 * [JDBC CRUD Operations Tutorial:](https://www.codejava.net/java-se/jdbc/jdbc-tutorial-sql-insert-select-update-and-delete-examples)
 
 ## Writing Book Listing JSP Page
 
 Create a JSP page for displaying all books from the database in `Bookstore\src\main\webapp`.
 
-Modifications to tutorial
+Modifications to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
 * Convert to HTML-5 conventions
 * Make `hard-coded` URL's, "/list" etc, `context directory` agnostic using JSTL `<c:url>` tag
@@ -189,8 +197,8 @@ Modifications to tutorial
 			<td><c:out value="${book.author}" /></td>
 			<td><c:out value="${book.price}" /></td>
 			<td><a href="${editUrl}?id=<c:out value='${book.id}' />">Edit</a>
-				&nbsp;&nbsp;&nbsp;&nbsp; <a
-				href="${deleteUrl}?id=<c:out value='${book.id}' />">Delete</a>                     
+				&nbsp;&nbsp;&nbsp;&nbsp; 
+				<a href="${deleteUrl}?id=<c:out value='${book.id}' />">Delete</a>                     
 			</td>
 		</tr>
 	</c:forEach>
@@ -225,18 +233,18 @@ Create a ControllerServlet class in `Bookstore\src\main\java\net\codejava\javaee
 
 Create `Bookstore/src/main/webapp/WEB-INF/web.xml` 
 
-Modification to the tutorial
+Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
 * change `<param-name>jdbcUsername</param-name>`
 * change `<param-name>jdbcPassword</param-name>`
 
-Example skeleton [web.xml for servlet 3.1](https://gist.github.com/darbyluv2code/dd3781d61c3db5476fbf05ee431ee917)
+An example skeleton [web.xml for servlet 3.1](https://gist.github.com/darbyluv2code/dd3781d61c3db5476fbf05ee431ee917)
 
 ## Writing Error JSP page
 
 Create `Bookstore/src/main/webapp/Error.jsp`
 
-Modification to the tutorial
+Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
 * Make HTML-5
 

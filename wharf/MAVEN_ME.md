@@ -17,25 +17,23 @@ Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
       MARIADB_ROOT_PASSWORD: r00tpa55
     networks:
 ```
-See `wharf/DOCKER_ME.md` for docker notes.
+See `wharf/DOCKER_ME.md` for docker notes and how to redeploy the docker containers.
 
 ```
 $ docker compose down --rmi local; docker compose build; docker compose up -d
 ```
 
-See `wharf/DOCKER_ME.md` for how to redeploy the docker containers.
-
 ## How to add Tomcat server in Eclipse IDE
 
 Follow [How to add Tomcat server in Eclipse IDE](https://www.codejava.net/servers/tomcat/how-to-add-tomcat-server-in-eclipse-ide) tutorial.
 
-Aside: the project used ***Apache Tomcat v9.0***.
+***Aside:*** the project used ***Apache Tomcat v9.0***.
 
-The Tomcat server should be installed see "Apache Tomcat Preparation" in `BUILD_ME.md` but not running.
+The Tomcat server should be installed see "Apache Tomcat Preparation" in `BUILD_ME.md` but should not running.
 
 Creating a new local server and Eclipse does not create `tomcat-users.xsd`, so the `tomcat-users.xml` in the `Servers` folder will show errors.
 
-  * [Download and install ](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) 
+Download and install the missing [`tomcat-users.xsd`](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) file.
 
 The next `Tomcat` error maybe be encountered is something like:
 >
@@ -44,22 +42,25 @@ The next `Tomcat` error maybe be encountered is something like:
 
 Most likely this because the `Tomcat admin port` is not configured, see [Can't start tomcatv9.0 in Eclipse](https://stackoverflow.com/questions/59471438/cant-start-tomcatv9-0-in-eclipse)
 
-You can now drag and drop a project into this server in order to deploy and run the project.
+Once all the errors have been fixed you can now drag and drop a project into this server to deploy and run the project.
 
-So now `http://localhost:8080/Bookstore/` should now connect.
+Now `http://localhost:8080/Bookstore/` should now connect.
 
 If it errors out again, displays the `Error.jsp` page, this is ok.
 >
 > Error
 > Access denied for user 'bsapp'@'172.22.0.1' (using password: YES)
 
+Rememeber the `MariaDB` server is inside a *Docker Environment*
+
 > #### Notice:
-> - IP is not the `localhost` this is because the `MariaDB` server is inside a *Docker Environment*.
-> - Docker is using it's own `jspnet` IP (RFC-1918) network. 
+> - IP is not the `localhost` 127.0.0.1
+> - Docker compose is using it's own `jspnet` an IP (RFC-1918) network. 
 > - Unlike `Linux`, `Windows` does not always handle NAT of `localhost`.
 
+***Aside:*** 
 
-***Aside:*** Testing the application from within Eclipse and the `context directory` is not included 
+Testing the application from within Eclipse and the `context directory` is not included 
 in the URL, so hard-coded URL's such as `<a href="/new">Add New Book</a>` work. 
 
 ## Building a Maven war file.
