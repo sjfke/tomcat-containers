@@ -4,8 +4,6 @@ services:
   bookstoredb:
     image: mariadb
     restart: unless-stopped
-    ports:
-      - 3306:3306
     environment:
       MARIADB_ROOT_PASSWORD: r00tpa55
     networks:
@@ -13,11 +11,20 @@ services:
     volumes:
       - jsp_bookstoredata:/var/lib/mysql
 
+  bookstore:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8395:8080"
+    networks:
+      - jspnet
+    
   adminer:
     image: adminer
     restart: unless-stopped
     ports:
-      - 8395:8080
+      - 8397:8080
     networks:
       - jspnet
 

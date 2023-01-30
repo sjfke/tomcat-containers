@@ -10,6 +10,7 @@ Aside: the `price` should probably be a `decimal(9,2)` and not `float`, but the 
 ## Create the `Bookstore.book` table.
 
 From `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container.
+Note: Maria Database root password is in the `compose.yaml` file.
 
 ```shell
 # mysql -u root -p
@@ -33,29 +34,34 @@ MariaDB [Bookstore]> exit;
 
 ## Create an application account and grant access.
 
-```shell
+***Notice***: the `bsapp` account is not IP access restricted, i.e. not `localhost`, because `Docker` will 
+allocate a random RFC-1918 IP to the database when it is deployed.
+
+```
 # mysql -u root -p
 Enter password:
 MariaDB [(none)]> use Bookstore;
-MariaDB [Bookstore]> create user 'user1'@'localhost' identified by 'P@ssw0rd';
-MariaDB [Bookstore]> grant all privileges on Bookstore.* to 'user1'@'localhost';
+MariaDB [Bookstore]> create user 'bsapp'@'%' identified by 'P@ssw0rd';
+MariaDB [Bookstore]> grant all privileges on Bookstore.* to 'bsapp'@'%';
 MariaDB [Bookstore]> flush privileges;
-MariaDB [Bookstore]> show grants for 'user1'@'localhost';
+MariaDB [Bookstore]> show grants for 'bsapp'@'%';
 MariaDB [Bookstore]> exit;
 ```
+
 ## Verify application account access.
 
-```shell
-# mysql -u user1 -p Bookstore
+```
+# mysql -u bsapp -p Bookstore
 Enter password:
 MariaDB [Bookstore]> select * from book;
 MariaDB [Bookstore]> exit;
 ```
+
 ## Using Adminer Web Interface
 
 All of the above steps can be done and checked using through [adminer](http://localhost:8395/).
 
-```shell
+```
 System: MySQL
 Server: bookstoredb
 Username: root
