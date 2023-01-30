@@ -114,9 +114,24 @@ Contains files and notes relating to setting up `Tomcat` and deploying the `Book
 The `Official Tomcat Docker` container, disables pretty much everything so all you see is a '403' or '404' error response once it is deployed.
 This is a development example, so `Dockerfile` restores much of this functionality.
 
+## Docker MySQL connection
+
+```
+jdbc:mysql://SERVICE-NAME:3306/DATABASE-NAME
+```
+Change to `webapps/Bookstore/WEB-INF/web.xml`
+
+```xml
+	<context-param>
+		<param-name>jdbcURL</param-name>
+		<param-value>jdbc:mysql://bookstoredb:3306/Bookstore</param-value>
+	</context-param>
+```
+
 ## Docker configuration files
 
 * `conf/tomcat-users.xml` grants access to the roles="manager-gui,admin-gui";
 * `webapps/manager/META-INF/context.xml` grants access to the localhost network and the 172 RFC-1918 space used by Docker networking;
+* `webapps/Bookstore/WEB-INF/web.xml` to access the MySQL database in docker-compose network;
 
   

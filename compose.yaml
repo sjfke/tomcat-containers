@@ -11,23 +11,7 @@ services:
     volumes:
       - jsp_bookstoredata:/var/lib/mysql
 
-  adminer:
-    image: adminer
-    restart: unless-stopped
-    ports:
-      - 8395:8080
-    networks:
-      - jspnet
-
-  web:
-    image: tomcat:latest
-    restart: unless-stopped
-    ports:
-      - 8396:8080
-    networks:
-      - jspnet
-
-  tomcat:
+  bookstore:
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -36,6 +20,14 @@ services:
     networks:
       - jspnet
     
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8395:8080
+    networks:
+      - jspnet
+
 networks:
   jspnet:
     driver: bridge

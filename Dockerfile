@@ -25,6 +25,7 @@ WORKDIR /usr/local/tomcat
 RUN mv webapps webapps.safe
 RUN mv webapps.dist/ webapps
 COPY ./wharf/Docker/webapps/manager/META-INF/context.xml /usr/local/tomcat/webapps/manager/META-INF/
+COPY ./wharf/Docker/webapps/host-manager/META-INF/context.xml /usr/local/tomcat/webapps/host-manager/META-INF/
 COPY ./wharf/Docker/conf/tomcat-users.xml /usr/local/tomcat/conf/
 RUN chmod 644 /usr/local/tomcat/conf/tomcat-users.xml
 
