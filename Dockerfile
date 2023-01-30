@@ -16,7 +16,7 @@ LABEL io.k8s.name="Bookstore" \
 # CATALINA_TMPDIR: /usr/local/tomcat/temp
 # JRE_HOME:        /usr
 # CLASSPATH:       /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar
-# configuration files are available in /usr/local/tomcat/conf/
+# Tomcat configuration files are available in /usr/local/tomcat/conf/
 
 ENV PORT=8080
 WORKDIR /usr/local/tomcat

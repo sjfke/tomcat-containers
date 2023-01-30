@@ -34,8 +34,10 @@ MariaDB [Bookstore]> exit;
 
 ## Create an application account and grant access.
 
-***Notice***: the `bsapp` account is not IP access restricted, i.e. not `localhost`, because `Docker` will 
-allocate a random RFC-1918 IP to the database when it is deployed.
+> #### Notice: 
+>
+> - The *bsapp* account is not IP access restricted, i.e. not 'bsapp'@'localhost'.
+> - *Docker* will allocate a random RFC-1918 IP to the database when it is deployed.
 
 ```
 # mysql -u root -p
@@ -69,7 +71,7 @@ Password: r00tpa55
 Database: <blank>
 ```
 
-# Apache Tomcat Preperation
+# Apache Tomcat Preperation (Windows-11 Home)
 
 * [Temurin™ for Windows x64 Prebuilt OpenJDK Binaries for Free!](https://adoptium.net/)
   * Install Temurin™ for Windows https://adoptium.net/ 
@@ -83,7 +85,7 @@ Database: <blank>
   * Installation "C:\Program Files\Apache Software Foundation\Tomcat 9.0"
   * Creates a service that requires manual starting `Service "Apache Tomcat 9.0 Tomcat9"`
   
-# Eclipse JEE preparation
+# Eclipse JEE preparation (Windows-11 Home)
 
 Download and install
 
@@ -100,7 +102,7 @@ For this project a local MariaDB installation was not done, downloads and instru
 
 # Creating Eclipse Project
 
-Follow the instructions
+Following the instructions in the tutorial.
 
 ## Creating Eclipse Project with Maven
 
@@ -124,7 +126,7 @@ The POM.XML update stanza goes between `</build>` and `</project>`
 The remember to create a Java package name for the project, `net.codejava.javaee.bookstore`.
 Eclipse: `Bookstore` > `Java Resources` > `New` > `Package`
 
-* useful pom dependency references, unspecified <scope> is compile (see 2)
+* Useful pom dependency references, unspecified <scope> is compile (see 2)
   # [How To Find Maven Dependencies](https://www.baeldung.com/java-find-maven-dependencies)
   # [Maven Dependency Scopes](https://www.baeldung.com/maven-dependency-scopes)
 
@@ -150,7 +152,7 @@ Modification to the tutorial
 
 Create a JSP page for displaying all books from the database in `Bookstore\src\main\webapp`.
 
-Modification to tutorial
+Modifications to tutorial
 
 * Convert to HTML-5 conventions
 * Make `hard-coded` URL's, "/list" etc, `context directory` agnostic using JSTL `<c:url>` tag
@@ -221,9 +223,9 @@ Create a ControllerServlet class in `Bookstore\src\main\java\net\codejava\javaee
 
 ## Configuring Web.xml
 
-Create Bookstore/src/main/webapp/WEB-INF/web.xml
+Create `Bookstore/src/main/webapp/WEB-INF/web.xml` 
 
-Modification to tutorial
+Modification to the tutorial
 
 * change `<param-name>jdbcUsername</param-name>`
 * change `<param-name>jdbcPassword</param-name>`
@@ -232,9 +234,9 @@ Example skeleton [web.xml for servlet 3.1](https://gist.github.com/darbyluv2code
 
 ## Writing Error JSP page
 
-Create Bookstore/src/main/webapp/Error.jsp
+Create `Bookstore/src/main/webapp/Error.jsp`
 
-Modification to tutorial
+Modification to the tutorial
 
 * Make HTML-5
 
