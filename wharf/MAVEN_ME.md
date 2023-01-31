@@ -17,7 +17,7 @@ Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
       MARIADB_ROOT_PASSWORD: r00tpa55
     networks:
 ```
-See `wharf/DOCKER_ME.md` for docker notes and how to redeploy the docker containers.
+See [DOCKER_ME.md](./DOCKER_ME.md) for docker notes and how to redeploy the docker containers.
 
 ```
 $ docker compose down --rmi local; docker compose build; docker compose up -d
@@ -29,11 +29,11 @@ Follow [How to add Tomcat server in Eclipse IDE](https://www.codejava.net/server
 
 ***Aside:*** the project used ***Apache Tomcat v9.0***.
 
-The Tomcat server should be installed see "Apache Tomcat Preparation" in `BUILD_ME.md` but should not running.
+The Tomcat server should be installed see "Apache Tomcat Preparation" in [BUILD_ME.md](BUILD_ME.md) but should not running.
 
-Creating a new local server and Eclipse does not create `tomcat-users.xsd`, so the `tomcat-users.xml` in the `Servers` folder will show errors.
-
-Download and install the missing [`tomcat-users.xsd`](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) file.
+Creating a new local server and Eclipse does not create `tomcat-users.xsd`
+* so the `tomcat-users.xml` in the `Servers` folder will show errors.
+* Download and install the missing [`tomcat-users.xsd`](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) file.
 
 The next `Tomcat` error maybe be encountered is something like:
 >
@@ -44,14 +44,14 @@ Most likely this because the `Tomcat admin port` is not configured, see [Can't s
 
 Once all the errors have been fixed you can now drag and drop a project into this server to deploy and run the project.
 
-Now `http://localhost:8080/Bookstore/` should now connect.
+Now [`http://localhost:8080/Bookstore/`](http://localhost:8080/Bookstore/) should now connect.
 
-If it errors out again, displays the `Error.jsp` page, this is ok.
+If it errors out again, the `Error.jsp` error page will explain, this is ok.
 >
 > Error
 > Access denied for user 'bsapp'@'172.22.0.1' (using password: YES)
 
-Rememeber the `MariaDB` server is inside a *Docker Environment*
+Remember the `MariaDB` server is inside a *Docker Environment*
 
 > #### Notice:
 > - IP is not the `localhost` 127.0.0.1
@@ -97,9 +97,9 @@ Check syntax by opening the file in Eclipse.
 
 ### To execute Maven, create a Run Configuration 
 
-Eclipse: run > Run Configurations..
+Eclipse: `Run` > `Run Configurations...`
 
-Creates m2 Maven Build > New_configuration
+Create, manage, and run configurations: `Maven Build` > `New_configuration`
 
 ```
 Main Tab:

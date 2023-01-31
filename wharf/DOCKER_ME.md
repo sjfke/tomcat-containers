@@ -6,7 +6,7 @@ Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
 ## MariaDB in Docker
 
 * The docker compose command will take the folder name of as the **_container__** name, so `compose.yaml` is not in `wharf` folder.
-* A permenant volume, `jsp_bookstoredata` is created using `docker-desktop Volumes` tab.
+* A permenant volume, `jsp_bookstoredata` is created using `Docker-Desktop` > `Volumes` tab.
 
 ### MariaDB Docker Compose file
 ```yaml
@@ -47,7 +47,7 @@ $ docker compose down --rmi local; docker compose build; docker compose up -d
 
 ## Tomcat and Bookstore application in Docker
 
-Consult the `Dockerfile` for details of the deployment.
+Consult the [Dockerfile](../Dockerfile) for details of the deployment.
 
 Any files which need to be replaced for Docker to work are in the `Docker` folder. 
 
@@ -55,8 +55,9 @@ Any files which need to be replaced for Docker to work are in the `Docker` folde
 
 It contains all the modified files to set up `Tomcat` and deploying the `Bookstore` the application.
 
-The `Official Tomcat Docker` container, disables pretty much everything so all you see is a '403' or '404' error response once it is deployed.
-This is a development example, so `Dockerfile` restores much of this functionality, key extracts follow:
+The [Official Tomcat Docker](https://hub.docker.com/_/tomcat) container, disables pretty much everything so all you see is a '403' or '404' error response once it is deployed.
+
+This is a development environment, so `Dockerfile` restores much of this functionality, key extracts follow:
 
 ```
 # Setup Tomcat in a development configuration
@@ -72,7 +73,6 @@ RUN chmod 644 /usr/local/tomcat/conf/tomcat-users.xml
 * `webapps/host-manager/META-INF/context.xml` grants access to the localhost and the RFC-1918 space used by Docker networking;
 * `conf/tomcat-users.xml` grants access to the roles="manager-gui,admin-gui" to username="admin";
 * `webapps/Bookstore/WEB-INF/web.xml` to access the MySQL database in docker-compose network;
-
 
 > #### Note:
 > 
@@ -133,14 +133,14 @@ $ docker compose down --rmi local; docker compose build; docker compose up -d
 $ docker compose down --rmi local; docker compose up -d --build
 ```
 
-1. [Docker: Overview of Docker Compose](https://docs.docker.com/compose/)
-2. [Docker: Compose specification](https://docs.docker.com/compose/compose-file)
-3. [Docker: Compose specification - ports](https://docs.docker.com/compose/compose-file/#ports)
+* [Docker: Reference documentation](https://docs.docker.com/reference/)
+* [Docker: Overview of Docker Compose](https://docs.docker.com/compose/)
+* [Docker: Compose specification](https://docs.docker.com/compose/compose-file)
 
 ## Docker Image Maintenance
 
 ```
-$ docker image prune # clean up dangling images
+$ docker image prune    # clean up dangling images
 $ docker system prune 
 $ docker rmi $(docker images -f 'dangling=true' -q) # bash only, images with no tags
 ```
