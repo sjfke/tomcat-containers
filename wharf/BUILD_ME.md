@@ -71,9 +71,9 @@ Password: r00tpa55
 Database: <blank>
 ```
 
-# Application Preperation (Windows-11 Home)
+# Application Preparation (Windows-11 Home)
 
-## Apache Tomcat Preperation (Windows-11 Home)
+## Apache Tomcat Preparation (Windows-11 Home)
 
 * [Temurin™ for Windows x64 Prebuilt OpenJDK Binaries for Free!](https://adoptium.net/)
   * Install Temurin™ for Windows https://adoptium.net/ 
@@ -96,7 +96,7 @@ Download and install
 
 Under `Window` > `Preferences` > `General` > `Appearence` you can enable `theming` like `Dark Mode`
 
-# MariaDB preparation
+## MariaDB preparation
 
 For this project a local MariaDB installation was not installed, downloads and instructions:  
 
@@ -130,7 +130,7 @@ The remember to create a Java package name for the project, `net.codejava.javaee
 
 Eclipse: `Bookstore` > `Java Resources` > `New` > `Package`
 
-* Useful pom dependency references, unspecified <scope> is compile (see 2)
+Useful pom dependency references, unspecified <scope> is compile (see 2)
   1. [How To Find Maven Dependencies](https://www.baeldung.com/java-find-maven-dependencies)
   2. [Maven Dependency Scopes](https://www.baeldung.com/maven-dependency-scopes)
 
@@ -139,22 +139,20 @@ Eclipse: `Bookstore` > `Java Resources` > `New` > `Package`
 Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
 ```java
-	public Book(int id, String title, String author, float price) {
-		// this(title, author, price);
-		this.id = id;
-		this.title = title;
-		this.author = author;
-		this.price = price;
-	}
+public Book(int id, String title, String author, float price) {
+	// this(title, author, price);
+	this.id = id;
+	this.title = title;
+	this.author = author;
+	this.price = price;
+}
 ```
 
 ## Coding DAO class
 
 Follow the instructions in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
-For additional help:
-
-* [JDBC CRUD Operations Tutorial:](https://www.codejava.net/java-se/jdbc/jdbc-tutorial-sql-insert-select-update-and-delete-examples)
+For additional help: [JDBC CRUD Operations Tutorial:](https://www.codejava.net/java-se/jdbc/jdbc-tutorial-sql-insert-select-update-and-delete-examples)
 
 ## Writing Book Listing JSP Page
 
@@ -208,7 +206,7 @@ Modifications to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc
 
 Create a JSP page for creating a new book in `Bookstore\src\main\webapp`.
 
-Modification to tutorial
+Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
 * Convert to HTML-5 conventions
 * Make `hard-coded` URL's, "/new", "/list", `context directory` agnostic using JSTL `<c:url>` tag
@@ -229,9 +227,11 @@ Modification to tutorial
 
 Create a ControllerServlet class in `Bookstore\src\main\java\net\codejava\javaee\bookstore`.
 
+Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
+
 ## Configuring Web.xml
 
-Create `Bookstore/src/main/webapp/WEB-INF/web.xml` 
+Create `Bookstore/src/main/webapp/WEB-INF/web.xml`.
 
 Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
