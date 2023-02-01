@@ -46,18 +46,6 @@ Once all the errors have been fixed you can now drag and drop a project into thi
 
 Now [`http://localhost:8080/Bookstore/`](http://localhost:8080/Bookstore/) should now connect.
 
-If it errors out again, the `Error.jsp` error page will explain, this is ok.
->
-> Error
-> Access denied for user 'bsapp'@'172.22.0.1' (using password: YES)
-
-Remember the `MariaDB` server is inside a *Docker Environment*
-
-> #### Notice:
-> - IP is not the `localhost` 127.0.0.1
-> - Docker compose is using it's own `jspnet` an IP (RFC-1918) network. 
-> - Unlike `Linux`, `Windows` does not always handle NAT of `localhost`.
-
 ***Aside:*** 
 
 Testing the application from within Eclipse and the `context directory` is not included 
@@ -71,11 +59,6 @@ To function `Maven` requires a minimal `settings.xml` which may have to be manua
 $ new-item C:\Users\sjfke\.m2\settings.xml
 $ get-content C:\Users\sjfke\.m2\settings.xml
 ```
-
-1. [Maven plugin in Eclipse - Settings.xml file is missing](https://stackoverflow.com/questions/4626609/maven-plugin-in-eclipse-settings-xml-file-is-missing) very old reference *but* works!
-2. [Apache Maven Project - Settings Reference](https://maven.apache.org/settings.html)
-
-Check syntax by opening the file in Eclipse.
 
 ```xml
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
@@ -94,6 +77,11 @@ Check syntax by opening the file in Eclipse.
   <activeProfiles/>
 </settings>
 ```
+
+1. [Maven plugin in Eclipse - Settings.xml file is missing](https://stackoverflow.com/questions/4626609/maven-plugin-in-eclipse-settings-xml-file-is-missing) very old reference *but* works!
+2. [Apache Maven Project - Settings Reference](https://maven.apache.org/settings.html)
+
+Check syntax by opening the file in Eclipse.
 
 ### To execute Maven, create a Run Configuration 
 

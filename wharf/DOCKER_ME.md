@@ -16,6 +16,8 @@ services:
   bookstoredb:
     image: mariadb
     restart: unless-stopped
+    ports:
+      - 3306:3306
     environment:
       MARIADB_ROOT_PASSWORD: r00tpa55
     networks:
