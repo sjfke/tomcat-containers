@@ -13,7 +13,7 @@ From `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` c
 
 ***Note:*** Maria Database root password is in the `compose.yaml` file.
 
-```shell
+```sql
 # mysql -u root -p
 Enter password:
 
@@ -35,7 +35,7 @@ MariaDB [Bookstore]> exit;
 
 ## Create an application account and grant access.
 
-```
+```sql
 # mysql -u root -p
 Enter password:
 MariaDB [(none)]> use Bookstore;
@@ -52,7 +52,7 @@ MariaDB [Bookstore]> exit;
 
 ## Verify application account access.
 
-```
+```sql
 # mysql -u bsapp -p Bookstore
 Enter password:
 MariaDB [Bookstore]> select * from book;
