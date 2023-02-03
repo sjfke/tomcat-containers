@@ -77,6 +77,13 @@ $ get-command docker # C:\Program Files\Docker\Docker\resources\bin\docker.exe
 $ get-command podman # C:\Program Files\RedHat\Podman\podman.exe
 ```
 
+## Podman References
+
+* [Podman Introduction](https://docs.podman.io/en/latest/Introduction.html)
+* [Podman Tutorials](https://docs.podman.io/en/latest/Tutorials.html)
+* [Podman for Windows](./Podman/podman-for-windows.html) installation instructions
+
+
 ## Installing Podman-Desktop
 
 Follow the instructions on [Containers and Kubernetes for application developers](https://podman-desktop.io/).
@@ -95,6 +102,63 @@ There is no evidence of any Windows services for `Redhat` or `Podman`.
 >
 >> `Docker-Desktop` sees it's containers or volumes but they cannot be started `docker compose` errors with exit status 1.
 
+## Create MariaDB `jsp_bookstoredata` Volume
+
+[podman-volume - Simple management tool for volumes](https://docs.podman.io/en/latest/markdown/podman-volume.1.html)
+
+```
+$ podman volume create jsp_bookstoredata
+$ podman volume exists jsp_bookstoredata # not visible in output nor in Podman-Desktop?
+
+$ podman volume ls
+DRIVER      VOLUME NAME
+local       jsp_bookstoredata
+
+$ podman volume inspect jsp_bookstoredata
+[
+     {
+          "Name": "jsp_bookstoredata",
+          "Driver": "local",
+          "Mountpoint": "/home/user/.local/share/containers/storage/volumes/jsp_bookstoredata/_data",
+          "CreatedAt": "2023-02-03T09:51:33.113178179+01:00",
+          "Labels": {},
+          "Scope": "local",
+          "Options": {},
+          "MountCount": 0,
+          "NeedsCopyUp": true,
+          "NeedsChown": true
+     }
+]
+```
+
+## Docker-Compose files
+
+Compose files are Docker specific and they can’t be used with Podman.
+
+```
+$ podman-compose -f ./docker-compose-platform.yaml up --detach # no podman-compose command
+$ podman compose -f ./docker-compose-platform.yaml up --detach # no podman-compose command
+Error: unrecognized command `podman.exe compose`
+
+# on F37 had to install the extension `podman-compose`
+```
+
+[How to Run Podman and Docker-Compose on Windows] (https://hackernoon.com/how-to-run-podman-and-docker-compose-on-windows)
+```
+$ docker compose up
+[+] Running 2/19
+ - adminer     Pulled 33.0s
+ - bookstoredb Pulled 22.3s
+[+] Building 25.2s (1/1) FINISHED
+ => ERROR [internal] booting buildkit                                                                                                                            25.2s
+ => => pulling image moby/buildkit:buildx-stable-1                                                                                                               23.6s
+ => => creating container buildx_buildkit_default                                                                                                                 1.6s
+------
+ > [internal] booting buildkit:
+------
+Error response from daemon: crun: creating cgroup directory `/sys/fs/cgroup/misc/docker/buildx/libpod-aa4302be3367c5679f58fa53e27fab324f1c824240bb230e48cf7754548602a3`: No such file or directory: OCI runtime attempted to invoke a command that was not found
+```
+
 ## Next steps
 
 1. Build out MariaDB, Adminer in podman
@@ -103,7 +167,7 @@ There is no evidence of any Windows services for `Redhat` or `Podman`.
 # Clean Up Previous Install.
 
 ```
-wsl --list --verbose
+$ wsl --list --verbose
   NAME                      STATE           VERSION
 * Ubuntu                    Stopped         2
   AlmaLinux-8               Stopped         2
