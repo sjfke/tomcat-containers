@@ -152,15 +152,30 @@ $ podman volume inspect jsp_bookstoredata
 
 ## Podman Compose Fedora 37
 
+Delete all traces of first attempt, containers, pods, and no bookstore *but* `localhost/docker2podman_bookstore` image reused.
+
+```
 $ podman-compose -f ./docker-compose-platform.yaml up --detach
-# Note: `podman-compose`
-# Have to select which hub-repos, docker.io, etc
-# Fails to deploy bookstore application, trying deploy image, need to build?
+'podman', '--version', '']
+using podman version: 4.3.1
+** excluding:  set()
+['podman', 'inspect', '-t', 'image', '-f', '{{.Id}}', 'docker2podman_bookstore']
+['podman', 'network', 'exists', 'docker2podman_jspnet']
+podman run --name=docker2podman_bookstoredb_1 -d --label io.podman.compose.config-hash=123 --label io.podman.compose.project=docker2podman --label io.podman.compose.version=0.0.1 --label com.docker.compose.project=docker2podman --label com.docker.compose.project.working_dir=/home/gcollis/Sandbox/docker2podman --label com.docker.compose.project.config_files=./docker-compose-platform.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=bookstoredb -e MARIADB_ROOT_PASSWORD=r00tpa55 -v docker2podman_jsp_bookstoredata:/var/lib/mysql --net docker2podman_jspnet --network-alias bookstoredb -p 3306:3306 --restart unless-stopped mariadb
+40825164736afa7bbc1957f59126b77ab68d61917230ceb2e8ba7e460e2ba2f2
+exit code: 0
+['podman', 'network', 'exists', 'docker2podman_jspnet']
+podman run --name=docker2podman_bookstore_1 -d --label io.podman.compose.config-hash=123 --label io.podman.compose.project=docker2podman --label io.podman.compose.version=0.0.1 --label com.docker.compose.project=docker2podman --label com.docker.compose.project.working_dir=/home/gcollis/Sandbox/docker2podman --label com.docker.compose.project.config_files=./docker-compose-platform.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=bookstore --net docker2podman_jspnet --network-alias bookstore -p 8395:8080 docker2podman_bookstore
+a3e75fce3a55b596e5858ad98fdefe51cace06f92102f631553230eccc2892dd
+exit code: 0
+['podman', 'network', 'exists', 'docker2podman_jspnet']
+podman run --name=docker2podman_adminer_1 -d --label io.podman.compose.config-hash=123 --label io.podman.compose.project=docker2podman --label io.podman.compose.version=0.0.1 --label com.docker.compose.project=docker2podman --label com.docker.compose.project.working_dir=/home/gcollis/Sandbox/docker2podman --label com.docker.compose.project.config_files=./docker-compose-platform.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=adminer --net docker2podman_jspnet --network-alias adminer -p 8397:8080 --restart unless-stopped adminer
+3f99292a61274d3588b89767b6bfe2f43b395abf1606cc20ae7c3223cf10b610
+exit code: 0
 ```
 
-It deployed the `bookstore-1` MariaDB container, and the `adminer-1` container.
-The `podman-desktop` is unstable, keeps becoming unresponsive, copy-n-paste does not work so delete it and use the `flatpack` version.
-Using the `podman-desktop (flatpack)` version, build out the MariaDB.
+Deployment successful, `tomcat` accessible, but again `` volume created is `docker2podman_jsp_bookstoredata`.
+Now populate `bookstoredb-1` MariaDB database.
 
 ```sql
 # mysql -u root -p
@@ -189,152 +204,62 @@ select * from book;
 exit;
 ```
 
-However it did not use the `jsp_bookstoredata` volume but created a new one?
+## Create Podman Play version
+
+Creating a single pod from the the Docker container, while it creates something in `podman`it does not work...
+Everything goes to the `adminer-1-podified` and it is obvious something is wrong because everything is listening on ***all*** of the ports.
+For completeness sake see the `bookstore-inspect-single-pod.json` and `bookstore-kube-single-pod.yaml`files.
+
+What needs to be created is a `pod` per Docker `service` and a `container` to run them.
+
+Had to delete everything and rerun `podman-compose -f ./docker-compose-platform.yaml up --detach`.
+There are two volumes with shown below what is each being used for?
 
 ```
 $ podman volume ls
 DRIVER      VOLUME NAME
+local       96390c62d58eac61395aceeb4307ea6676432d00d23c11aa0e7946a7cfbd49c2
 local       docker2podman_jsp_bookstoredata
-local       jsp_bookstoredata
-```
 
-Try the `docker-compose` again and this time it deploys...
-
-```
-$ podman-compose -f ./docker-compose-platform.yaml up --detach
-['podman', '--version', '']
-using podman version: 4.3.1
-** excluding:  set()
-['podman', 'inspect', '-t', 'image', '-f', '{{.Id}}', 'docker2podman_bookstore']
-Error: inspecting object: docker2podman_bookstore: image not known
-podman build -t docker2podman_bookstore -f ././Dockerfile .
-STEP 1/15: FROM tomcat:9.0.71-jdk17-temurin
-✔ docker.io/library/tomcat:9.0.71-jdk17-temurin
-Trying to pull docker.io/library/tomcat:9.0.71-jdk17-temurin...
-Getting image source signatures
-Copying blob 10ac4908093d skipped: already exists  
-Copying blob 1f8839e6ed79 done  
-Copying blob 8fa912900627 done  
-Copying blob f8fe20946c04 done  
-Copying blob 6df15e605e38 done  
-Copying blob 2db012dd504c done  
-Copying blob 0839ea5a8b1a done  
-Copying config b07e16b110 done  
-Writing manifest to image destination
-Storing signatures
-STEP 2/15: ENV BUILDER_VERSION 1.0
---> 3cee1b57e6d
-STEP 3/15: LABEL io.k8s.name="Bookstore"       io.k8s.description="Tomcat JSP for Docker and Podman testing"       io.k8s.display-name="Bookstore"       io.k8s.version="0.0.1"       io.openshift.expose-services="8080:http"       io.openshift.tags="Tomcat JSP,Bookstore,0.0.1,Docker,Podman"
---> 88f4bb90471
-STEP 4/15: ENV PORT=8080
---> 5c3089aa6e6
-STEP 5/15: WORKDIR /usr/local/tomcat
---> 0ffe8a8a689
-STEP 6/15: RUN mv webapps webapps.safe
---> c109a3f21aa
-STEP 7/15: RUN mv webapps.dist/ webapps
---> d56ee3c0acd
-STEP 8/15: COPY ./wharf/Docker/webapps/manager/META-INF/context.xml /usr/local/tomcat/webapps/manager/META-INF/
---> 57d16dff3df
-STEP 9/15: COPY ./wharf/Docker/webapps/host-manager/META-INF/context.xml /usr/local/tomcat/webapps/host-manager/META-INF/
---> a686dc17907
-STEP 10/15: COPY ./wharf/Docker/conf/tomcat-users.xml /usr/local/tomcat/conf/
---> a3507e60bc3
-STEP 11/15: RUN chmod 644 /usr/local/tomcat/conf/tomcat-users.xml
---> d1091904213
-STEP 12/15: COPY ./Bookstore/target/Bookstore-0.0.1-SNAPSHOT/ /usr/local/tomcat/webapps/Bookstore
---> 090999dc515
-STEP 13/15: COPY ./wharf/Docker/webapps/Bookstore/WEB-INF/web.xml /usr/local/tomcat/webapps/Bookstore/WEB-INF/web.xml
---> 07ae33c17eb
-STEP 14/15: USER 1
---> 987e3dfdc6e
-STEP 15/15: CMD ["catalina.sh", "run"]
-COMMIT docker2podman_bookstore
---> 7f051cd00bc
-Successfully tagged localhost/docker2podman_bookstore:latest
-7f051cd00bc6e2c68b343c844fc596408827667687c545a4b1d4326ce18653e8
-exit code: 0
-['podman', 'network', 'exists', 'docker2podman_jspnet']
-podman run --name=docker2podman_bookstoredb_1 -d --label io.podman.compose.config-hash=123 --label io.podman.compose.project=docker2podman --label io.podman.compose.version=0.0.1 --label com.docker.compose.project=docker2podman --label com.docker.compose.project.working_dir=/home/gcollis/Sandbox/docker2podman --label com.docker.compose.project.config_files=./docker-compose-platform.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=bookstoredb -e MARIADB_ROOT_PASSWORD=r00tpa55 -v docker2podman_jsp_bookstoredata:/var/lib/mysql --net docker2podman_jspnet --network-alias bookstoredb -p 3306:3306 --restart unless-stopped mariadb
-9bc656b6e253d71ffbcf01c06a0f0f0e15538fd38a42171fd5765a766ad1a1de
-exit code: 0
-['podman', 'network', 'exists', 'docker2podman_jspnet']
-podman run --name=docker2podman_bookstore_1 -d --label io.podman.compose.config-hash=123 --label io.podman.compose.project=docker2podman --label io.podman.compose.version=0.0.1 --label com.docker.compose.project=docker2podman --label com.docker.compose.project.working_dir=/home/gcollis/Sandbox/docker2podman --label com.docker.compose.project.config_files=./docker-compose-platform.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=bookstore --net docker2podman_jspnet --network-alias bookstore -p 8395:8080 docker2podman_bookstore
-4505638e1f469189c387f7a896484122f5ba0589d69321d6030a9536264caa90
-exit code: 0
-['podman', 'network', 'exists', 'docker2podman_jspnet']
-podman run --name=docker2podman_adminer_1 -d --label io.podman.compose.config-hash=123 --label io.podman.compose.project=docker2podman --label io.podman.compose.version=0.0.1 --label com.docker.compose.project=docker2podman --label com.docker.compose.project.working_dir=/home/gcollis/Sandbox/docker2podman --label com.docker.compose.project.config_files=./docker-compose-platform.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=adminer --net docker2podman_jspnet --network-alias adminer -p 8397:8080 --restart unless-stopped adminer
-d85c5f1b28298f13c44a72ea6144903a325747c76a14d116b719fa6a0702157f
-exit code: 0
-```
-
-Next steps work through POD's and create a podman compose file?
-
-## Windows 11 cruft to clean
- 
-```
-# Windows-11
-
-PS1> podman volume create jsp_bookstoredata
-PS1> podman volume exists jsp_bookstoredata # not visible in output nor in Podman-Desktop?
-
-$ podman volume create jsp_bookstoredata
-$ podman volume exists jsp_bookstoredata # not visible in output but visible in Podman-Desktop?
-
-$ podman volume ls
-DRIVER      VOLUME NAME
-local       jsp_bookstoredata
-
-$ podman volume inspect jsp_bookstoredata
+$ podman volume inspect docker2podman_jsp_bookstoredata
 [
      {
-          "Name": "jsp_bookstoredata",
+          "Name": "docker2podman_jsp_bookstoredata",
           "Driver": "local",
-          "Mountpoint": "/home/user/.local/share/containers/storage/volumes/jsp_bookstoredata/_data",
-          "CreatedAt": "2023-02-03T09:51:33.113178179+01:00",
+          "Mountpoint": "/home/gcollis/.local/share/containers/storage/volumes/docker2podman_jsp_bookstoredata/_data",
+          "CreatedAt": "2023-02-06T10:00:20.836576554+01:00",
           "Labels": {},
           "Scope": "local",
           "Options": {},
           "MountCount": 0,
-          "NeedsCopyUp": true,
-          "NeedsChown": true
+          "NeedsCopyUp": true
+     }
+]
+$ podman volume inspect 96390c62d58eac61395aceeb4307ea6676432d00d23c11aa0e7946a7cfbd49c2
+[
+     {
+          "Name": "96390c62d58eac61395aceeb4307ea6676432d00d23c11aa0e7946a7cfbd49c2",
+          "Driver": "local",
+          "Mountpoint": "/home/gcollis/.local/share/containers/storage/volumes/96390c62d58eac61395aceeb4307ea6676432d00d23c11aa0e7946a7cfbd49c2/_data",
+          "CreatedAt": "2023-02-06T11:34:51.439576262+01:00",
+          "Labels": {},
+          "Scope": "local",
+          "Options": {},
+          "Anonymous": true,
+          "MountCount": 0,
+          "NeedsCopyUp": true
      }
 ]
 ```
 
-## Docker-Compose files
+Could not make this work.. converted each Docker `service` into a pod for reference.
 
-Compose files are Docker specific and they can’t be used with Podman.
+* `wharf/Podman/adminer-pod.yaml`;
+* `wharf/Podman/bookstoredb-pod.yaml`;
+* `wharf/Podman/bookstore-pod.yaml`;
 
-```
-$ podman-compose -f ./docker-compose-platform.yaml up --detach # no podman-compose command
-$ podman compose -f ./docker-compose-platform.yaml up --detach # no podman-compose command
-Error: unrecognized command `podman.exe compose`
-
-# on F37 had to install the extension `podman-compose`
-```
-
-[How to Run Podman and Docker-Compose on Windows] (https://hackernoon.com/how-to-run-podman-and-docker-compose-on-windows)
-
-```
-$ docker compose up
-[+] Running 2/19
- - adminer     Pulled 33.0s
- - bookstoredb Pulled 22.3s
-[+] Building 25.2s (1/1) FINISHED
- => ERROR [internal] booting buildkit                                                                                                                            25.2s
- => => pulling image moby/buildkit:buildx-stable-1                                                                                                               23.6s
- => => creating container buildx_buildkit_default                                                                                                                 1.6s
-------
- > [internal] booting buildkit:
-------
-Error response from daemon: crun: creating cgroup directory `/sys/fs/cgroup/misc/docker/buildx/libpod-aa4302be3367c5679f58fa53e27fab324f1c824240bb230e48cf7754548602a3`: No such file or directory: OCI runtime attempted to invoke a command that was not found
-```
-
-## Next steps
-
-1. Build out MariaDB, Adminer in podman
-2. Convert compose file as per the article. 
+Probably next step is to create a `deployment` which deploys these pods and connects them.
+This is akin to building a `helm chart`, but could also look at 
 
 # Clean Up Previous Install.
 
@@ -366,7 +291,7 @@ Reboot to clean up everything... but still broken, needed the following steps to
 $ podman machine info                      # Still see's podman-machine-default
 $ podman machine init                      # Error: podman-machine-default: VM already exists
 $ podman machine inspect                   # podman-machine-default as stopped
-$ podman machine start                     # Starting machine "podman-machine-default", no distribution with the supplied name.
+$ podman machine start                     # Starting machine "podman-machine-default"
 $ podman machine rm podman-machine-default # Delete it
 $ podman machine inspect                   # Error: podman-machine-default: VM does not exist
 ```
