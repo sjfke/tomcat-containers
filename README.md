@@ -10,7 +10,7 @@ The working docker-desktop implementation based on docker-compose with then be [
 
 The tomcat application is an implementation of [CodeJava Tutorial - JSP Servlet JDBC MySQL Create Read Update Delete (CRUD) Example](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
-# Project Organization
+# Project Organisation
 
 ## Wharf - where are the containerization information is stored.
 
