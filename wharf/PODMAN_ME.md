@@ -8,22 +8,34 @@ Based on the article [Docker-Desktop to Podman-Desktop migration](https://fedora
 ## Windows Platform
 
 * [Docker-Desktop](https://www.docker.com/products/docker-desktop/) version v4.16.3
-* [Podman-Desktop](https://podman-desktop.io/downloads/Windows) version 0.11.0
+* [Podman-Desktop](https://github.com/containers/podman-desktop/releases/download/v0.11.0/podman-desktop-0.11.0-setup.exe) version 0.11.0 or `winget install -e --id RedHat.Podman-Desktop`
 * [Windows 11 Home Version 22H2](https://learn.microsoft.com/en-us/windows/whats-new/whats-new-windows-11-version-22h2)
 * [WSL version: 1.0.3.0](https://learn.microsoft.com/en-us/windows/wsl/install)
 
-## MacOS Platform
+## MacOS Platform (Intel)
 
 * [Docker-Desktop](https://www.docker.com/products/docker-desktop/) version v4.16.2
-* [Podman-Desktop](https://podman-desktop.io/downloads/Windows) version 0.11.0
+* [Podman-Desktop](https://github.com/containers/podman-desktop/releases/download/v0.11.0/podman-desktop-0.11.0-x64.dmg) version 0.11.0 or `$ brew install podman-desktop`
 * MacOS
 * Kubernetes
+
+## Fedora 37 Platform
+
+* [Podman-Desktop](https://github.com/containers/podman-desktop/releases/download/v0.11.0/podman-desktop-0.11.0.flatpak) version 0.11.0
+
+```
+gcollis@morpheus docker2podman]$ sudo dnf list installed | grep podman
+podman.x86_64                                        4:4.3.1-1.fc37                      @updates                  
+podman-compose.noarch                                1.0.3-6.fc37                        @fedora                   
+podman-gvproxy.x86_64                                4:4.3.1-1.fc37                      @updates                  
+podman-plugins.x86_64                                4:4.3.1-1.fc37                      @updates                
+```
 
 ## Docker Setup
 
 See [DOCKER_ME.md](./DOCKER_ME.md) for docker notes and how to redeploy the docker containers.
 
-# Podman and Podman-Desktop installation
+# Podman and Podman-Desktop Windows installation
 
 First install `podman` and once it is working then install `podman-desktop`.
 
@@ -77,6 +89,10 @@ $ get-command docker # C:\Program Files\Docker\Docker\resources\bin\docker.exe
 $ get-command podman # C:\Program Files\RedHat\Podman\podman.exe
 ```
 
+> #### Note
+>
+> - There is no **podman-compose** command, on *Fedora* it is an extension that needs to be installed.
+ 
 ## Podman References
 
 * [Podman Introduction](https://docs.podman.io/en/latest/Introduction.html)
@@ -84,7 +100,7 @@ $ get-command podman # C:\Program Files\RedHat\Podman\podman.exe
 * [Podman for Windows](./Podman/podman-for-windows.html) installation instructions
 
 
-## Installing Podman-Desktop
+## Installing Podman-Desktop Windows
 
 Follow the instructions on [Containers and Kubernetes for application developers](https://podman-desktop.io/).
 
@@ -98,17 +114,172 @@ There is no evidence of any Windows services for `Redhat` or `Podman`.
 
 > Note:
 >
->> `Podman-Desktop` does not see any other the `Docker-Desktop` containers or volumes.
+> Different WSL virtual machines are being used, and the `docker` command is using the API to the `podman` virtual machine.
 >
->> `Docker-Desktop` sees it's containers or volumes but they cannot be started `docker compose` errors with exit status 1.
+>> So `Podman-Desktop` does not see any other the `Docker-Desktop` containers or volumes.
+>
+>> So `Docker-Desktop` sees it's containers or volumes but cannot start them, `docker compose` errors with exit status 1.
 
 ## Create MariaDB `jsp_bookstoredata` Volume
 
 [podman-volume - Simple management tool for volumes](https://docs.podman.io/en/latest/markdown/podman-volume.1.html)
 
-```
+```shell
+# Fedora-37
+
 $ podman volume create jsp_bookstoredata
-$ podman volume exists jsp_bookstoredata # not visible in output nor in Podman-Desktop?
+$ podman volume exists jsp_bookstoredata # not visible in output but visible in Podman-Desktop?
+
+$ podman volume ls
+DRIVER      VOLUME NAME
+local       jsp_bookstoredata
+
+$ podman volume inspect jsp_bookstoredata 
+[
+     {
+          "Name": "jsp_bookstoredata",
+          "Driver": "local",
+          "Mountpoint": "/home/gcollis/.local/share/containers/storage/volumes/jsp_bookstoredata/_data",
+          "CreatedAt": "2023-02-03T16:43:34.039774242+01:00",
+          "Labels": {},
+          "Scope": "local",
+          "Options": {},
+          "MountCount": 0,
+          "NeedsCopyUp": true,
+          "NeedsChown": true
+     }
+]
+
+## Podman Compose Fedora 37
+
+$ podman-compose -f ./docker-compose-platform.yaml up --detach
+# Note: `podman-compose`
+# Have to select which hub-repos, docker.io, etc
+# Fails to deploy bookstore application, trying deploy image, need to build?
+```
+
+It deployed the `bookstore-1` MariaDB container, and the `adminer-1` container.
+The `podman-desktop` is unstable, keeps becoming unresponsive, copy-n-paste does not work so delete it and use the `flatpack` version.
+Using the `podman-desktop (flatpack)` version, build out the MariaDB.
+
+```sql
+# mysql -u root -p
+create database Bookstore;
+use Bookstore
+
+drop table if exists book;
+create table book(
+  `book_id` int(11) auto_increment primary key not null,
+  `title` varchar(128) unique key not null,
+  `author` varchar(45) not null,
+  `price` float not null
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+
+insert into book (title, author, price) values ('Thinking in Java', 'Bruce Eckel', '25.69');
+select * from book;
+
+create user 'bsapp'@'%' identified by 'P@ssw0rd';
+grant all privileges on Bookstore.* to 'bsapp'@'%';
+flush privileges;
+show grants for 'bsapp'@'%';
+exit;
+
+# mysql -u bsapp -p Bookstore
+select * from book;
+exit;
+```
+
+However it did not use the `jsp_bookstoredata` volume but created a new one?
+
+```
+$ podman volume ls
+DRIVER      VOLUME NAME
+local       docker2podman_jsp_bookstoredata
+local       jsp_bookstoredata
+```
+
+Try the `docker-compose` again and this time it deploys...
+
+```
+$ podman-compose -f ./docker-compose-platform.yaml up --detach
+['podman', '--version', '']
+using podman version: 4.3.1
+** excluding:  set()
+['podman', 'inspect', '-t', 'image', '-f', '{{.Id}}', 'docker2podman_bookstore']
+Error: inspecting object: docker2podman_bookstore: image not known
+podman build -t docker2podman_bookstore -f ././Dockerfile .
+STEP 1/15: FROM tomcat:9.0.71-jdk17-temurin
+✔ docker.io/library/tomcat:9.0.71-jdk17-temurin
+Trying to pull docker.io/library/tomcat:9.0.71-jdk17-temurin...
+Getting image source signatures
+Copying blob 10ac4908093d skipped: already exists  
+Copying blob 1f8839e6ed79 done  
+Copying blob 8fa912900627 done  
+Copying blob f8fe20946c04 done  
+Copying blob 6df15e605e38 done  
+Copying blob 2db012dd504c done  
+Copying blob 0839ea5a8b1a done  
+Copying config b07e16b110 done  
+Writing manifest to image destination
+Storing signatures
+STEP 2/15: ENV BUILDER_VERSION 1.0
+--> 3cee1b57e6d
+STEP 3/15: LABEL io.k8s.name="Bookstore"       io.k8s.description="Tomcat JSP for Docker and Podman testing"       io.k8s.display-name="Bookstore"       io.k8s.version="0.0.1"       io.openshift.expose-services="8080:http"       io.openshift.tags="Tomcat JSP,Bookstore,0.0.1,Docker,Podman"
+--> 88f4bb90471
+STEP 4/15: ENV PORT=8080
+--> 5c3089aa6e6
+STEP 5/15: WORKDIR /usr/local/tomcat
+--> 0ffe8a8a689
+STEP 6/15: RUN mv webapps webapps.safe
+--> c109a3f21aa
+STEP 7/15: RUN mv webapps.dist/ webapps
+--> d56ee3c0acd
+STEP 8/15: COPY ./wharf/Docker/webapps/manager/META-INF/context.xml /usr/local/tomcat/webapps/manager/META-INF/
+--> 57d16dff3df
+STEP 9/15: COPY ./wharf/Docker/webapps/host-manager/META-INF/context.xml /usr/local/tomcat/webapps/host-manager/META-INF/
+--> a686dc17907
+STEP 10/15: COPY ./wharf/Docker/conf/tomcat-users.xml /usr/local/tomcat/conf/
+--> a3507e60bc3
+STEP 11/15: RUN chmod 644 /usr/local/tomcat/conf/tomcat-users.xml
+--> d1091904213
+STEP 12/15: COPY ./Bookstore/target/Bookstore-0.0.1-SNAPSHOT/ /usr/local/tomcat/webapps/Bookstore
+--> 090999dc515
+STEP 13/15: COPY ./wharf/Docker/webapps/Bookstore/WEB-INF/web.xml /usr/local/tomcat/webapps/Bookstore/WEB-INF/web.xml
+--> 07ae33c17eb
+STEP 14/15: USER 1
+--> 987e3dfdc6e
+STEP 15/15: CMD ["catalina.sh", "run"]
+COMMIT docker2podman_bookstore
+--> 7f051cd00bc
+Successfully tagged localhost/docker2podman_bookstore:latest
+7f051cd00bc6e2c68b343c844fc596408827667687c545a4b1d4326ce18653e8
+exit code: 0
+['podman', 'network', 'exists', 'docker2podman_jspnet']
+podman run --name=docker2podman_bookstoredb_1 -d --label io.podman.compose.config-hash=123 --label io.podman.compose.project=docker2podman --label io.podman.compose.version=0.0.1 --label com.docker.compose.project=docker2podman --label com.docker.compose.project.working_dir=/home/gcollis/Sandbox/docker2podman --label com.docker.compose.project.config_files=./docker-compose-platform.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=bookstoredb -e MARIADB_ROOT_PASSWORD=r00tpa55 -v docker2podman_jsp_bookstoredata:/var/lib/mysql --net docker2podman_jspnet --network-alias bookstoredb -p 3306:3306 --restart unless-stopped mariadb
+9bc656b6e253d71ffbcf01c06a0f0f0e15538fd38a42171fd5765a766ad1a1de
+exit code: 0
+['podman', 'network', 'exists', 'docker2podman_jspnet']
+podman run --name=docker2podman_bookstore_1 -d --label io.podman.compose.config-hash=123 --label io.podman.compose.project=docker2podman --label io.podman.compose.version=0.0.1 --label com.docker.compose.project=docker2podman --label com.docker.compose.project.working_dir=/home/gcollis/Sandbox/docker2podman --label com.docker.compose.project.config_files=./docker-compose-platform.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=bookstore --net docker2podman_jspnet --network-alias bookstore -p 8395:8080 docker2podman_bookstore
+4505638e1f469189c387f7a896484122f5ba0589d69321d6030a9536264caa90
+exit code: 0
+['podman', 'network', 'exists', 'docker2podman_jspnet']
+podman run --name=docker2podman_adminer_1 -d --label io.podman.compose.config-hash=123 --label io.podman.compose.project=docker2podman --label io.podman.compose.version=0.0.1 --label com.docker.compose.project=docker2podman --label com.docker.compose.project.working_dir=/home/gcollis/Sandbox/docker2podman --label com.docker.compose.project.config_files=./docker-compose-platform.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=adminer --net docker2podman_jspnet --network-alias adminer -p 8397:8080 --restart unless-stopped adminer
+d85c5f1b28298f13c44a72ea6144903a325747c76a14d116b719fa6a0702157f
+exit code: 0
+```
+
+Next steps work through POD's and create a podman compose file?
+
+## Windows 11 cruft to clean
+ 
+```
+# Windows-11
+
+PS1> podman volume create jsp_bookstoredata
+PS1> podman volume exists jsp_bookstoredata # not visible in output nor in Podman-Desktop?
+
+$ podman volume create jsp_bookstoredata
+$ podman volume exists jsp_bookstoredata # not visible in output but visible in Podman-Desktop?
 
 $ podman volume ls
 DRIVER      VOLUME NAME
@@ -144,6 +315,7 @@ Error: unrecognized command `podman.exe compose`
 ```
 
 [How to Run Podman and Docker-Compose on Windows] (https://hackernoon.com/how-to-run-podman-and-docker-compose-on-windows)
+
 ```
 $ docker compose up
 [+] Running 2/19
