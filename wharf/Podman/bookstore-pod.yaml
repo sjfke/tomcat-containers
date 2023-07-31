@@ -1,0 +1,40 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.3.1
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    io.kubernetes.cri-o.ContainerType/bookstore-1-podified: container
+    io.kubernetes.cri-o.SandboxID/bookstore-1-podified: e558be38a3a397f57710b818da0e694c5b722d96db6ba5d92113d65c74d603d
+    io.podman.annotations.autoremove/bookstore-1-podified: "FALSE"
+    io.podman.annotations.init/bookstore-1-podified: "FALSE"
+    io.podman.annotations.privileged/bookstore-1-podified: "FALSE"
+    io.podman.annotations.publish-all/bookstore-1-podified: "FALSE"
+    org.opencontainers.image.base.digest/bookstore-1-podified: sha256:85534a0cbfbb31eb84a6ca18c42c2c6d9cf20185d5d0e8ec976cc5e6
+    org.opencontainers.image.base.name/bookstore-1-podified: docker.io/library/tomcat:9.0.71-jdk17-temurin
+  creationTimestamp: "2023-02-06T15:10:21Z"
+  labels:
+    app: bookstore-pod
+  name: bookstore-pod
+spec:
+  automountServiceAccountToken: false
+  containers:
+  - env:
+    - name: HOSTNAME
+      value: f8c01bf7b9b4
+    - name: HOME
+      value: /usr/sbin
+    image: localhost/docker2podman_bookstore:latest
+    name: bookstore-1-podified
+    ports:
+    - containerPort: 8080
+      hostPort: 8395
+    resources: {}
+    securityContext:
+      capabilities: {}
+  enableServiceLinks: false
+  hostname: bookstore-pod
+  restartPolicy: Never
+status: {}

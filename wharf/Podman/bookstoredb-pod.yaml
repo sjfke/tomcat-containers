@@ -1,0 +1,50 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.3.1
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    io.kubernetes.cri-o.ContainerType/bookstoredb-1-podified: container
+    io.kubernetes.cri-o.SandboxID/bookstoredb-1-podified: 1c42e8204cd6b5a7d57a4c8a7b43fc0fea1332a6bec42678457b34a4c1bd377
+    io.podman.annotations.autoremove/bookstoredb-1-podified: "FALSE"
+    io.podman.annotations.init/bookstoredb-1-podified: "FALSE"
+    io.podman.annotations.privileged/bookstoredb-1-podified: "FALSE"
+    io.podman.annotations.publish-all/bookstoredb-1-podified: "FALSE"
+  creationTimestamp: "2023-02-06T15:07:51Z"
+  labels:
+    app: bookstoredb-pod
+  name: bookstoredb-pod
+spec:
+  automountServiceAccountToken: false
+  containers:
+  - args:
+    - mariadbd
+    env:
+    - name: HOME
+      value: /root
+    - name: MARIADB_ROOT_PASSWORD
+      value: r00tpa55
+    - name: HOSTNAME
+      value: 59fea60f03fd
+    image: docker.io/library/mariadb:latest
+    name: bookstoredb-1-podified
+    ports:
+    - containerPort: 3306
+      hostPort: 3306
+    resources: {}
+    securityContext:
+      capabilities: {}
+    volumeMounts:
+    - mountPath: /var/lib/mysql
+      name: a79892f217d7ec140cd137bf6ec1ec2ccba8f68a6965a28c51a56e6b2ea5eeba-pvc
+  enableServiceLinks: false
+  hostname: bookstoredb-pod
+  restartPolicy: Never
+  volumes:
+  - name: a79892f217d7ec140cd137bf6ec1ec2ccba8f68a6965a28c51a56e6b2ea5eeba-pvc
+    persistentVolumeClaim:
+      claimName: a79892f217d7ec140cd137bf6ec1ec2ccba8f68a6965a28c51a56e6b2ea5eeba
+status: {}
+
