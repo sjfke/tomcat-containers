@@ -106,13 +106,38 @@ Download and install
 - [Eclipse Installer 2022-12 R](https://www.eclipse.org/downloads/packages/installer)
 - [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages/release/2022-12/r/eclipse-ide-enterprise-java-and-web-developers)
 
-Under `Window` > `Preferences` > `General` > `Appearence` you can enable `theming` like `Dark Mode`
+Install Eclipse Marketplace plugins
+
+- Java and Web Developer Tools 3.30, accepting the defaults, restart
+`Help` > `Eclipse Marketplace` > `Popular` > `Eclipse Java and Web Developer Tools 3.30`
+
+- LiClipseText 2.4.0, accepting the defaults, restart
+`Help` > `Eclipse Marketplace` > `Search` > `LiClipseText 2.4.0`
+
+- Markdown Text Editor 1.2.0, accepting the defaults, restart
+`Help` > `Eclipse Marketplace` > `Search` > `Markdown Text Editor 1.2.0`
+
+Appearance Preferences
+
+Under `Window` > `Preferences` > `General` > `Appearance` you can enable `Dark Mode` theme
+
 
 ### MariaDB preparation
 
 For this project a local MariaDB installation was not installed, downloads and instructions:  
 
 - [MariaDB Community Downloads](https://mariadb.com/downloads)
+
+## Tomcat Server in Eclipse IDE
+
+1. [How to configure tomcat server in Eclipse IDE](https://www.javatpoint.com/how-to-configure-tomcat-server-in-eclipse-ide)
+2. [Setup and Install Apache Tomcat Server in Eclipse IDE](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/)
+
+Create a `tomcat` in the Eclipse workspace folder for the `Download and install` step, meaning Eclipse will use this copy not the one installed earlier (avoids Admin, Deployment configuration)
+
+Follow the instructions but select the workspace `tomcat` folder, and then the `Download and install`
+
+Look at *Step 5* onwards in reference (2) above, to ensure all is OK. 
 
 ## Creating Eclipse Project
 
