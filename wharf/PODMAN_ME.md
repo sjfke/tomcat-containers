@@ -1,18 +1,152 @@
 # tomcat-containers
-Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
 
-# Migrating the Bookstore Application
+Podman set up for [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) development.
 
-Based on the article [Docker-Desktop to Podman-Desktop migration](https://fedoramagazine.org/docker-and-fedora-37-migrating-to-podman/).
+## Podman on various platforms
 
-## Windows Platform
+* MacOS `podman` is backed by a QEMU based virtual machine
+* Windows `podman` is backed by a Windows Subsystem for Linux (WSLv2) distribution, 
+* Linux distributions `podman` is supplied as an appropriate package.
 
-* [Docker-Desktop](https://www.docker.com/products/docker-desktop/) version v4.16.3
-* [Podman-Desktop](https://github.com/containers/podman-desktop/releases/download/v0.11.0/podman-desktop-0.11.0-setup.exe) version 0.11.0 or `winget install -e --id RedHat.Podman-Desktop`
+The `Windows` environment is the most complex to setup, so let's start with that.
+
+## Windows Platform Setup
+
+* [Podman for Windows](https://github.com/containers/podman/blob/main/docs/tutorials/podman-for-windows.md), version 4.6.0
+* [Podman-Desktop](https://podman-desktop.io/downloads), Desktop version v1.2.1
+* [Windows 10 Home Version 22H2](https://learn.microsoft.com/en-us/windows/whats-new/whats-new-windows-10-version-22h2)
 * [Windows 11 Home Version 22H2](https://learn.microsoft.com/en-us/windows/whats-new/whats-new-windows-11-version-22h2)
-* [WSL version: 1.0.3.0](https://learn.microsoft.com/en-us/windows/wsl/install)
+* [WSL version: 1.2.5.0](https://learn.microsoft.com/en-us/windows/wsl/install)
+
+For this project `WSL` was installed manually, before `Podman` to ensure `WSL` was working correctly.
+However installing `Podman` will also install `WSL` the process is simple, and straighforward.
+
+The `Podman Desktop` installation is also straight forward and installs the required extensions.
+
+* *Compose*, *Docker*, *Kind*, *Kube Context*, *Podman*, *Lima* and *Registeries*
+
+Installation sequence is:
+
+1. Install and test `WSL`, either manually or part of the `podman` install
+2. Install and test `Podman`
+3. Install and test `Podman Desktop`
+
+### Manual WSLv2 Installation
+
+For platform `prerequisites` see [Install Linux on Windows with WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+While this describes using  `wsl` command in an Administrative PowerShell, it is easier to install using the `Microsoft Store`.
+
+```text
+1. Windows -> Settings -> Optional Features -> More Windows Features
+  - [x] Virtual Machine Platform
+  - [x] Windows Subsystem for Linux
+2. Reboot
+3. Install WSL from Microsoft Store
+4. Reboot
+5. Install Ubuntu (20.04.6 LTS) from Microsoft Store
+```
+
+Checking the `WSL` is installed and working, example assumes `PowerShell` but `CMD` also works.
+
+```console
+PS C:\Users\sjfke> wsl --status
+PS C:\Users\sjfke> wsl --help
+
+PS C:\Users\sjfke> wsl --list
+Windows Subsystem for Linux Distributions:
+Ubuntu-20.04 (Default)
+
+PS C:\Users\sjfke> wsl
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+Welcome to Ubuntu 20.04.6 LTS (GNU/Linux 5.15.90.1-microsoft-standard-WSL2 x86_64)
+
+    * Documentation:  https://help.ubuntu.com
+    * Management:     https://landscape.canonical.com
+    * Support:        https://ubuntu.com/advantage
+
+sjfke@host:/mnt/c/Users/sjfke$ exit
+```
+
+### Installing Podman
+
+* [Podman for Windows](https://github.com/containers/podman/blob/main/docs/tutorials/podman-for-windows.md)
+* [GitHub containers/podman](https://github.com/containers/podman/releases)
+
+```text
+1. Download the 'podman-v4.6.0.msi' (or whatever the latest version is)
+2. Run the setup.
+3. Reboot (otherwise 'podman' is not in your path)
+```
+
+Initialize, start, stop and (re)start `podman machine`.
+
+```console
+C:\Users\sjfke> podman machine init
+C:\Users\sjfke> podman machine start
+
+C:\Users\sjfke> wsl --list --verbose
+    NAME                      STATE           VERSION
+  * Ubuntu-20.04              Running         2
+    podman-machine-default    Running         2
+
+C:\Users\sjfke> podman machine --help
+
+C:\Users\sjfke> podman machine stop
+C:\Users\sjfke> wsl --list --verbose
+    NAME                      STATE           VERSION
+  * Ubuntu-20.04              Stopped         2
+    podman-machine-default    Stopped         2
+
+C:\Users\sjfke> podman machine start # only starts 'podman-machine-default'
+C:\Users\sjfke> wsl                  # will restart 'Ubuntu-20.04'
+sjfke@host:/mnt/c/Users/sjfke$ exit
+
+C:\Users\sjfke> wsl --list --verbose
+    NAME                      STATE           VERSION
+  * Ubuntu-20.04              Running         2
+    podman-machine-default    Running         2
+```
+
+Test `podman` is working by running so simple examples
+
+```console
+PS C:\Users\sjfke> podman images
+REPOSITORY  TAG         IMAGE ID    CREATED     SIZE  
+PS C:\Users\sjfke> podman run ubi8-micro date
+Mon Aug  7 16:04:30 UTC 2023
+PS C:\Users\sjfke> podman images
+REPOSITORY                             TAG         IMAGE ID      CREATED      SIZE
+registry.access.redhat.com/ubi8-micro  latest      1de8feb0720b  6 weeks ago  28.4 MB
+
+PS C:\Users\sjfke> podman run --rm -d -p 8080:80 --name httpd docker.io/library/httpd
+PS C:\Users\sjfke> curl http://localhost:8080/ -UseBasicParsing
+
+PS C:\Users\sjfke> podman run -it fedora echo "Hello Podman!"
+Hello Podman!
+
+PS C:\Users\sjfke> get-command podman | format-list -Property Path
+Path : C:\Program Files\RedHat\Podman\podman.exe
+```
+
+#### Podman References
+
+* [Podman Introduction](https://docs.podman.io/en/latest/Introduction.html)
+* [Podman Tutorials](https://docs.podman.io/en/latest/Tutorials.html)
+* [Podman for Windows](./Podman/podman-for-windows.html) installation instructions
+
+## Installing Podman-Desktop Windows
+
+Download the Windows installer,[Podman-Desktop](https://podman-desktop.io/downloads) and follow the instructions on, [Podman-Desktop - Windows Install](https://podman-desktop.io/docs/Installation/windows-install)
+
+Both applications, `Podman` and `Podman-Desktop` are listed correctly in `Settings` > `Apps` > `Installed apps`.
+
+There is no evidence of any Windows services for `Redhat` or `Podman`.
 
 ## MacOS Platform (Intel)
+
+==Section needs a rewrite==
 
 * [Docker-Desktop](https://www.docker.com/products/docker-desktop/) version v4.16.2
 * [Podman-Desktop](https://github.com/containers/podman-desktop/releases/download/v0.11.0/podman-desktop-0.11.0-x64.dmg) version 0.11.0 or `$ brew install podman-desktop`
@@ -23,7 +157,7 @@ Based on the article [Docker-Desktop to Podman-Desktop migration](https://fedora
 
 * [Podman-Desktop](https://github.com/containers/podman-desktop/releases/download/v0.11.0/podman-desktop-0.11.0.flatpak) version 0.11.0
 
-```
+```console
 gcollis@morpheus docker2podman]$ sudo dnf list installed | grep podman
 podman.x86_64                                        4:4.3.1-1.fc37                      @updates                  
 podman-compose.noarch                                1.0.3-6.fc37                        @fedora                   
@@ -31,96 +165,9 @@ podman-gvproxy.x86_64                                4:4.3.1-1.fc37             
 podman-plugins.x86_64                                4:4.3.1-1.fc37                      @updates                
 ```
 
-## Docker Setup
+## Application specific Podman Setup
 
-See [DOCKER_ME.md](./DOCKER_ME.md) for docker notes and how to redeploy the docker containers.
-
-# Podman and Podman-Desktop Windows installation
-
-First install `podman` and once it is working then install `podman-desktop`.
-
-## Installing Podman
-
-Follow the `GitHub` instructions.
-
-* [Podman for Windows](https://github.com/containers/podman/blob/main/docs/tutorials/podman-for-windows.md)
-
-Download and install [`podman-4.3.1-setup.exe`](https://github.com/containers/podman/releases/download/v4.3.1/podman-4.3.1-setup.exe)
-
-After install `Close & Open Guide` and follow [Podman for Windows](./Podman/podman-for-windows.html) instructions.
-
-```
-$ podman machine init   # Downloading VM image: fedora-podman-v36.0.117.tar.xz: done
-
-$ podman machine start  # Starting machine "podman-machine-default"
-
-This machine is currently configured in rootless mode. If your containers
-require root permissions (e.g. ports < 1024), or if you run into compatibility
-issues with non-podman clients, you can switch using the following command:
-
-        podman machine set --rootful
-
-API forwarding listening on: npipe:////./pipe/docker_engine
-
-Docker API clients default to this address. You do not need to set DOCKER_HOST.
-Machine "podman-machine-default" started successfully
-
-$ wsl --list --verbose
-  NAME                      STATE           VERSION
-* Ubuntu                    Stopped         2
-  AlmaLinux-8               Stopped         2
-  docker-desktop            Stopped         2
-  docker-desktop-data       Stopped         2
-  podman-machine-default    Running         2
-
-$ podman run ubi8-micro date
-Thu Feb  2 16:13:06 UTC 2023
-
-$ podman run --rm -d -p 8080:80 --name httpd docker.io/library/httpd
-$ curl http://localhost:8080/ -UseBasicParsing
-
-$ docker run -it fedora echo "Hello Podman!"
-Hello Podman!
-
-$ podman run -it fedora echo "Hello Podman!"
-Hello Podman!
-
-$ get-command docker # C:\Program Files\Docker\Docker\resources\bin\docker.exe
-$ get-command podman # C:\Program Files\RedHat\Podman\podman.exe
-```
-
-> #### Note
->
-> - There is no **podman-compose** command, on *Fedora* it is an extension that needs to be installed.
- 
-## Podman References
-
-* [Podman Introduction](https://docs.podman.io/en/latest/Introduction.html)
-* [Podman Tutorials](https://docs.podman.io/en/latest/Tutorials.html)
-* [Podman for Windows](./Podman/podman-for-windows.html) installation instructions
-
-
-## Installing Podman-Desktop Windows
-
-Follow the instructions on [Containers and Kubernetes for application developers](https://podman-desktop.io/).
-
-* Download and install [Podman-Desktop](https://podman-desktop.io/downloads/Windows) version 0.11.0
-
-The installation will prompt for any additional steps.
-
-Both applications, `Podman` and `Podman-Desktop` are listed correctly in `Settings` > `Apps` > `Installed apps`.
-
-There is no evidence of any Windows services for `Redhat` or `Podman`.
-
-> Note:
->
-> Different WSL virtual machines are being used, and the `docker` command is using the API to the `podman` virtual machine.
->
->> So `Podman-Desktop` does not see any other the `Docker-Desktop` containers or volumes.
->
->> So `Docker-Desktop` sees it's containers or volumes but cannot start them, `docker compose` errors with exit status 1.
-
-## Create MariaDB `jsp_bookstoredata` Volume
+### Create Volume for MariaDB `jsp_bookstoredata`
 
 [podman-volume - Simple management tool for volumes](https://docs.podman.io/en/latest/markdown/podman-volume.1.html)
 
