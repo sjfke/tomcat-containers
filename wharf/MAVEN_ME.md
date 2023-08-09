@@ -46,7 +46,7 @@ Once all the errors have been fixed you can now drag and drop a project into thi
 
 Now [`http://localhost:8080/Bookstore/`](http://localhost:8080/Bookstore/) should now connect.
 
-***Aside:*** 
+***Aside:***
 
 Testing the application from within Eclipse and the `context directory` is not included 
 in the URL, so hard-coded URL's such as `<a href="/new">Add New Book</a>` work. 
