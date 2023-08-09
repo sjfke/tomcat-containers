@@ -21,10 +21,10 @@ The tomcat application is an implementation of [CodeJava Tutorial - JSP Servlet 
 
 ## Wharf Documentation Organization
 
-* [BUILD_ME](./wharf/BUILD_ME.md)  - Notes on setup and build within Eclipse, plus corrections to the `CodeJava Tutorial`.
-* [DOCKER_ME](./wharf/DOCKER_ME.md) - Notes on how to build and deploy using Docker, Docker Compose.
-* [MAVEN_ME](./wharf/MAVEN_ME.md)  - Notes on how to build using Maven inside Eclipse and deploy.
-* [PODMAN_ME](./wharf/PODMAN_ME.md)  - Notes on how to build using Maven inside Eclipse and deploy.
+* [BUILD](./wharf/BUILD.md)  - Notes on setup and build within Eclipse, plus corrections to the `CodeJava Tutorial`.
+* [DOCKER](./wharf/DOCKER.md) - Notes on how to build and deploy using Docker, Docker Compose.
+* [MAVEN](./wharf/MAVEN.md)  - Notes on how to build using Maven inside Eclipse and deploy.
+* [PODMAN](./wharf/PODMAN.md)  - Notes on how to build using Maven inside Eclipse and deploy.
 
 ```
 C:\USERS\SJFKE\TOMCAT-CONTAINERS\WHARF
