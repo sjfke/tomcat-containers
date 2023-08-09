@@ -1,4 +1,6 @@
-git # tomcat-containers
+:github_url: https://github.com/sjfke/tomcat-containers/README.md
+
+# tomcat-containers
 Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
 
 # Project Objectives
