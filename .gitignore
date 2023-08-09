@@ -91,6 +91,9 @@ local.properties
 # Typically, this file would be tracked if it contains build/dependency configurations:
 .project
 
+# ignore PyCharm folders
+.idea/
+
 ## Exclude Project Tomcat Installations
 #######################################
 Servers/
