@@ -209,7 +209,9 @@ PS C:\Users\sjfke\Github\tomcat-containers> podman volume inspect jsp_bookstored
 ]
 ```
 
-## Cleaning Up Previous Podman Installation
+## Cleaning Up A Podman + Docker Installation
+
+Accidentally installed `Podman` and `Docker` on Windows, the following steps were used to remove `Podman` installation.
 
 ```console
 PS C:\Users\sjfke> podman machine info                      # Details of "podman-machine-default"
@@ -224,7 +226,9 @@ PS C:\Users\sjfke> wsl --list --verbose
   NAME                      STATE           VERSION
 * Ubuntu                    Stopped         2
   AlmaLinux-8               Stopped         2
+  docker-desktop            Stopped         2
   podman-machine-default    Stopped         2
+  docker-desktop-data       Stopped         2
 ```
 
 ```console
@@ -235,4 +239,6 @@ PS C:\Users\sjfke> wsl --list --verbose
   NAME                   STATE           VERSION
 * Ubuntu                 Stopped         2
   AlmaLinux-8            Stopped         2
+  docker-desktop         Stopped         2
+  docker-desktop-data    Stopped         2
 ```
