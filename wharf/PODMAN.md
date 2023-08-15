@@ -48,7 +48,7 @@ While this describes using  `wsl` command in an Administrative PowerShell, it is
 5. Install Ubuntu (20.04.6 LTS) from Microsoft Store
 ```
 
-Checking the `WSL` is installed and working, example assumes `PowerShell` but `CMD` also works.
+Checking the `WSL` is installed and working, example uses `PowerShell` but `CMD` also works.
 
 ```console
 PS C:\Users\sjfke> wsl --status
@@ -82,7 +82,7 @@ sjfke@host:/mnt/c/Users/sjfke$ exit
 3. Reboot (otherwise 'podman' is not in your path)
 ```
 
-Initialize, start, stop and (re)start `podman machine`.
+Initialize, start, stop and restart `podman machine`.
 
 ```console
 C:\Users\sjfke> podman machine init
@@ -139,6 +139,26 @@ Path : C:\Program Files\RedHat\Podman\podman.exe
 * [Podman Introduction](https://docs.podman.io/en/latest/Introduction.html)
 * [Podman Tutorials](https://docs.podman.io/en/latest/Tutorials.html)
 * [Podman for Windows](./Podman/podman-for-windows.html) installation instructions
+* [Containers - Open Repository for Container Tools](https://github.com/containers)
+
+### Installing Podman Compose
+
+Install the Community [Podman Compose](https://github.com/containers/podman-compose) Python script to get `Docker Compose` style support.
+
+There are several ways to install `python` on Windows, see [Python on Windows References](#python-on-windows-references), the author used a `Microsoft Store` installation.
+
+```console
+PS C:\Users\sjfke\Github\tomcat-containers> python -m venv venv
+PS C:\Users\sjfke\Github\tomcat-containers> .\venv\Scripts\activate
+(venv) PS C:\Users\sjfke\Github\tomcat-containers> pip3 install podman-compose
+```
+
+#### Python on Windows References
+
+* [RealPython - Your Python Coding Environment on Windows: Setup Guide](https://realpython.com/python-coding-setup-windows/)
+* [Python - Using Python on Windows](https://docs.python.org/3/using/windows.html)
+* [Microsoft - Get started using Python on Windows for beginners](https://learn.microsoft.com/en-us/windows/python/beginners)
+* [Microsoft Store - Python 3.11](https://apps.microsoft.com/store/detail/python-311/9NRWMJP3717K)
 
 ## Installing Podman-Desktop Windows
 
@@ -175,7 +195,9 @@ There is no evidence of any Windows services for `Redhat` or `Podman`.
 
 The following additional steps are required for the [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) development.
 
-### Create Volume for MariaDB `jsp_bookstoredata`
+### Create Volume for MariaDB
+
+Creating the `jsp_bookstoredata` volume.
 
 [podman-volume - Simple management tool for volumes](https://docs.podman.io/en/latest/markdown/podman-volume.1.html)
 
@@ -209,9 +231,57 @@ PS C:\Users\sjfke\Github\tomcat-containers> podman volume inspect jsp_bookstored
 ]
 ```
 
+## Docker and Docker Configuration Files
+
+### MariaDB in Docker
+
+* The docker compose command will take the folder name of as the **container** name, so `compose.yaml` is not in `wharf` folder
+* A permenant volume, `jsp_bookstoredata` must be created from `podman` command line, see [Create Volume for MariaDB](#create-volume-for-mariadb)
+
+#### MariaDB Docker Compose file
+
+```yaml
+version: "3.9"
+services:
+  # Use root/r00tpa55 as user/password credentials
+  bookstoredb:
+    image: mariadb
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: r00tpa55
+    networks:
+      - jspnet
+    volumes:
+      - jsp_bookstoredata:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8395:8080
+    networks:
+      - jspnet
+
+networks:
+  jspnet:
+    driver: bridge
+
+volumes:
+  jsp_bookstoredata:
+    external: true
+```
+
+Create the containers, from inside the `python` virtual environment.
+
+```console
+(venv) PS C:\Users\sjfke\Github\tomcat-containers> podman-compose down local; podman-compose build; podman-compose up -d
+```
+
 ## Cleaning Up A Podman + Docker Installation
 
-Accidentally installed `Podman` and `Docker` on Windows, the following steps were used to remove `Podman` installation.
+Accidentally installed `Podman` and `Docker` on Windows, the following additional steps were used to remove `Podman` installation.
 
 ```console
 PS C:\Users\sjfke> podman machine info                      # Details of "podman-machine-default"

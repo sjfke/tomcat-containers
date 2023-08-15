@@ -16,12 +16,13 @@ There are a number of errors in the SQL in the tutorial, and using `root` for an
 
 ## Create the `Bookstore.book` table
 
-From `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container.
+* `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container
+* `podman-desktop` open a terminal on the `bookstoredb-1` container
 
 ***Note:*** Maria Database root password is in the `compose.yaml` file.
 
 ```sql
-# mysql -u root -p
+# mariadb -u root -p
 Enter password:
 
 MariaDB [(none)]> create database Bookstore;
@@ -43,7 +44,7 @@ MariaDB [Bookstore]> exit;
 ### Create an application account and grant access
 
 ```sql
-# mysql -u root -p
+# mariadb -u root -p
 Enter password:
 MariaDB [(none)]> use Bookstore;
 MariaDB [Bookstore]> create user 'bsapp'@'%' identified by 'P@ssw0rd';
@@ -55,13 +56,13 @@ MariaDB [Bookstore]> exit;
 
 > #### Notice
 >
-> - The *bsapp* account is not IP access restricted, i.e. not 'bsapp'@'localhost'.
-> - *Docker* will allocate a random RFC-1918 IP to the database when it is deployed.
+> * The *bsapp* account is not IP access restricted, i.e. not 'bsapp'@'localhost'.
+> * *Docker* will allocate a random RFC-1918 IP to the database when it is deployed.
 
 ## Verify application account access
 
 ```sql
-# mysql -u bsapp -p Bookstore
+# mariadb -u bsapp -p Bookstore
 Enter password:
 MariaDB [Bookstore]> select * from book;
 MariaDB [Bookstore]> exit;
@@ -85,18 +86,17 @@ Tested on `Windows-10 Home` and `Windows-11 Home`
 
 ### Apache Tomcat Preparation
 
-- [Temurin™ for Windows x64 Prebuilt OpenJDK Binaries for Free!](https://adoptium.net/)
-  - [Install Temurin™ for Windows[(https://adoptium.net/)
-  - Using defaults, and enabled everything, it needed by tomcat (same JRE is bundled in Eclipse JEE)
-  - Installs into "C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot", enabled everything
+* [Temurin™ for Windows x64 Prebuilt OpenJDK Binaries for Free!](https://adoptium.net/) it is needed by tomcat
+  * [Install Temurin™ for Windows](https://adoptium.net/), using defaults, and with everything enabled
+  * Installs into `C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot`
 
-- [Tomcat 9 Software Downloads](https://tomcat.apache.org/download-90.cgi)
-  - Install Tomcat installation required to start 'Dynamic Web Project' (KISS and not force to Docker)
-  - Install everything, including `docs`, `examples`, `host-manager`, and `manager`
-  - Installation prompts for tomcat users, `user:admin`, `password: admin` for roles `manager-gui,admin-gui`
-  - JRE path "C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot"
-  - Installation "C:\Program Files\Apache Software Foundation\Tomcat 9.0"
-  - Creates a service that may require manual starting `Service "Apache Tomcat 9.0 Tomcat9"`
+* [Tomcat 9 Software Downloads](https://tomcat.apache.org/download-90.cgi)
+  * Install Tomcat installation required to start 'Dynamic Web Project' in Eclipse, ([KISS](https://slang.net/meaning/kiss))
+  * Install everything, including `docs`, `examples`, `host-manager`, and `manager`
+  * Installation prompts for tomcat users, `user:admin`, `password: admin` for roles `manager-gui,admin-gui`
+  * JRE path `C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot`
+  * Installation `C:\Program Files\Apache Software Foundation\Tomcat 9.0`
+  * Creates a service that may require manual starting `Service "Apache Tomcat 9.0 Tomcat9"`
 
 Test Tomcat is working
 
@@ -108,18 +108,18 @@ PS> start "http://127.0.0.1:8080"
 
 Download and install
 
-- [Eclipse Installer 2022-12 R](https://www.eclipse.org/downloads/packages/installer)
-- [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages/release/2022-12/r/eclipse-ide-enterprise-java-and-web-developers)
+* [Eclipse Installer 2022-12 R](https://www.eclipse.org/downloads/packages/installer)
+* [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages/release/2022-12/r/eclipse-ide-enterprise-java-and-web-developers)
 
 Install Eclipse Marketplace plugins
 
-- Java and Web Developer Tools 3.30, accepting the defaults, restart
+* Java and Web Developer Tools 3.30, accepting the defaults, restart
 `Help` > `Eclipse Marketplace` > `Popular` > `Eclipse Java and Web Developer Tools 3.30`
 
-- LiClipseText 2.4.0, accepting the defaults, restart
+* LiClipseText 2.4.0, accepting the defaults, restart
 `Help` > `Eclipse Marketplace` > `Search` > `LiClipseText 2.4.0`
 
-- Markdown Text Editor 1.2.0, accepting the defaults, restart
+* Markdown Text Editor 1.2.0, accepting the defaults, restart
 `Help` > `Eclipse Marketplace` > `Search` > `Markdown Text Editor 1.2.0`
 
 Appearance Preferences
@@ -130,7 +130,7 @@ Under `Window` > `Preferences` > `General` > `Appearance` you can enable `Dark M
 
 For this project a local MariaDB installation was not installed, downloads and instructions:  
 
-- [MariaDB Community Downloads](https://mariadb.com/downloads)
+* [MariaDB Community Downloads](https://mariadb.com/downloads)
 
 ## Tomcat Server in Eclipse IDE
 
@@ -201,9 +201,9 @@ Create a JSP page for displaying all books from the database in `Bookstore\src\m
 
 Modifications to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
-- Convert to HTML-5 conventions
-- Make `hard-coded` URL's, "/list" etc, `context directory` agnostic using JSTL `<c:url>` tag
-  - [Use relative paths without including the context rootname](https://stackoverflow.com/questions/4764405/how-to-use-relative-paths-without-including-the-context-root-name)
+* Convert to HTML-5 conventions
+* Make `hard-coded` URL's, "/list" etc, `context directory` agnostic using JSTL `<c:url>` tag
+  * [Use relative paths without including the context rootname](https://stackoverflow.com/questions/4764405/how-to-use-relative-paths-without-including-the-context-root-name)
 
 ```jsp
 
@@ -248,8 +248,8 @@ Create a JSP page for creating a new book in `Bookstore\src\main\webapp`.
 
 Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
-- Convert to HTML-5 conventions
-- Make `hard-coded` URL's, "/new", "/list", `context directory` agnostic using JSTL `<c:url>` tag
+* Convert to HTML-5 conventions
+* Make `hard-coded` URL's, "/new", "/list", `context directory` agnostic using JSTL `<c:url>` tag
 
 ```jsp
 
@@ -275,8 +275,8 @@ Create `Bookstore/src/main/webapp/WEB-INF/web.xml`.
 
 Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
-- change `<param-name>jdbcUsername</param-name>`
-- change `<param-name>jdbcPassword</param-name>`
+* change `<param-name>jdbcUsername</param-name>`
+* change `<param-name>jdbcPassword</param-name>`
 
 An example skeleton [web.xml for servlet 3.1](https://gist.github.com/darbyluv2code/dd3781d61c3db5476fbf05ee431ee917)
 
@@ -286,4 +286,4 @@ Create `Bookstore/src/main/webapp/Error.jsp`
 
 Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
-- Make HTML-5
+* Make HTML-5

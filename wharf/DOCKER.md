@@ -30,7 +30,7 @@ Follow the instructions in [Install Docker Desktop on Windows](https://docs.dock
 
 ### MariaDB in Docker
 
-* The docker compose command will take the folder name of as the **_container__** name, so `compose.yaml` is not in `wharf` folder.
+* The docker compose command will take the folder name of as the **container** name, so `compose.yaml` is not in `wharf` folder.
 * A permenant volume, `jsp_bookstoredata` is created using `Docker-Desktop` > `Volumes` tab.
 
 #### MariaDB Docker Compose file
@@ -133,8 +133,7 @@ Change to `webapps/Bookstore/WEB-INF/web.xml`
 
 ## Deploying Bookstore using Docker
 
-To keep the Docker file simple, the output of the `maven` build within Eclipse is copied to the `Bookstore` webapp, 
-and the `web.xml` file is replaced with one that has the correct `jdbcURL`.
+To keep the Docker file simple, the output of the `maven` build within Eclipse is copied to the `Bookstore` webapp, and the `web.xml` file is replaced with one that has the correct `jdbcURL`.
 
 ```text
 # Deploy the Bookstore application, using the output of the Maven build
@@ -143,7 +142,7 @@ COPY ./Bookstore/target/Bookstore-0.0.1-SNAPSHOT/ /usr/local/tomcat/webapps/Book
 COPY ./wharf/Docker/webapps/Bookstore/WEB-INF/web.xml /usr/local/tomcat/webapps/Bookstore/WEB-INF/web.xml
 ```
 
-> #### Note
+> ### Maven Note
 >
 > * It is possible to install `maven` locally and execute the build using Docker.
 > * There is also a [Dockerhub maven official image](https://hub.docker.com/_/maven) if you want to containerize the `maven` build.
@@ -186,8 +185,7 @@ PS C:\Users\sjfke> docker inspect <network-name>  # details of network.
 
 A good introduction [Docker-compose bridge network subnet](https://bobcares.com/blog/docker-compose-bridge-network-subnet/).
 
-[One compose file solution](https://stackoverflow.com/questions/53949616/networks-created-by-docker-compose-do-not-respect-dockers-subnet-settings), 
-becareful about IP range clashes.
+[One compose file solution](https://stackoverflow.com/questions/53949616/networks-created-by-docker-compose-do-not-respect-dockers-subnet-settings), becareful about IP range clashes.
 
 ```yaml
 networks:

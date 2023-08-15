@@ -147,3 +147,5 @@ Servers/
 tomcat/
 # 
 wharf/Podman/Downloads
+venv/
+.venv/
