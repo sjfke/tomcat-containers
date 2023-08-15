@@ -1,6 +1,6 @@
-# tomcat-containers
+# Building tomcat-containers
 
-Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
+Updated building instructions for [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
 ## Table of Contents
 
@@ -14,7 +14,7 @@ There are a number of errors in the SQL in the tutorial, and using `root` for an
 
 ***Aside:*** `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
 
-## Create the `Bookstore.book` table.
+## Create the `Bookstore.book` table
 
 From `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container.
 
@@ -53,12 +53,12 @@ MariaDB [Bookstore]> show grants for 'bsapp'@'%';
 MariaDB [Bookstore]> exit;
 ```
 
-> #### Notice: 
+> #### Notice
 >
 > - The *bsapp* account is not IP access restricted, i.e. not 'bsapp'@'localhost'.
 > - *Docker* will allocate a random RFC-1918 IP to the database when it is deployed.
 
-## Verify application account access.
+## Verify application account access
 
 ```sql
 # mysql -u bsapp -p Bookstore
@@ -86,7 +86,7 @@ Tested on `Windows-10 Home` and `Windows-11 Home`
 ### Apache Tomcat Preparation
 
 - [Temurin™ for Windows x64 Prebuilt OpenJDK Binaries for Free!](https://adoptium.net/)
-  - Install Temurin™ for Windows https://adoptium.net/ 
+  - [Install Temurin™ for Windows[(https://adoptium.net/)
   - Using defaults, and enabled everything, it needed by tomcat (same JRE is bundled in Eclipse JEE)
   - Installs into "C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot", enabled everything
 
@@ -97,7 +97,12 @@ Tested on `Windows-10 Home` and `Windows-11 Home`
   - JRE path "C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot"
   - Installation "C:\Program Files\Apache Software Foundation\Tomcat 9.0"
   - Creates a service that may require manual starting `Service "Apache Tomcat 9.0 Tomcat9"`
-  - PS> start "http://127.0.0.1:8080"
+
+Test Tomcat is working
+
+```console
+PS> start "http://127.0.0.1:8080"
+```
   
 ### Eclipse JEE preparation
 
@@ -121,7 +126,6 @@ Appearance Preferences
 
 Under `Window` > `Preferences` > `General` > `Appearance` you can enable `Dark Mode` theme
 
-
 ### MariaDB preparation
 
 For this project a local MariaDB installation was not installed, downloads and instructions:  
@@ -137,7 +141,7 @@ Create a `tomcat` in the Eclipse workspace folder for the `Download and install`
 
 Follow the instructions but select the workspace `tomcat` folder, and then the `Download and install`
 
-Look at *Step 5* onwards in reference (2) above, to ensure all is OK. 
+Look at *Step 5* onwards in reference (2) above, to ensure all is OK.
 
 ## Creating Eclipse Project
 
@@ -199,43 +203,43 @@ Modifications to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc
 
 - Convert to HTML-5 conventions
 - Make `hard-coded` URL's, "/list" etc, `context directory` agnostic using JSTL `<c:url>` tag
-	- [Use relative paths without including the context rootname](https://stackoverflow.com/questions/4764405/how-to-use-relative-paths-without-including-the-context-root-name)
+  - [Use relative paths without including the context rootname](https://stackoverflow.com/questions/4764405/how-to-use-relative-paths-without-including-the-context-root-name)
 
 ```jsp
 
-	<%-- hard-coded --%>
-	<%-- <a href="/new">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="/list">List All Books</a> --%>
+    <%-- hard-coded --%>
+    <%-- <a href="/new">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="/list">List All Books</a> --%>
 
-	<h2>
-		<c:url value="/new" var="newUrl" />
-		<c:url value="/list" var="listUrl" />
-		<a href="${newUrl}">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="${listUrl}">List All Books</a>         
-	</h2>
+    <h2>
+        <c:url value="/new" var="newUrl" />
+        <c:url value="/list" var="listUrl" />
+        <a href="${newUrl}">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="${listUrl}">List All Books</a>         
+    </h2>
 ```
 
 ```jsp
 
-	<%-- hard-coded --%>
-	<%-- <td> --%>
-	<%-- 	<a href="/edit?id=<c:out value='${book.id}' />">Edit</a> --%>
-	<%-- 	&nbsp;&nbsp;&nbsp;&nbsp; --%>	
-	<%-- 	<a href="/delete?id=<c:out value='${book.id}' />">Delete</a> --%>
-	<%-- <td> --%>
-	
-	<c:url value="/edit" var="editUrl" />
-	<c:url value="/delete" var="deleteUrl" />
-	<c:forEach var="book" items="${listBook}">
-		<tr>
-			<td><c:out value="${book.id}" /></td>
-			<td><c:out value="${book.title}" /></td>
-			<td><c:out value="${book.author}" /></td>
-			<td><c:out value="${book.price}" /></td>
-			<td><a href="${editUrl}?id=<c:out value='${book.id}' />">Edit</a>
-				&nbsp;&nbsp;&nbsp;&nbsp; 
-				<a href="${deleteUrl}?id=<c:out value='${book.id}' />">Delete</a>                     
-			</td>
-		</tr>
-	</c:forEach>
+  <%-- hard-coded --%>
+  <%-- <td> --%>
+  <%-- <a href="/edit?id=<c:out value='${book.id}' />">Edit</a> --%>
+  <%-- &nbsp;&nbsp;&nbsp;&nbsp; --%>
+  <%-- <a href="/delete?id=<c:out value='${book.id}' />">Delete</a> --%>
+  <%-- <td> --%>
+
+  <c:url value="/edit" var="editUrl" />
+  <c:url value="/delete" var="deleteUrl" />
+  <c:forEach var="book" items="${listBook}">
+    <tr>
+      <td><c:out value="${book.id}" /></td>
+      <td><c:out value="${book.title}" /></td>
+      <td><c:out value="${book.author}" /></td>
+      <td><c:out value="${book.price}" /></td>
+      <td><a href="${editUrl}?id=<c:out value='${book.id}' />">Edit</a>
+        &nbsp;&nbsp;&nbsp;&nbsp; 
+        <a href="${deleteUrl}?id=<c:out value='${book.id}' />">Delete</a>                     
+      </td>
+    </tr>
+  </c:forEach>
 ```
 
 ### Writing Book Form JSP Page
@@ -249,14 +253,14 @@ Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-
 
 ```jsp
 
-	<%-- hard-coded --%>
-	<%-- <a href="/new">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="/list">List All Books</a> --%>
+  <%-- hard-coded --%>
+  <%-- <a href="/new">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="/list">List All Books</a> --%>
 
-	<h2>
-		<c:url value="/new" var="newUrl" />
-		<c:url value="/list" var="listUrl" />
-		<a href="${newUrl}">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="${listUrl}">List All Books</a>         
-	</h2>
+  <h2>
+    <c:url value="/new" var="newUrl" />
+    <c:url value="/list" var="listUrl" />
+    <a href="${newUrl}">Add New Book</a> &nbsp;&nbsp;&nbsp; <a href="${listUrl}">List All Books</a>         
+  </h2>
 ```
 
 ### Coding Controller Servlet Class
