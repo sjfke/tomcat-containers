@@ -14,7 +14,7 @@ There are a number of errors in the SQL in the tutorial, and using `root` for an
 
 ***Aside:*** `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
 
-## Create the `Bookstore.book` table.
+## Create the `Bookstore.book` table
 
 From `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container.
 
@@ -53,7 +53,7 @@ MariaDB [Bookstore]> show grants for 'bsapp'@'%';
 MariaDB [Bookstore]> exit;
 ```
 
-> #### Notice:
+> #### Notice
 >
 > - The *bsapp* account is not IP access restricted, i.e. not 'bsapp'@'localhost'.
 > - *Docker* will allocate a random RFC-1918 IP to the database when it is deployed.
@@ -86,7 +86,7 @@ Tested on `Windows-10 Home` and `Windows-11 Home`
 ### Apache Tomcat Preparation
 
 - [Temurin™ for Windows x64 Prebuilt OpenJDK Binaries for Free!](https://adoptium.net/)
-  - Install Temurin™ for Windows https://adoptium.net/ 
+  - [Install Temurin™ for Windows[(https://adoptium.net/)
   - Using defaults, and enabled everything, it needed by tomcat (same JRE is bundled in Eclipse JEE)
   - Installs into "C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot", enabled everything
 
@@ -97,7 +97,12 @@ Tested on `Windows-10 Home` and `Windows-11 Home`
   - JRE path "C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot"
   - Installation "C:\Program Files\Apache Software Foundation\Tomcat 9.0"
   - Creates a service that may require manual starting `Service "Apache Tomcat 9.0 Tomcat9"`
-  - PS> start "http://127.0.0.1:8080"
+
+Test Tomcat is working
+
+```console
+PS> start "http://127.0.0.1:8080"
+```
   
 ### Eclipse JEE preparation
 
@@ -121,7 +126,6 @@ Appearance Preferences
 
 Under `Window` > `Preferences` > `General` > `Appearance` you can enable `Dark Mode` theme
 
-
 ### MariaDB preparation
 
 For this project a local MariaDB installation was not installed, downloads and instructions:  
@@ -137,7 +141,7 @@ Create a `tomcat` in the Eclipse workspace folder for the `Download and install`
 
 Follow the instructions but select the workspace `tomcat` folder, and then the `Download and install`
 
-Look at *Step 5* onwards in reference (2) above, to ensure all is OK. 
+Look at *Step 5* onwards in reference (2) above, to ensure all is OK.
 
 ## Creating Eclipse Project
 

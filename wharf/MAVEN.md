@@ -51,10 +51,9 @@ Now [`http://localhost:8080/Bookstore/`](http://localhost:8080/Bookstore/) shoul
 
 ***Aside:***
 
-Testing the application from within Eclipse and the `context directory` is not included 
-in the URL, so hard-coded URL's such as `<a href="/new">Add New Book</a>` work. 
+Testing the application from within Eclipse and the `context directory` is not included in the URL, so hard-coded URL's such as `<a href="/new">Add New Book</a>` work.
 
-## Building a Maven war file.
+## Building a Maven war file
 
 To function `Maven` requires a minimal `settings.xml` which may have to be manually created, see:
 
