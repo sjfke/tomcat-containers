@@ -128,7 +128,7 @@ Under `Window` > `Preferences` > `General` > `Appearance` you can enable `Dark M
 
 ### MariaDB preparation
 
-For this project a local MariaDB installation was not installed, downloads and instructions:  
+For this project a local MariaDB installation was not installed, but for downloads and instructions:  
 
 * [MariaDB Community Downloads](https://mariadb.com/downloads)
 
@@ -137,9 +137,11 @@ For this project a local MariaDB installation was not installed, downloads and i
 1. [How to configure tomcat server in Eclipse IDE](https://www.javatpoint.com/how-to-configure-tomcat-server-in-eclipse-ide)
 2. [Setup and Install Apache Tomcat Server in Eclipse IDE](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/)
 
-Create a `tomcat` in the Eclipse workspace folder for the `Download and install` step, meaning Eclipse will use this copy not the one installed earlier (avoids Admin, Deployment configuration)
+Create a `tomcat` folder in the Eclipse workspace folder which is used in the `Download and install` step.
 
 Follow the instructions but select the workspace `tomcat` folder, and then the `Download and install`
+
+Eclipse will use this copy not the one installed earlier avoiding `Admin`, and `Deployment` configuration.
 
 Look at *Step 5* onwards in reference (2) above, to ensure all is OK.
 

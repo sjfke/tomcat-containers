@@ -31,7 +31,7 @@ Follow [How to add Tomcat server in Eclipse IDE](https://www.codejava.net/server
 
 ***Aside:*** the project used ***Apache Tomcat v9.0***.
 
-The Tomcat server should be installed see "Apache Tomcat Preparation" in [BUILD_ME.md](BUILD_ME.md) but should not running.
+The Tomcat server should be installed see "Apache Tomcat Preparation" in [BUILDME.md](BUILDME.md) but should not running.
 
 Creating a new local server and Eclipse does not create `tomcat-users.xsd`
 

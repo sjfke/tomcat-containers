@@ -82,6 +82,10 @@ sjfke@host:/mnt/c/Users/sjfke$ exit
 3. Reboot (otherwise 'podman' is not in your path)
 ```
 
+> #### Warning
+>
+> Do not `podman machine set --rootful` because this breaks `podman build`
+
 Initialize, start, stop and restart `podman machine`.
 
 ```console
@@ -240,6 +244,8 @@ PS C:\Users\sjfke\Github\tomcat-containers> podman volume inspect jsp_bookstored
 
 #### MariaDB Docker Compose file
 
+Contents of `compose-mariadb.yaml` file.
+
 ```yaml
 version: "3.9"
 services:
@@ -276,8 +282,62 @@ volumes:
 Create the containers, from inside the `python` virtual environment.
 
 ```console
-(venv) PS C:\Users\sjfke\Github\tomcat-containers> podman-compose down local; podman-compose build; podman-compose up -d
+(venv) PS C:\Users\sjfke\Github\tomcat-containers> podman-compose -f .\compose-mariadb.yaml up -d # Start MariaDB and Adminer
+(venv) PS C:\Users\sjfke\Github\tomcat-containers> podman-compose -f .\compose-mariadb.yaml down  # Stop MariaDB and Adminer
 ```
+
+## Tomcat and Bookstore application in Podman
+
+With `MariaDB` and `Adminer` running, follow all the steps in, [Build](../BUILD) to build the `Bookstore` application.
+
+Consult the [Dockerfile](../Dockerfile) for details of the deployment.
+
+Any files which need to be replaced for Docker to work are in the `Docker` folder.
+
+### Docker Folder
+
+It contains all the modified files to set up `Tomcat` and deploying the `Bookstore` the application.
+
+The [Official Tomcat Docker](https://hub.docker.com/_/tomcat) container, disables pretty much everything so all you see is a '403' or '404' error response once it is deployed.
+
+This is a development environment, so `Dockerfile` restores much of this functionality, key extracts follow:
+
+```text
+# Setup Tomcat in a development configuration
+RUN mv webapps webapps.safe
+RUN mv webapps.dist/ webapps
+COPY ./wharf/Docker/webapps/manager/META-INF/context.xml /usr/local/tomcat/webapps/manager/META-INF/
+COPY ./wharf/Docker/webapps/host-manager/META-INF/context.xml /usr/local/tomcat/webapps/host-manager/META-INF/
+COPY ./wharf/Docker/conf/tomcat-users.xml /usr/local/tomcat/conf/
+RUN chmod 644 /usr/local/tomcat/conf/tomcat-users.xml
+```
+
+## Current troubleshooting
+
+`podman build .` fails if `podman machine set --rootful`
+
+```console
+PS C:\Users\sjfke\Github\tomcat-containers> podman machine stop
+PS C:\Users\sjfke\Github\tomcat-containers> podman machine set --rootful=false
+
+PS C:\Users\sjfke\Github\tomcat-containers> podman machine start
+PS C:\Users\sjfke\Github\tomcat-containers> podman system connection list
+Name                         URI                                                          Identity                                    Default
+podman-machine-default       ssh://user@127.0.0.1:51252/run/user/1000/podman/podman.sock  C:\Users\sjfke\.ssh\podman-machine-default  false
+podman-machine-default-root  ssh://root@127.0.0.1:51252/run/podman/podman.sock            C:\Users\sjfke\.ssh\podman-machine-default  true
+
+PS C:\Users\sjfke\Github\tomcat-containers> podman build .
+STEP 1/15: FROM tomcat:9.0.71-jdk17-temurin
+Resolving "tomcat" using unqualified-search registries (/etc/containers/registries.conf.d/999-podman-machine.conf)
+Trying to pull docker.io/library/tomcat:9.0.71-jdk17-temurin...
+Getting image source signatures
+```
+
+* [Rootful & Rootless](https://github.com/containers/podman/blob/main/docs/tutorials/podman-for-windows.md#rootful--rootless)
+
+> Another case in which you may wish to use rootful execution is binding a port less than 1024.
+> However, future versions of podman will likely drop this to a lower number to improve compatibility with
+> defaults on system port services (such as MySQL)
 
 ## Cleaning Up A Podman + Docker Installation
 
