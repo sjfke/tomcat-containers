@@ -1,14 +1,16 @@
 # Setup of Tomcat for tomcat-containers
 
-Podman set up for [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) development.
+Tomcat set up for [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) development.
 
 ## Windows Platform Setup
 
-Tested on `Windows-10 Home` and `Windows-11 Home` editions.
+A standalone `Tomcat` installation is optional because everything can be done within `Eclipse`.
 
-This is optional but was used to provide the documntation for the `Tomcat 9` release, and to debug, test `Tomcat` issues.
+However, it permits debugging and testing outside of `Eclipse` and provides the documentation for the `Tomcat 9` release.
 
 ### Apache Tomcat Preparation
+
+`Tomcat` requires a `Java JDK`, the project used `Temurin` because this is the one bundled with `Eclipse`.
 
 * [Temurin™ for Windows x64 Prebuilt OpenJDK Binaries for Free!](https://adoptium.net/) it is needed by tomcat
   * [Install Temurin™ for Windows](https://adoptium.net/), using defaults, and with everything enabled
@@ -22,7 +24,7 @@ This is optional but was used to provide the documntation for the `Tomcat 9` rel
   * Installation `C:\Program Files\Apache Software Foundation\Tomcat 9.0`
   * Creates a service that may require manual starting `Service "Apache Tomcat 9.0 Tomcat9"`
 
-Test Tomcat is working
+To test if Tomcat is working:
 
 ```console
 PS> start "http://127.0.0.1:8080"
@@ -30,12 +32,12 @@ PS> start "http://127.0.0.1:8080"
 
 ## MacOS Platform (Intel) Setup
 
-> ### MacOS Note
+> ### MacOS Notes
 >
 > Needs to be written.
 
 ## Fedora Platform Setup
 
-> ### Fedora Note
+> ### Fedora Notes
 >
 > Needs to be written.
