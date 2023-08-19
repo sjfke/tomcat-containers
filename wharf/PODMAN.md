@@ -1,4 +1,4 @@
-# Setup for tomcat-containers
+# Setup of Podman for tomcat-containers
 
 Podman set up for [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) development.
 
@@ -15,7 +15,7 @@ The `Windows` environment is the most complex to setup, so let's start with that
 ## Windows Platform Setup
 
 * [Podman for Windows](https://github.com/containers/podman/blob/main/docs/tutorials/podman-for-windows.md), version 4.6.0
-* [Podman-Desktop](https://podman-desktop.io/downloads), Desktop version v1.2.1
+* [Podman-Desktop](https://podman-desktop.io/downloads), version v1.2.1
 * [Windows 10 Home Version 22H2](https://learn.microsoft.com/en-us/windows/whats-new/whats-new-windows-10-version-22h2)
 * [Windows 11 Home Version 22H2](https://learn.microsoft.com/en-us/windows/whats-new/whats-new-windows-11-version-22h2)
 * [WSL version: 1.2.5.0](https://learn.microsoft.com/en-us/windows/wsl/install)
@@ -194,6 +194,13 @@ There is no evidence of any Windows services for `Redhat` or `Podman`.
 >podman-gvproxy.x86_64                                4:4.3.1-1.fc37                      @updates                  
 >podman-plugins.x86_64                                4:4.3.1-1.fc37                      @updates                
 >```
+
+## Notes on using Podman and Podman Destop
+
+### Updates
+
+* `Podman Desktop` task bar will show if a `Podman Desktop` update is available
+* `Podman Desktop` main panel will show if a `Podman` update is available
 
 ## Application Specific Setup
 
