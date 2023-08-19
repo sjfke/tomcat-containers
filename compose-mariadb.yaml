@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  # Use root/r00tpa55 as user/password credentials
+  bookstoredb:
+    image: mariadb
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: r00tpa55
+    networks:
+      - jspnet
+    volumes:
+      - jsp_bookstoredata:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8397:8080
+    networks:
+      - jspnet
+
+networks:
+  jspnet:
+    driver: bridge
+
+volumes:
+  jsp_bookstoredata:
+    external: true

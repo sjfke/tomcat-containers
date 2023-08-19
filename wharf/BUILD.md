@@ -1,12 +1,25 @@
 # Building tomcat-containers
 
-Updated building instructions for [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
+Updated building instructions for [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) which is in some cases outdated and in others inconsistent with deploying the application to a `Docker` container environment.
 
 ## Table of Contents
 
-1. [Creating MariaDB Database](#creating-mariadb-database)
-2. [Application Preparation Windows](#application-preparation-windows)
-3. [Creating Eclipse Project](#creating-eclipse-project)
+1. [Prerequisites](#prerequisites)
+2. [Creating MariaDB Database](#creating-mariadb-database)
+3. [Application Preparation Windows](#application-preparation-windows)
+4. [Creating Eclipse Project](#creating-eclipse-project)
+
+## Prerequisites
+
+The following applications need to be available or installed.
+
+* [Eclipse](./ECLIPSE.md)
+* Install one of the following, but not both:
+  * [Docker](./DOCKER.md)
+  * [Podman](./PODMAN.md)
+* Optionally install:
+  * [Tomcat](./TOMCAT.md)
+  * [MariaDB](./MARIADB)
 
 ## Creating MariaDB Database
 
@@ -14,12 +27,14 @@ There are a number of errors in the SQL in the tutorial, and using `root` for an
 
 ***Aside:*** `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
 
+Assuming you have `MariaDB` running in your chosen container environment.
+
 ## Create the `Bookstore.book` table
 
 * `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container
 * `podman-desktop` open a terminal on the `bookstoredb-1` container
 
-***Note:*** Maria Database root password is in the `compose.yaml` file.
+***Note:*** Maria Database root password is in the `compose-mariadb.yaml` and `compose.yaml` files.
 
 ```sql
 # mariadb -u root -p
@@ -68,7 +83,7 @@ MariaDB [Bookstore]> select * from book;
 MariaDB [Bookstore]> exit;
 ```
 
-## Using Adminer Web Interface
+## Using *Adminer* Web Interface
 
 All of the above steps can be done and checked using through [adminer](http://localhost:8395/).
 
@@ -82,64 +97,18 @@ Database: <blank>
 
 ## Application Preparation Windows
 
-Tested on `Windows-10 Home` and `Windows-11 Home`
-
-### Apache Tomcat Preparation
-
-* [Temurin™ for Windows x64 Prebuilt OpenJDK Binaries for Free!](https://adoptium.net/) it is needed by tomcat
-  * [Install Temurin™ for Windows](https://adoptium.net/), using defaults, and with everything enabled
-  * Installs into `C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot`
-
-* [Tomcat 9 Software Downloads](https://tomcat.apache.org/download-90.cgi)
-  * Install Tomcat installation required to start 'Dynamic Web Project' in Eclipse, ([KISS](https://slang.net/meaning/kiss))
-  * Install everything, including `docs`, `examples`, `host-manager`, and `manager`
-  * Installation prompts for tomcat users, `user:admin`, `password: admin` for roles `manager-gui,admin-gui`
-  * JRE path `C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot`
-  * Installation `C:\Program Files\Apache Software Foundation\Tomcat 9.0`
-  * Creates a service that may require manual starting `Service "Apache Tomcat 9.0 Tomcat9"`
-
-Test Tomcat is working
-
-```console
-PS> start "http://127.0.0.1:8080"
-```
-  
-### Eclipse JEE preparation
-
-Download and install
-
-* [Eclipse Installer 2022-12 R](https://www.eclipse.org/downloads/packages/installer)
-* [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages/release/2022-12/r/eclipse-ide-enterprise-java-and-web-developers)
-
-Install Eclipse Marketplace plugins
-
-* Java and Web Developer Tools 3.30, accepting the defaults, restart
-`Help` > `Eclipse Marketplace` > `Popular` > `Eclipse Java and Web Developer Tools 3.30`
-
-* LiClipseText 2.4.0, accepting the defaults, restart
-`Help` > `Eclipse Marketplace` > `Search` > `LiClipseText 2.4.0`
-
-* Markdown Text Editor 1.2.0, accepting the defaults, restart
-`Help` > `Eclipse Marketplace` > `Search` > `Markdown Text Editor 1.2.0`
-
-Appearance Preferences
-
-Under `Window` > `Preferences` > `General` > `Appearance` you can enable `Dark Mode` theme
-
-### MariaDB preparation
-
-For this project a local MariaDB installation was not installed, downloads and instructions:  
-
-* [MariaDB Community Downloads](https://mariadb.com/downloads)
+Tested on `Windows-10 Home` and `Windows-11 Home` editions
 
 ## Tomcat Server in Eclipse IDE
 
 1. [How to configure tomcat server in Eclipse IDE](https://www.javatpoint.com/how-to-configure-tomcat-server-in-eclipse-ide)
 2. [Setup and Install Apache Tomcat Server in Eclipse IDE](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/)
 
-Create a `tomcat` in the Eclipse workspace folder for the `Download and install` step, meaning Eclipse will use this copy not the one installed earlier (avoids Admin, Deployment configuration)
+Create a `tomcat` folder in the Eclipse workspace folder which is used in the `Download and install` step.
 
 Follow the instructions but select the workspace `tomcat` folder, and then the `Download and install`
+
+Eclipse will use this copy not the one installed earlier avoiding `Admin`, and `Deployment` configuration.
 
 Look at *Step 5* onwards in reference (2) above, to ensure all is OK.
 
