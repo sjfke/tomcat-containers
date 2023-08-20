@@ -249,7 +249,7 @@ Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-cre
 
 ### 8. Configuring Web.xml
 
-Create `Bookstore/src/main/webapp/WEB-INF/web.xml`.
+Create `Bookstore/src/main/webapp/WEB-INF/web.xml` using the example skeleton [web.xml for servlet 3.1](https://gist.github.com/darbyluv2code/dd3781d61c3db5476fbf05ee431ee917).
 
 Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) with the following modifications.
 
@@ -268,8 +268,6 @@ Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-cre
   </context-param>
 ```
 
-An example skeleton [web.xml for servlet 3.1](https://gist.github.com/darbyluv2code/dd3781d61c3db5476fbf05ee431ee917)
-
 ### 9. Writing Error JSP page
 
 Create `Bookstore/src/main/webapp/Error.jsp`
@@ -277,3 +275,59 @@ Create `Bookstore/src/main/webapp/Error.jsp`
 Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) with the following modifications.
 
 * Make HTML-5
+
+## 10. Deploying and Testing the Application
+
+This section differs from the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) because the database server and the `Bookstore` application will also be deployed to `Docker` or `Podman`. Follow the [Docker](./DOCKER.md) or [Podman](./PODMAN.md) to setup your environment.
+
+To test a `Maven` deployment within `Eclipse` it is necessary to start database server using the `compose` and the `compose-mariadb.yaml` file.
+
+***Podman*** from within the `Python` virtual environment.
+
+```console
+(venv) PS C:\Users\sjfke\Github\tomcat-containers> podman-compose -f .\compose-mariadb.yaml up -d # Start MariaDB and Adminer
+(venv) PS C:\Users\sjfke\Github\tomcat-containers> Test-NetConnection localhost -Port 3306        # Check MariDB is up and accessible
+(venv) PS C:\Users\sjfke\Github\tomcat-containers> podman-compose -f .\compose-mariadb.yaml down  # Stop MariaDB and Adminer
+```
+
+***Docker***
+
+```console
+PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.yaml up -d # Start MariaDB and Adminer
+PS C:\Users\sjfke\Github\tomcat-containers> Test-NetConnection localhost -Port 3306        # Check MariDB is up and accessible
+PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.yaml down  # Stop MariaDB and Adminer
+```
+
+## Building a Maven war file
+
+To function `Maven` requires a minimal `settings.xml` which may have to be manually created.
+
+[Maven](./MAVEN.md) details how to create the `settings.xml` and general reference to the `Maven` build process.
+
+### To execute Maven, create a Run Configuration
+
+Eclipse: `Run` > `Run Configurations...` and *double-click* on the `Maven Build`
+
+Create, manage, and run configurations: `Maven Build` > `New_configuration`
+
+```text
+Main Tab:
+  Name: Bookstore
+  Base directory > Workspace > Bookstore #  Base directory: ${workspace_loc:/Bookstore}
+  Goals: clean package
+  User settings: C:\Users\sjfke\.m2\settings.xml (File System ...)
+
+  * [x] Update Snapshots
+  * [x] Resolve Workspace artifacts
+
+Common Tab:
+  Favorites menu
+    * [x] Run
+  Encoding
+    * Other: UTF-8
+```
+
+This will generate `Bookstore\target\Bookstore-0.0.1-SNAPSHOT.war` which can be deployed manually if you locally installed and configured [Tomcat](./TOMCAT.md).
+To rerun the `Bookstore` configuration it should appear under `Run` > `Run Configurations...` > `Maven Build`
+
+## Deploying and testing within Eclipse

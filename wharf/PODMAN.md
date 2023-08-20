@@ -246,8 +246,8 @@ PS C:\Users\sjfke\Github\tomcat-containers> podman volume inspect jsp_bookstored
 
 ### MariaDB in Docker
 
-* The docker compose command will take the folder name of as the **container** name, so `compose.yaml` is not in `wharf` folder
-* A permenant volume, `jsp_bookstoredata` must be created from `podman` command line, see [Create Volume for MariaDB](#create-volume-for-mariadb)
+* The docker compose command will take the folder name of as the **container** name, so the `compose-mariadb.yaml` and `compose.yaml` files are not in `wharf` folder
+* A permanent volume, `jsp_bookstoredata` must be created from `podman` command line, see [Create Volume for MariaDB](#create-volume-for-mariadb)
 
 #### MariaDB Docker Compose file
 
