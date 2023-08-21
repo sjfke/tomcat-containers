@@ -31,7 +31,7 @@ Follow the instructions in [Install Docker Desktop on Windows](https://docs.dock
 ### MariaDB in Docker
 
 * The docker compose command will take the folder name of as the **container** name, so `compose.yaml` is not in `wharf` folder.
-* A permenant volume, `jsp_bookstoredata` is created using `Docker-Desktop` > `Volumes` tab.
+* A permanent volume, `jsp_bookstoredata` is created using `Docker-Desktop` > `Volumes` tab.
 
 #### MariaDB Docker Compose file
 
@@ -68,10 +68,11 @@ volumes:
     external: true
 ```
 
-Create the containers
+To create, stop/start the `MariaDB` and `Adminer` containers.
 
 ```console
-PS C:\Users\sjfke> docker compose down --rmi local; docker compose build; docker compose up -d
+PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.yaml up -d # Start MariaDB and Adminer
+PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.yaml down  # Stop MariaDB and Adminer
 ```
 
 ## Tomcat and Bookstore application in Docker

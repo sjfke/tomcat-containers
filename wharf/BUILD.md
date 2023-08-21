@@ -1,13 +1,6 @@
 # Building tomcat-containers
 
-Updated building instructions for [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) which is in some cases outdated and in others inconsistent with deploying the application to a `Docker` container environment.
-
-## Table of Contents
-
-1. [Prerequisites](#prerequisites)
-2. [Creating MariaDB Database](#creating-mariadb-database)
-3. [Application Preparation Windows](#application-preparation-windows)
-4. [Creating Eclipse Project](#creating-eclipse-project)
+This document walks through each step in [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) tutorial, updating the build instructions, where necessary to to deploy the application to a `Docker` container environment.
 
 ## Prerequisites
 
@@ -15,26 +8,30 @@ The following applications need to be available or installed.
 
 * [Eclipse](./ECLIPSE.md)
 * Install one of the following, but not both:
-  * [Docker](./DOCKER.md)
-  * [Podman](./PODMAN.md)
+  * [Docker Desktop](./DOCKER.md)
+  * [Podman and Podman Desktop](./PODMAN.md)
 * Optionally install:
   * [Tomcat](./TOMCAT.md)
   * [MariaDB](./MARIADB)
 
-## Creating MariaDB Database
+## 1. Creating MySQL Database
 
 There are a number of errors in the SQL in the tutorial, and using `root` for an application is problematic.
 
-***Aside:*** `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
+> ***Note:***
+>
+> `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
 
 Assuming you have `MariaDB` running in your chosen container environment.
 
-## Create the `Bookstore.book` table
+### Create the `Bookstore.book` table
 
 * `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container
 * `podman-desktop` open a terminal on the `bookstoredb-1` container
 
-***Note:*** Maria Database root password is in the `compose-mariadb.yaml` and `compose.yaml` files.
+> ***Note:***
+>
+> Maria Database root password is in the `compose-mariadb.yaml` and `compose.yaml` files.
 
 ```sql
 # mariadb -u root -p
@@ -95,24 +92,7 @@ Password: r00tpa55
 Database: <blank>
 ```
 
-## Application Preparation Windows
-
-Tested on `Windows-10 Home` and `Windows-11 Home` editions
-
-## Tomcat Server in Eclipse IDE
-
-1. [How to configure tomcat server in Eclipse IDE](https://www.javatpoint.com/how-to-configure-tomcat-server-in-eclipse-ide)
-2. [Setup and Install Apache Tomcat Server in Eclipse IDE](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/)
-
-Create a `tomcat` folder in the Eclipse workspace folder which is used in the `Download and install` step.
-
-Follow the instructions but select the workspace `tomcat` folder, and then the `Download and install`
-
-Eclipse will use this copy not the one installed earlier avoiding `Admin`, and `Deployment` configuration.
-
-Look at *Step 5* onwards in reference (2) above, to ensure all is OK.
-
-## Creating Eclipse Project
+## 2. Creating Eclipse Project with Maven
 
 Follow the instructions in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
@@ -120,9 +100,23 @@ Follow the instructions in the [tutorial](https://www.codejava.net/coding/jsp-se
 
 Eclipse: `File` > `New` > `Dynamic Web Project`
 
-For tomcat installation folder select `tomcat`
+Using **Bookstore** as the project name, choosing `Apache Tomcat v9.0`with `tomcat` as the installation folder.
 
-The POM.XML update stanza goes between `</build>` and `</project>`
+You need to enter information to create Maven POM file, such as group ID, artifact ID, etc, for example.
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>Bookstore</groupId>
+  <artifactId>Bookstore</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <build>
+     ...
+  </build>
+```
+
+Then add the following dependencies to the `pom.xml` file, after `</build>` and before `</project>`
 
 ```xml
 <project>
@@ -144,9 +138,24 @@ Useful pom dependency references, unspecified `<scope>` is compile (see 2)
   1. [How To Find Maven Dependencies](https://www.baeldung.com/java-find-maven-dependencies)
   2. [Maven Dependency Scopes](https://www.baeldung.com/maven-dependency-scopes)
 
-### Writing Model Class
+In setting up the project you need to install `tomcat` in the `tomcat` folder in `Eclipse` workspace as described in [Tomcat Server in Eclipse IDE](#tomcat-server-in-eclipse-ide)
 
-Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
+### Tomcat Server in Eclipse IDE
+
+1. [How to configure tomcat server in Eclipse IDE](https://www.javatpoint.com/how-to-configure-tomcat-server-in-eclipse-ide)
+2. [Setup and Install Apache Tomcat Server in Eclipse IDE](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/)
+
+Create a `tomcat` folder in the Eclipse workspace folder which is used in the `Download and install` step.
+
+Follow the instructions but select the workspace `tomcat` folder, and then the `Download and install`
+
+Eclipse will use this copy not the one installed earlier avoiding `Admin`, and `Deployment` configuration.
+
+Look at *Step 5* onwards in reference (2) above, to ensure all is OK.
+
+### 3. Writing Model Class
+
+Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) but with the these modifications, because `this(title, author, price)` did not work.
 
 ```java
 public Book(int id, String title, String author, float price) {
@@ -158,17 +167,17 @@ public Book(int id, String title, String author, float price) {
 }
 ```
 
-### Coding DAO class
+### 4. Coding DAO class
 
 Follow the instructions in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
 
 For additional help: [JDBC CRUD Operations Tutorial:](https://www.codejava.net/java-se/jdbc/jdbc-tutorial-sql-insert-select-update-and-delete-examples)
 
-### Writing Book Listing JSP Page
+### 5. Writing Book Listing JSP Page
 
 Create a JSP page for displaying all books from the database in `Bookstore\src\main\webapp`.
 
-Modifications to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
+Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) with the following modifications.
 
 * Convert to HTML-5 conventions
 * Make `hard-coded` URL's, "/list" etc, `context directory` agnostic using JSTL `<c:url>` tag
@@ -211,11 +220,11 @@ Modifications to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc
   </c:forEach>
 ```
 
-### Writing Book Form JSP Page
+### 6. Writing Book Form JSP Page
 
 Create a JSP page for creating a new book in `Bookstore\src\main\webapp`.
 
-Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
+Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) with the following modifications
 
 * Convert to HTML-5 conventions
 * Make `hard-coded` URL's, "/new", "/list", `context directory` agnostic using JSTL `<c:url>` tag
@@ -232,27 +241,105 @@ Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-
   </h2>
 ```
 
-### Coding Controller Servlet Class
+### 7. Coding Controller Servlet Class
 
 Create a ControllerServlet class in `Bookstore\src\main\java\net\codejava\javaee\bookstore`.
 
 Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
-### Configuring Web.xml
+### 8. Configuring Web.xml
 
-Create `Bookstore/src/main/webapp/WEB-INF/web.xml`.
+Create `Bookstore/src/main/webapp/WEB-INF/web.xml` using the example skeleton [web.xml for servlet 3.1](https://gist.github.com/darbyluv2code/dd3781d61c3db5476fbf05ee431ee917).
 
-Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
+Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) with the following modifications.
 
 * change `<param-name>jdbcUsername</param-name>`
 * change `<param-name>jdbcPassword</param-name>`
 
-An example skeleton [web.xml for servlet 3.1](https://gist.github.com/darbyluv2code/dd3781d61c3db5476fbf05ee431ee917)
+```xml
+  <context-param>
+    <param-name>jdbcUsername</param-name>
+    <param-value>bsapp</param-value>
+  </context-param>
 
-### Writing Error JSP page
+  <context-param>
+    <param-name>jdbcPassword</param-name>
+    <param-value>P@ssw0rd</param-value>
+  </context-param>
+```
+
+### 9. Writing Error JSP page
 
 Create `Bookstore/src/main/webapp/Error.jsp`
 
-Modification to the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
+Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) with the following modifications.
 
 * Make HTML-5
+
+## 10. Deploying and Testing the Application
+
+This section differs from the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) because the database server and the `Bookstore` application will also be deployed to `Docker` or `Podman`. Follow the [Docker](./DOCKER.md) or [Podman](./PODMAN.md) to setup your environment.
+
+To test a `Maven` deployment within `Eclipse` it is necessary to start database server using the `compose` and the `compose-mariadb.yaml` file.
+
+***Podman*** from within the `Python` virtual environment.
+
+```console
+(venv) PS C:\Users\sjfke\Github\tomcat-containers> podman-compose -f .\compose-mariadb.yaml up -d # Start MariaDB and Adminer
+(venv) PS C:\Users\sjfke\Github\tomcat-containers> Test-NetConnection localhost -Port 3306        # Check MariDB is up and accessible
+(venv) PS C:\Users\sjfke\Github\tomcat-containers> podman-compose -f .\compose-mariadb.yaml down  # Stop MariaDB and Adminer
+```
+
+***Docker***
+
+```console
+PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.yaml up -d # Start MariaDB and Adminer
+PS C:\Users\sjfke\Github\tomcat-containers> Test-NetConnection localhost -Port 3306        # Check MariDB is up and accessible
+PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.yaml down  # Stop MariaDB and Adminer
+```
+
+### Configure Eclipse Tomcat server
+
+This permits debugging when following the steps in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
+
+Follow the instructions in [Tomcat](./TOMCAT.md) to setup the `Tomcat` server within `Eclipse`.
+
+On the `Servers` tab, *double-click* on the `Tomcat v9 Server at localhost`, which will display the `Overview` tab. Select the `Modules` tab and click on the `Add External Web Module...` button.
+
+Document base: Bookstore
+Path: /Bookstore
+[x] Auto reloading enabled
+
+## Building a Maven war file
+
+To function `Maven` requires a minimal `settings.xml` which may have to be manually created.
+
+[Maven](./MAVEN.md) details how to create the `settings.xml` and general reference to the `Maven` build process.
+
+### To execute Maven, create a Run Configuration
+
+Eclipse: `Run` > `Run Configurations...` and *double-click* on the `Maven Build`
+
+Create, manage, and run configurations: `Maven Build` > `New_configuration`
+
+```text
+Main Tab:
+  Name: Bookstore Package
+  Base directory > Workspace > Bookstore #  Base directory: ${workspace_loc:/Bookstore}
+  Goals: clean package
+  User settings: C:\Users\sjfke\.m2\settings.xml (File System ...)
+
+  * [x] Update Snapshots
+  * [x] Resolve Workspace artifacts
+
+Common Tab:
+  Favorites menu
+    * [x] Run
+  Encoding
+    * Other: UTF-8
+```
+
+This will generate `Bookstore\target\Bookstore-0.0.1-SNAPSHOT.war` which can be deployed manually if you locally installed and configured [Tomcat](./TOMCAT.md).
+To rerun the `Bookstore` configuration it should appear under `Run` > `Run Configurations...` > `Maven Build`
+
+## Deploying and testing within Eclipse
