@@ -102,6 +102,18 @@ Eclipse: `File` > `New` > `Dynamic Web Project`
 
 Using **Bookstore** as the project name, choosing `Apache Tomcat v9.0`with `tomcat` as the installation folder.
 
+> ***Warning***
+>
+> Simply cloning the `git repo` is insufficient, the `Dynamic Web Project` step must be done within `Eclipse` first.
+>
+> If the `tomcat-containers` repo has already been cloned:
+>
+> 1. Delete the `Bookstore` folder
+> 2. Create the `Dynamic Web Project`
+> 3. Use `git restore` to restore the `Bookstore` folder
+>
+> Failing to will mean `Bookstore` cannot be added to the `Tomcat` server within `Eclipse`
+
 You need to enter information to create Maven POM file, such as group ID, artifact ID, etc, for example.
 
 ```xml
@@ -152,6 +164,10 @@ Follow the instructions but select the workspace `tomcat` folder, and then the `
 Eclipse will use this copy not the one installed earlier avoiding `Admin`, and `Deployment` configuration.
 
 Look at *Step 5* onwards in reference (2) above, to ensure all is OK.
+
+Check `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost`, it is likely that the `tomcat-users.xsd` is missing.
+
+Download [tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) and add it to the folder.
 
 ### 3. Writing Model Class
 
