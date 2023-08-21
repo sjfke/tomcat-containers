@@ -298,6 +298,18 @@ PS C:\Users\sjfke\Github\tomcat-containers> Test-NetConnection localhost -Port 3
 PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.yaml down  # Stop MariaDB and Adminer
 ```
 
+### Configure Eclipse Tomcat server
+
+This permits debugging when following the steps in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
+
+Follow the instructions in [Tomcat](./TOMCAT.md) to setup the `Tomcat` server within `Eclipse`.
+
+On the `Servers` tab, *double-click* on the `Tomcat v9 Server at localhost`, which will display the `Overview` tab. Select the `Modules` tab and click on the `Add External Web Module...` button.
+
+Document base: Bookstore
+Path: /Bookstore
+[x] Auto reloading enabled
+
 ## Building a Maven war file
 
 To function `Maven` requires a minimal `settings.xml` which may have to be manually created.
@@ -312,7 +324,7 @@ Create, manage, and run configurations: `Maven Build` > `New_configuration`
 
 ```text
 Main Tab:
-  Name: Bookstore
+  Name: Bookstore Package
   Base directory > Workspace > Bookstore #  Base directory: ${workspace_loc:/Bookstore}
   Goals: clean package
   User settings: C:\Users\sjfke\.m2\settings.xml (File System ...)
