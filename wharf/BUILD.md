@@ -104,15 +104,16 @@ Using **Bookstore** as the project name, choosing `Apache Tomcat v9.0`with `tomc
 
 > ***Warning***
 >
-> Simply cloning the `git repo` is insufficient, the `Dynamic Web Project` step must be done within `Eclipse` first.
+> Simply cloning the `tomcat-containers` git repo is insufficient, the `Dynamic Web Project` and `Convert to Maven Project` steps must be done within `Eclipse`.
 >
 > If the `tomcat-containers` repo has already been cloned:
 >
 > 1. Delete the `Bookstore` folder
-> 2. Create the `Dynamic Web Project`
+> 2. `File > New > Dynamic Web Project`
 > 3. Use `git restore` to restore the `Bookstore` folder
+> 4. `Configure > Convert to Maven Project`
 >
-> Failing to will mean `Bookstore` cannot be added to the `Tomcat` server within `Eclipse`
+> Failing to do this will mean `Bookstore` cannot be added to the `Tomcat` server within `Eclipse`
 
 You need to enter information to create Maven POM file, such as group ID, artifact ID, etc, for example.
 
@@ -141,7 +142,7 @@ Then add the following dependencies to the `pom.xml` file, after `</build>` and 
 </project>
 ```
 
-The remember to create a Java package name for the project, `net.codejava.javaee.bookstore`.
+Remember to create a Java package name for the project, `net.codejava.javaee.bookstore`.
 
 Eclipse: `Bookstore` > `Java Resources` > `New` > `Package`
 
@@ -196,7 +197,7 @@ Create a JSP page for displaying all books from the database in `Bookstore\src\m
 Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) with the following modifications.
 
 * Convert to HTML-5 conventions
-* Make `hard-coded` URL's, "/list" etc, `context directory` agnostic using JSTL `<c:url>` tag
+* Make `hard-coded` URL's, **"/list"** etc, `context directory` agnostic using JSTL `<c:url>` tag
   * [Use relative paths without including the context rootname](https://stackoverflow.com/questions/4764405/how-to-use-relative-paths-without-including-the-context-root-name)
 
 ```jsp
@@ -243,7 +244,7 @@ Create a JSP page for creating a new book in `Bookstore\src\main\webapp`.
 Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) with the following modifications
 
 * Convert to HTML-5 conventions
-* Make `hard-coded` URL's, "/new", "/list", `context directory` agnostic using JSTL `<c:url>` tag
+* Make `hard-coded` URL's, **"/new"**, **"/list"**, `context directory` agnostic using JSTL `<c:url>` tag
 
 ```jsp
 
@@ -318,13 +319,16 @@ PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.
 
 This permits debugging when following the steps in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
-Follow the instructions in [Tomcat](./TOMCAT.md) to setup the `Tomcat` server within `Eclipse`.
+Follow the instructions in [Tomcat Server in Eclipse IDE](#tomcat-server-in-eclipse-ide) to setup the `Tomcat` server within `Eclipse`.
 
-On the `Servers` tab, *double-click* on the `Tomcat v9 Server at localhost`, which will display the `Overview` tab. Select the `Modules` tab and click on the `Add External Web Module...` button.
+On the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Add and Remove...`. 
+Select `Bookstore` from `Available:` and `Add >` to `Configured:`.
 
-Document base: Bookstore
-Path: /Bookstore
-[x] Auto reloading enabled
+The extra `jar` files need to be added, so `Run Configurations...` and select `Tomcat v9 Server at localhost` under the `Source` tab.
+
+*** Need to figure out from where - results of Maven build...
+
+C:\Users\sjfke\.m2\repository\javax\servlet\javax.servlet-api\3.1.0?
 
 ## Building a Maven war file
 
