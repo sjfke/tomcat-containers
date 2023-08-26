@@ -160,13 +160,15 @@ In setting up the project you need to install `tomcat` in the `tomcat` folder in
 
 Create a `tomcat` folder in the Eclipse workspace folder which is used in the `Download and install` step.
 
-Follow the instructions but select the workspace `tomcat` folder, and then the `Download and install`
+On the `Servers` tab, `No servers available. Click this link to create a new server...`.
+
+On the `Tomcat Server` page select `apache-tomcat-9.0.71` and select the `Bookstore` folder, and then the `Download and install` and then the `tomcat` folder.
 
 Eclipse will use this copy not the one installed earlier avoiding `Admin`, and `Deployment` configuration.
 
 Look at *Step 5* onwards in reference (2) above, to ensure all is OK.
 
-Check `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost`, it is likely that the `tomcat-users.xsd` is missing.
+Check `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost` > `conf`, it is likely that the `tomcat-users.xsd` is missing.
 
 Download [tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) and add it to the folder.
 
@@ -321,7 +323,7 @@ This permits debugging when following the steps in the [tutorial](https://www.co
 
 Follow the instructions in [Tomcat Server in Eclipse IDE](#tomcat-server-in-eclipse-ide) to setup the `Tomcat` server within `Eclipse`.
 
-On the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Add and Remove...`. 
+On the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Add and Remove...`.
 Select `Bookstore` from `Available:` and `Add >` to `Configured:`.
 
 The extra `jar` files need to be added, so `Run Configurations...` and select `Tomcat v9 Server at localhost` under the `Source` tab.
@@ -338,13 +340,13 @@ To function `Maven` requires a minimal `settings.xml` which may have to be manua
 
 ### To execute Maven, create a Run Configuration
 
-Eclipse: `Run` > `Run Configurations...` and *double-click* on the `Maven Build`
+Eclipse: `Run` > `Run Configurations...` and select `Maven Build` and the `New launch configuration`
 
 Create, manage, and run configurations: `Maven Build` > `New_configuration`
 
 ```text
 Main Tab:
-  Name: Bookstore Package
+  Name: Package Bookstore
   Base directory > Workspace > Bookstore #  Base directory: ${workspace_loc:/Bookstore}
   Goals: clean package
   User settings: C:\Users\sjfke\.m2\settings.xml (File System ...)
@@ -363,3 +365,27 @@ This will generate `Bookstore\target\Bookstore-0.0.1-SNAPSHOT.war` which can be 
 To rerun the `Bookstore` configuration it should appear under `Run` > `Run Configurations...` > `Maven Build`
 
 ## Deploying and testing within Eclipse
+
+This can be a real *black art* easiest approach is to do the `Maven build` first.
+
+Test this by manually deploying using the standalone `Tomcat` once working, the dependency list is in `Explorer` > `Bookstore` > `Java Resources` > `Libraries` > `Maven Dependencies`
+
+Once it is working `Run` > `Run configurations` > `apache-tomcat-9.0.71` on the `Classpath` tab.
+
+* [JSTL-1.2](https://mvnrepository.com/artifact/javax.servlet/jstl/1.2)
+* [JSTL Tutorial, JSTL Tags Example](https://www.digitalocean.com/community/tutorials/jstl-tutorial-jstl-tags-example)
+
+```text
+> Bootstrap Entries
+  > JRE System LIbrary [jre]
+> User Entries
+  > bootstrap.jar - Bookstore\tomcat\apache-tomcat-9.0.71\bin\
+  > commons-daemon.jar - Bookstore\tomcat\apache-tomcat-9.0.71\bin\
+  > tomcat-juli.jar - Bookstore\tomcat\apache-tomcat-9.0.7\bin\
+  > javax.servlet-api-3.1.0.jar - C:\Users\sjfke\.m2\repository\javax\servlet\javax.servlet-api\3.1.0\
+  > javax.servlet.jsp-api-2.3.1.jar - C:\Users\sjfke\.m2\repository\javax\servlet\javax.servlet.jsp-api\2.3.1\
+  > jstl-1.2.jar - C:\Users\sjfke\.m2\repository\javax\servlet\jstl\1.2\
+  > standard-1.1.2.jar - C:\Users\sjfke\.m2\repository\taglibs\1.1.2\
+  > mysql-connector-java-5.1.30.jar - C:\Users\sjfke\.m2\repository\mysql\mysql-connector-java\5.1.30\
+  > Bookstore
+```
