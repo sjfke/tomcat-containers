@@ -2,7 +2,7 @@
 
 Docker set up for [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) development.
 
-## Project Preperation
+## Project Preparation
 
 The project uses `Docker` and `Docker Compose` configuration files.
 
