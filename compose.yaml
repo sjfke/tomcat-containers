@@ -25,6 +25,8 @@ services:
   adminer:
     image: adminer
     restart: unless-stopped
+    environment:
+      - ADMINER_DEFAULT_SERVER=bookstoredb
     ports:
       - 8397:8080
     networks:
