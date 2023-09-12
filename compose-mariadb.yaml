@@ -14,8 +14,11 @@ services:
       - jsp_bookstoredata:/var/lib/mysql
 
   adminer:
-    image: adminer
+    image: adminer:latest
     restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: bookstoredb
+      ADMINER_DESIGN: dracula # hever
     ports:
       - 8397:8080
     networks:
