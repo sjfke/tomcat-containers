@@ -321,16 +321,15 @@ PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.
 
 This permits debugging when following the steps in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
-Follow the instructions in [Tomcat Server in Eclipse IDE](#tomcat-server-in-eclipse-ide) to setup the `Tomcat` server within `Eclipse`.
+Follow the instructions in [How to add Tomcat server in Eclipse IDE](https://www.codejava.net/servers/tomcat/how-to-add-tomcat-server-in-eclipse-ide) to setup the `Tomcat` server within `Eclipse`. Eclipse often appears to pick non-existent versions, so it is possible to manually install in the `tomcat` folder and then follow these steps ignoring the download part.
+
+* use the default `conf/tomcat-users.xml` file, do not configure any users.
+* verify that `conf/tomcat-users.xsd` file exists, can be downloaded from [GitHub conf/tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd)
 
 On the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Add and Remove...`.
 Select `Bookstore` from `Available:` and `Add >` to `Configured:`.
 
-The extra `jar` files need to be added, so `Run Configurations...` and select `Tomcat v9 Server at localhost` under the `Source` tab.
-
-*** Need to figure out from where - results of Maven build...
-
-C:\Users\sjfke\.m2\repository\javax\servlet\javax.servlet-api\3.1.0?
+Even this adds the `maven` snapshot versions, extra `jar` files may be need to be added. If so `Run Configurations...` and select `Apache Tomcat > Tomcat v9 Server at localhost` under the `Source` tab in `Default/Bookstore`. The list can be found in `Bookstore > Java Resources > Libraries > Maven Dependencies`
 
 ## Building a Maven war file
 

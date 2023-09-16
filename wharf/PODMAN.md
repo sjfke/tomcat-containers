@@ -25,7 +25,7 @@ However installing `Podman` will also install `WSL` the process is simple, and s
 
 The `Podman Desktop` installation is also straight forward and installs the required extensions.
 
-* *Compose*, *Docker*, *Kind*, *Kube Context*, *Podman*, *Lima* and *Registeries*
+* *Compose*, *Docker*, *Kind*, *Kube Context*, *Podman*, *Lima* and *Registries*
 
 Installation sequence is:
 
