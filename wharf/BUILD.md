@@ -326,10 +326,11 @@ Follow the instructions in [How to add Tomcat server in Eclipse IDE](https://www
 * use the default `conf/tomcat-users.xml` file, do not configure any users.
 * verify that `conf/tomcat-users.xsd` file exists, can be downloaded from [GitHub conf/tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd)
 
-On the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Add and Remove...`.
-Select `Bookstore` from `Available:` and `Add >` to `Configured:`.
+Deployments to `tomcat` require a `war` or `ear` file, which is created using `maven`, see [Building a Maven war file](#building-a-maven-war-file). Once the `war` file is created on the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Add and Remove...`. Select `Bookstore` from `Available:` and `Add >` to `Configured:`.
 
-Even this adds the `maven` snapshot versions, extra `jar` files may be need to be added. If so `Run Configurations...` and select `Apache Tomcat > Tomcat v9 Server at localhost` under the `Source` tab in `Default/Bookstore`. The list can be found in `Bookstore > Java Resources > Libraries > Maven Dependencies`
+Start MariaDB using `docker compose` or `podman-compose` and the `.\compose-mariadb.yaml` file. 
+
+Start the server within `Eclipse` and test using your browser `http://localhost:8080/Bookstore`.
 
 ## Building a Maven war file
 
@@ -387,4 +388,61 @@ Once it is working `Run` > `Run configurations` > `apache-tomcat-9.0.71` on the 
   > standard-1.1.2.jar - C:\Users\sjfke\.m2\repository\taglibs\1.1.2\
   > mysql-connector-java-5.1.30.jar - C:\Users\sjfke\.m2\repository\mysql\mysql-connector-java\5.1.30\
   > Bookstore
+```
+
+## A. Building the Application Image
+
+Having completed steps 1 through 10, we stop following the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
+
+First build the bookstore container image, using the `Docker` file, see [Docker section](./DOCKER.md).
+
+```console
+  
+```
+
+The `compose.yaml` file, differs from `compose-mariadb.yaml` because contains the `bookstore` stanza which permits building the container using `docker compose` or `podman-compose`.
+
+```yaml
+ersion: "3.9"
+services:
+  # Use root/r00tpa55 as user/password credentials
+  bookstoredb:
+    image: mariadb
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: r00tpa55
+    networks:
+      - jspnet
+    volumes:
+      - jsp_bookstoredata:/var/lib/mysql
+
+  bookstore:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8395:8080"
+    networks:
+      - jspnet
+    
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: bookstoredb
+      ADMINER_DESIGN: dracula # hever
+    ports:
+      - 8397:8080
+    networks:
+      - jspnet
+
+networks:
+  jspnet:
+    driver: bridge
+
+volumes:
+  jsp_bookstoredata:
+    external: true
 ```
