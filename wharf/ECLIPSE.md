@@ -28,6 +28,9 @@ Install Eclipse Marketplace plugins
 * m2e-connector for maven-dependency-plugin 0.0.4
 `Help` > `Eclipse Marketplace` > `Search` > `maven`
 
+* Eclipse Docker Tooling 5.12.0.202309052024
+`Help` > `Eclipse Marketplace` > `Search` > `Docker Tooling`
+
 Appearance Preferences
 
 Under `Window` > `Preferences` > `General` > `Appearance` you can enable `Dark Mode` theme
