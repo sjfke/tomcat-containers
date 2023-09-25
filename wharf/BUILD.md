@@ -403,14 +403,14 @@ First build the bookstore container image, using the `Docker` file, see [Docker 
 The `compose.yaml` file, differs from `compose-mariadb.yaml` because contains the `bookstore` stanza which permits building the container using `docker compose` or `podman-compose`.
 
 ```yaml
-ersion: "3.9"
+version: "3.9"
 services:
   # Use root/r00tpa55 as user/password credentials
   bookstoredb:
     image: mariadb
     restart: unless-stopped
     ports:
-      - 3306:3306
+      - "3306:3306"
     environment:
       MARIADB_ROOT_PASSWORD: r00tpa55
     networks:
@@ -423,7 +423,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - "8395:8080"
+      - "8080:8080"
     networks:
       - jspnet
     
@@ -434,7 +434,7 @@ services:
       ADMINER_DEFAULT_SERVER: bookstoredb
       ADMINER_DESIGN: dracula # hever
     ports:
-      - 8397:8080
+      - "8081:8080"
     networks:
       - jspnet
 
