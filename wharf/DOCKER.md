@@ -156,7 +156,7 @@ COPY ./wharf/Docker/webapps/Bookstore/WEB-INF/web.xml /usr/local/tomcat/webapps/
 ### Typical command usage
 
 ```console
-# Once compose.yaml is created, see references (ii, iii)
+# Once compose.yaml is created, see references (2, 3)
 PS C:\Users\sjfke> docker compose build
 PS C:\Users\sjfke> docker compose up -d 
 PS C:\Users\sjfke> docker compose down
@@ -166,9 +166,9 @@ PS C:\Users\sjfke> docker compose down --rmi local; docker compose build; docker
 PS C:\Users\sjfke> docker compose down --rmi local; docker compose up -d --build
 ```
 
-* [Docker: Reference documentation](https://docs.docker.com/reference/)
-* [Docker: Overview of Docker Compose](https://docs.docker.com/compose/)
-* [Docker: Compose specification](https://docs.docker.com/compose/compose-file)
+1. [Docker: Reference documentation](https://docs.docker.com/reference/)
+2. [Docker: Overview of Docker Compose](https://docs.docker.com/compose/)
+3. [Docker: Compose specification](https://docs.docker.com/compose/compose-file)
 
 ## Docker Image Maintenance
 
