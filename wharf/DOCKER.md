@@ -54,6 +54,9 @@ services:
   adminer:
     image: adminer
     restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: bookstoredb
+      ADMINER_DESIGN: dracula # hever
     ports:
       - 8395:8080
     networks:

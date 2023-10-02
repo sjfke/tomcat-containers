@@ -272,6 +272,9 @@ services:
   adminer:
     image: adminer
     restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: bookstoredb
+      ADMINER_DESIGN: dracula # hever
     ports:
       - 8395:8080
     networks:
@@ -297,7 +300,7 @@ Create the containers, from inside the `python` virtual environment.
 
 With `MariaDB` and `Adminer` running, follow all the steps in, [Build](../BUILD) to build the `Bookstore` application.
 
-Consult the [Dockerfile](../Dockerfile) for details of the deployment.
+Consult the [Dockerfile](../Dockerfile) and for details of the deployment.
 
 Any files which need to be replaced for Docker to work are in the `Docker` folder.
 
