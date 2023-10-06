@@ -272,6 +272,9 @@ services:
   adminer:
     image: adminer
     restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: bookstoredb
+      ADMINER_DESIGN: dracula # hever
     ports:
       - 8395:8080
     networks:
@@ -297,7 +300,7 @@ Create the containers, from inside the `python` virtual environment.
 
 With `MariaDB` and `Adminer` running, follow all the steps in, [Build](../BUILD) to build the `Bookstore` application.
 
-Consult the [Dockerfile](../Dockerfile) for details of the deployment.
+Consult the [Dockerfile](../Dockerfile) and for details of the deployment.
 
 Any files which need to be replaced for Docker to work are in the `Docker` folder.
 
@@ -319,7 +322,107 @@ COPY ./wharf/Docker/conf/tomcat-users.xml /usr/local/tomcat/conf/
 RUN chmod 644 /usr/local/tomcat/conf/tomcat-users.xml
 ```
 
-## Current troubleshooting
+* `webapps/manager/META-INF/context.xml` grants access to the localhost and the RFC-1918 space used by Docker networking;
+* `webapps/host-manager/META-INF/context.xml` grants access to the localhost and the RFC-1918 space used by Docker networking;
+* `conf/tomcat-users.xml` grants access to the roles="manager-gui,admin-gui" to username="admin";
+* `webapps/Bookstore/WEB-INF/web.xml` to access the MySQL database in docker-compose network;
+
+> #### Note
+>
+> The container file system is read-only, so some `tomcat manager` and `tomcat host-manager` actions fail.
+
+The docker deployment of `Bookstore` needs to connect to the `bookstoredb` container, not `localhost`, so different `web.xml` is used.
+
+```text
+# Deploy the Bookstore application, using the output of the Maven build
+# Modified web.xml changes jdbc:mysql for Docker, 'jdbc:mysql://SERVICE-NAME:3306/DATABASE-NAME'
+COPY ./Bookstore/target/Bookstore-0.0.1-SNAPSHOT/ /usr/local/tomcat/webapps/Bookstore
+COPY ./wharf/Docker/webapps/Bookstore/WEB-INF/web.xml /usr/local/tomcat/webapps/Bookstore/WEB-INF/web.xml
+```
+
+### Docker MySQL connection
+
+```xml
+jdbc:mysql://SERVICE-NAME:3306/DATABASE-NAME
+```
+
+Change to `webapps/Bookstore/WEB-INF/web.xml`
+
+```xml
+  <context-param>
+    <param-name>jdbcURL</param-name>
+    <param-value>jdbc:mysql://bookstoredb:3306/Bookstore</param-value>
+  </context-param>
+```
+
+## Deploying Bookstore using Docker
+
+To keep the Docker file simple, the output of the `maven` build within Eclipse is copied to the `Bookstore` webapp, and the `web.xml` file is replaced with one that has the correct `jdbcURL`.
+
+```text
+# Deploy the Bookstore application, using the output of the Maven build
+# Modified web.xml changes jdbc:mysql for Docker, 'jdbc:mysql://SERVICE-NAME:3306/DATABASE-NAME'
+COPY ./Bookstore/target/Bookstore-0.0.1-SNAPSHOT/ /usr/local/tomcat/webapps/Bookstore
+COPY ./wharf/Docker/webapps/Bookstore/WEB-INF/web.xml /usr/local/tomcat/webapps/Bookstore/WEB-INF/web.xml
+```
+
+## General Docker and Docker Compose Notes
+
+### Typical command usage
+
+```console
+PS C:\Users\sjfke> podman build -f .\Dockerfile
+PS C:\Users\sjfke> podman images
+REPOSITORY                             TAG                   IMAGE ID      CREATED         SIZE
+localhost/tomcat-containers_bookstore  latest                f75bce11f066  11 seconds ago  489 MB
+
+# 'podman-compose' is a Python script, using (venv) 'virtual environment'
+PS C:\Users\sjfke> venv\Scripts\activate
+(venv) pip install podman-compose
+
+# Once compose.yaml is created, see references (3, 4) you can build just like with Docker
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml build
+(venv) PS C:\Users\sjfke> podman images
+REPOSITORY                             TAG                   IMAGE ID      CREATED         SIZE
+localhost/tomcat-containers_bookstore  latest                f75bce11f066   5 minutes ago  489 MB
+docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  8 months ago    482 MB
+
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml up -d
+(venv) PS C:\Users\sjfke> podman images
+REPOSITORY                             TAG                   IMAGE ID      CREATED       SIZE
+localhost/tomcat-containers_bookstore  latest                f75bce11f066  3 hours ago   489 MB
+docker.io/library/adminer              latest                9b672f480fc7  12 days ago   258 MB
+docker.io/library/mariadb              latest                871a9153c184  4 weeks ago   410 MB
+docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  8 months ago  482 MB
+
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down  # deletes the containers
+
+(venv) PS C:\Users\sjfke> podman images                 # man podman-images
+(venv) PS C:\Users\sjfke> podman image prune            # prune dangling images, man podman-image-prune
+(venv) PS C:\Users\sjfke> podman rmi --all              # Delete all images
+(venv) PS C:\Users\sjfke> podman rmi localhost/myimage  
+(venv) PS C:\Users\sjfke> podman rmi e80dffa4ea27
+
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml stop
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml start
+
+(venv) PS C:\Users\sjfke> podman-compose help
+(venv) PS C:\Users\sjfke> podman help
+```
+
+1. [Podman: Commands](https://docs.podman.io/en/latest/Commands.html)
+2. [Podman: Tutorials](https://docs.podman.io/en/latest/Tutorials.html)
+3. [Github: podman-compose](https://github.com/containers/podman-compose)
+4. [Docker: Compose specification](https://docs.docker.com/compose/compose-file)
+5. [Docker: Reference documentation](https://docs.docker.com/reference/)
+6. [Docker: Overview of Docker Compose](https://docs.docker.com/compose/)
+7. [Podman: podman play kube](https://docs.podman.io/en/v4.2/markdown/podman-play-kube.1.html)
+
+***
+
+## Issues found with a `rootful` `podman machine`
+
+### Troubleshooting
 
 `podman build .` fails if `podman machine set --rootful`
 
@@ -346,7 +449,7 @@ Getting image source signatures
 > However, future versions of podman will likely drop this to a lower number to improve compatibility with
 > defaults on system port services (such as MySQL)
 
-## Cleaning Up A Podman + Docker Installation
+### Cleaning Up A Podman + Docker Installation
 
 Accidentally installed `Podman` and `Docker` on Windows, the following additional steps were used to remove `Podman` installation.
 
