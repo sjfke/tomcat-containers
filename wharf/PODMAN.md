@@ -395,8 +395,16 @@ docker.io/library/adminer              latest                9b672f480fc7  12 da
 docker.io/library/mariadb              latest                871a9153c184  4 weeks ago   410 MB
 docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  8 months ago  482 MB
 
-(venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down
-(venv) PS C:\Users\sjfke> podman rmi --all   # Delete all images
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down  # deletes the containers
+
+(venv) PS C:\Users\sjfke> podman images                 # man podman-images
+(venv) PS C:\Users\sjfke> podman image prune            # prune dangling images, man podman-image-prune
+(venv) PS C:\Users\sjfke> podman rmi --all              # Delete all images
+(venv) PS C:\Users\sjfke> podman rmi localhost/myimage  
+(venv) PS C:\Users\sjfke> podman rmi e80dffa4ea27
+
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml stop
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml start
 
 (venv) PS C:\Users\sjfke> podman-compose help
 (venv) PS C:\Users\sjfke> podman help
@@ -408,6 +416,7 @@ docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  8 mon
 4. [Docker: Compose specification](https://docs.docker.com/compose/compose-file)
 5. [Docker: Reference documentation](https://docs.docker.com/reference/)
 6. [Docker: Overview of Docker Compose](https://docs.docker.com/compose/)
+7. [Podman: podman play kube](https://docs.podman.io/en/v4.2/markdown/podman-play-kube.1.html)
 
 ***
 
