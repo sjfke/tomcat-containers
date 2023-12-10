@@ -412,11 +412,13 @@ docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  8 mon
 
 1. [Podman: Commands](https://docs.podman.io/en/latest/Commands.html)
 2. [Podman: Tutorials](https://docs.podman.io/en/latest/Tutorials.html)
-3. [Github: podman-compose](https://github.com/containers/podman-compose)
-4. [Docker: Compose specification](https://docs.docker.com/compose/compose-file)
-5. [Docker: Reference documentation](https://docs.docker.com/reference/)
-6. [Docker: Overview of Docker Compose](https://docs.docker.com/compose/)
-7. [Podman: podman play kube](https://docs.podman.io/en/v4.2/markdown/podman-play-kube.1.html)
+3. [Podman: Python scripting for Podman services](https://podman-py.readthedocs.io/en/latest/index.html)
+4. [Github: Containers/Podman](https://github.com/containers/podman/releases)
+5. [Github: podman-compose](https://github.com/containers/podman-compose)
+6. [Docker: Compose specification](https://docs.docker.com/compose/compose-file)
+7. [Docker: Reference documentation](https://docs.docker.com/reference/)
+8. [Docker: Overview of Docker Compose](https://docs.docker.com/compose/)
+9. [Podman: podman play kube](https://docs.podman.io/en/v4.2/markdown/podman-play-kube.1.html)
 
 ***
 

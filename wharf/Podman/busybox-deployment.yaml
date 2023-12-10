@@ -1,0 +1,38 @@
+# https://examples.openshift.pub/deploy/#simple-deployment
+#
+# kubeadmin$ oc adm policy add-scc-to-group anyuid system:authenticated --namespace="<project>"
+# developer$ oc apply -f busybox-deployment.yaml
+# developer$ oc exec --stdin --tty pod/<pod-name> -- bash
+# developer$ oc delete deployment.apps/busybox-deployment
+# kubeadmin$ oc adm policy remove-scc-from-group anyuid system:authenticated --namespace="<project>"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: busybox-deployment
+    app.kubernetes.io/component: busybox-deployment
+    app.kubernetes.io/instance: busybox-deployment
+    app.kubernetes.io/part-of: busybox-deployment
+    app.openshift.io/runtime: redhat
+  name: busybox-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: busybox-deployment
+    type: Recreate  
+  template:
+    metadata:
+      labels:
+        app: busybox-deployment
+        deploymentconfig: busybox
+    spec:
+      containers:
+      - image: busybox
+        imagePullPolicy: Always
+        name: busybox-deployment
+#        command: [ "/bin/sh", "-c", "while true ; do date; sleep 1; done;" ]
+        command: [ "/bin/sh", "-c", "tail -f /dev/null" ]
+        resources: {}
+

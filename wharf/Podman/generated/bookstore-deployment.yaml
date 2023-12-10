@@ -1,0 +1,34 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.5.0
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: "2023-11-04T18:07:28Z"
+  labels:
+    app: tomcat-containersbookstore1-pod
+  name: tomcat-containersbookstore1-pod-deployment
+spec:
+  selector:
+    matchLabels:
+      app: tomcat-containersbookstore1-pod
+  template:
+    metadata:
+      annotations:
+        io.podman.annotations.ulimit: nofile=1048576:1048576,nproc=15433:15433
+        org.opencontainers.image.base.digest/tomcat-containersbookstore1: sha256:2bb1a54a40ad148f327fac0be697d0190f4539c72e77be9b36a363da
+        org.opencontainers.image.base.name/tomcat-containersbookstore1: docker.io/library/tomcat:9.0.71-jdk17-temurin
+      creationTimestamp: "2023-11-04T18:07:28Z"
+      labels:
+        app: tomcat-containersbookstore1-pod
+      name: tomcat-containersbookstore1-pod
+    spec:
+      containers:
+      - image: localhost/tomcat-containers_bookstore:latest
+        name: tomcat-containersbookstore1
+        ports:
+        - containerPort: 8080
+          hostPort: 8080
+        securityContext:
+          runAsNonRoot: true

@@ -1,0 +1,63 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.5.0
+
+# NOTE: If you generated this yaml from an unprivileged and rootless podman container on an SELinux
+# enabled system, check the podman generate kube man page for steps to follow to ensure that your pod/container
+# has the right permissions to access the volumes added.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2023-11-04T18:08:49Z"
+  labels:
+    app: tomcat-containersbookstoredb1-pod
+  name: tomcat-containersbookstoredb1-pod
+spec:
+  ports:
+  - name: "3306"
+    nodePort: 31364
+    port: 3306
+    targetPort: 3306
+  selector:
+    app: tomcat-containersbookstoredb1-pod
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: "2023-11-04T18:08:49Z"
+  labels:
+    app: tomcat-containersbookstoredb1-pod
+  name: tomcat-containersbookstoredb1-pod-deployment
+spec:
+  selector:
+    matchLabels:
+      app: tomcat-containersbookstoredb1-pod
+  template:
+    metadata:
+      annotations:
+        io.podman.annotations.ulimit: nofile=1048576:1048576,nproc=15433:15433
+      creationTimestamp: "2023-11-04T18:08:49Z"
+      labels:
+        app: tomcat-containersbookstoredb1-pod
+      name: tomcat-containersbookstoredb1-pod
+    spec:
+      containers:
+      - args:
+        - mariadbd
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          value: r00tpa55
+        image: docker.io/library/mariadb:latest
+        name: tomcat-containersbookstoredb1
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: jsp_bookstoredata-pvc
+      volumes:
+      - name: jsp_bookstoredata-pvc
+        persistentVolumeClaim:
+          claimName: jsp_bookstoredata
