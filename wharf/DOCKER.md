@@ -206,3 +206,4 @@ networks:
 * [Docker Reference documentation](https://docs.docker.com/reference/);
 * [Dockerfile reference](https://docs.docker.com/engine/reference/builder/);
 * [Docker Compose file build reference](https://docs.docker.com/compose/compose-file/build/)
+* [Docker SDK for Python](https://docker-py.readthedocs.io/en/stable/)
