@@ -157,26 +157,34 @@ The files in the [inspect](./wharf/Podman/inspect) folder were collected at the 
 
 While this provides an informative starting point, it is cleaner to write the `podman kube play` YAML files from scratch using the output gathered here as a reference source.
 
+Using `podman-compose` will create the `jspnet` but called `tomcat-containers_jspnet`, and this is not deleted by the `podman-compose -f .\compose.yaml down`, so it needs to be manually removed.
+
+```console
+PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet
+```
+
 ## Using Kubernetes files
 
 * [How to deploy a Flask API in Kubernetes](https://www.vantage-ai.com/blog/deploy-a-flask-api-in-kubernetes)
 
+First step is to create the `jspnet` to isolate the work from `podman-default-kube-network`
+
 ```console
-PS C:\Users\sjfke> podman network ls
+PS C:\Users\sjfke> podman network ls                                   # what networks exist?
 
-PS C:\Users\sjfke> podman network inspect podman-default-kube-network
-PS C:\Users\sjfke> podman inspect podman-default-kube-network
+PS C:\Users\sjfke> podman network inspect podman-default-kube-network  # network details
+PS C:\Users\sjfke> podman inspect podman-default-kube-network          # 'network' keyword is optional
 
-PS C:\Users\sjfke> podman network inspect podman
-
-
+PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet          # remove podman-compose network
+PS C:\Users\sjfke> podman network create jspnet                        # create jspnet with the defaults
+PS C:\Users\sjfke> podman network inspect jspnet                       # what was created
 ```
 
-### Base64 encode/decode 
+### Base64 encode/decode
 
-To convert the database password to be used in a secret you need Base64 encode/decode.
+To demonstrate using a `secret`, you need to be able to Base64 encode/decode the database password.
 
-Using Git Bash or any `wsl` installed UNIX shell
+#### Using Git Bash or any `wsl` installed UNIX shell
 
 ```console
 $ echo -n r00tpa55 | base64
@@ -186,7 +194,7 @@ $ echo -n cjAwdHBhNTU=| base64 -d
 r00tpa55
 ```
 
-In Python, the string needs to be converted to bytes then base64 bytes.
+#### In Python, the string needs to be converted to bytes then base64 bytes
 
 ```python
 >>> import base64
@@ -202,7 +210,9 @@ cjAwdHBhNTU=
 r00tpa55
 ```
 
-***NEED TO CHECK*** Using PowerShell will not provide a UNIX compatible string.
+#### Using PowerShell will not provide a UNIX compatible string.
+
+***NEED TO CHECK***
 
 ```console
 PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("r00tpa55"))
@@ -215,14 +225,14 @@ r00tpa55
 ### Deploying
 
 ```console
-PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml
-PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml
+PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml                      # podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml                  # podman-default-kube-network
 
-PS C:\Users\sjfke> podman play kube --start --network tomcat-containers_jspnet .\adminer-deployment.yaml
-PS C:\Users\sjfke> podman play kube --start --network tomcat-containers_jspnet .\bookstoredb-deployment.yaml
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deployment.yaml     # jspnet
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # jspnet
 
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml
-PS C:\Users\sjfke> podman play kube --down .\adminer-deployment.yaml
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
+PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
 ```
 
 ## Useful references
