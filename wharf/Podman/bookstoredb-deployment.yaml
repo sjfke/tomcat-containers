@@ -1,3 +1,12 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mariadb-secrets
+type: Opaque
+data:
+  db_root_password: cjAwdHBhNTU=
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,7 +30,10 @@ spec: # https://mariadb.org/start-mariadb-in-k8s/
         - name: MARIADB_ALLOW_EMPTY_ROOT_PASSWORD
           value: "1" # if it is 1 and root_password is set, 
         - name: MARIADB_ROOT_PASSWORD
-          value: r00tpa55
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secrets
+              key: db_root_password
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: jsp_bookstoredata-pvc
