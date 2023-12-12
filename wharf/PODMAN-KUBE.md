@@ -18,22 +18,20 @@ PS C:\Users\sjfke> podman build --tag localhost/tomcat-containers_bookstore --sq
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down
 ```
 
-## Using Docker compose
+## Using Docker compose file
 
 * Deprecated [Compose file version 1](https://docs.docker.com/compose/compose-file/compose-versioning/#version-1-deprecated)
 * [Compose file version 2 reference](https://docs.docker.com/compose/compose-file/compose-file-v2/)
 * [Compose file version 3 reference](https://docs.docker.com/compose/compose-file/compose-file-v3/)
 * [Github: podman-compose](https://github.com/containers/podman-compose)
 
-The `podman-compose` command is a Python script, which supports a subset of [docker compose](https://docs.docker.com/compose/compose-file/03-compose-file/) files.
+The `podman-compose` command is a Python script, which supports a subset of [docker compose](https://docs.docker.com/compose/compose-file/03-compose-file/) files, but is not intended as a *plug-in* replacement. It is better to use `podman kube generate` and `podman kube play`, for more details see [Podman Compose or Docker Compose: Which should you use in Podman?](https://www.redhat.com/sysadmin/podman-compose-docker-compose)
 
-It is not intended as a *plug-in* replacement, it is better to use `podman kube generate` and `podman kube play`, for more details see [Podman Compose or Docker Compose: Which should you use in Podman?](https://www.redhat.com/sysadmin/podman-compose-docker-compose)
+The results of running `podman kube generate` are stored in [generated](./wharf/Podman/generated) folder.
+To be able to use, some manual editing of the *label* and *name* attributes is needed.
 
-The results of running `podman kube generate` results are stored in [generated](./wharf/Podman/generated) folder. To be able to use some manual editing of the *label* and *name* attributes is needed.
-
-Like `docker compose` this will generate missing images from the local `Dockerfile` or `Containerfile`.
-
-Manually building the `Bookstore` build requires `--tag` and optionally the `--squash` the image’s new layers into a single new layer.
+Like `docker compose`, `podman-compose` will generate missing images from the `Dockerfile` or `Containerfile` in the current folder.
+To illustrate this two example `podman-compose` are shown, the first manually build the `Bookstore` image, using `--tag` to supply the name and `--squash` to merge the image’s new layers into a single new layer.
 
 ### Manual build
 
@@ -50,7 +48,7 @@ docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  10 mo
 
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml up -d
 
-PS C:\Users\sjfke> podman image list
+PS C:\Users\sjfke> podman image list -a
 REPOSITORY                             TAG                   IMAGE ID      CREATED         SIZE
 localhost/tomcat-containers_bookstore  latest                a92421f59491  26 minutes ago  489 MB
 docker.io/library/mariadb              latest                f8c340abd40f  8 days ago      411 MB
@@ -130,8 +128,6 @@ docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  10 mo
 
 To demonstrate the `podman kube generate` all the files in the [generated](./wharf/Podman/generated) folder where created as show below.
 
-The files in the [inspect](./wharf/Podman/inspect) folder were collected at the same time.
-
 ```console
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml up -d
 
@@ -157,7 +153,87 @@ Error: generating YAML: invalid generation type - only pods and deployments are 
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down
 ```
 
+The files in the [inspect](./wharf/Podman/inspect) folder were collected at the same time as the `podman kube generate` files were generated.
+
 While this provides an informative starting point, it is cleaner to write the `podman kube play` YAML files from scratch using the output gathered here as a reference source.
+
+Using `podman-compose` will create the `jspnet` but called `tomcat-containers_jspnet`, and this is not deleted by the `podman-compose -f .\compose.yaml down`, so it needs to be manually removed.
+
+```console
+PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet
+```
+
+## Using Kubernetes files
+
+* [How to deploy a Flask API in Kubernetes](https://www.vantage-ai.com/blog/deploy-a-flask-api-in-kubernetes)
+
+First step is to create the `jspnet` to isolate the work from `podman-default-kube-network`
+
+```console
+PS C:\Users\sjfke> podman network ls                                   # what networks exist?
+
+PS C:\Users\sjfke> podman network inspect podman-default-kube-network  # network details
+PS C:\Users\sjfke> podman inspect podman-default-kube-network          # 'network' keyword is optional
+
+PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet          # remove podman-compose network
+PS C:\Users\sjfke> podman network create jspnet                        # create jspnet with the defaults
+PS C:\Users\sjfke> podman network inspect jspnet                       # what was created
+```
+
+### Base64 encode/decode
+
+To demonstrate using a `secret`, you need to be able to Base64 encode/decode the database password.
+
+#### Using Git Bash or any `wsl` installed UNIX shell
+
+```console
+$ echo -n r00tpa55 | base64
+cjAwdHBhNTU=
+
+$ echo -n cjAwdHBhNTU=| base64 -d
+r00tpa55
+```
+
+#### In Python, the string needs to be converted to bytes then base64 bytes
+
+```python
+>>> import base64
+>>> _bites = "r00tpa55".encode("ascii")
+>>> _b64bytes = base64.b64encode(_bites)
+>>> print(_b64bytes.decode("ascii"))
+cjAwdHBhNTU=
+
+>>> import base64
+>>> _bites = "cjAwdHBhNTU=".encode("ascii")
+>>> _b64bytes = base64.b64decode(_bites)
+>>> print(_b64bytes.decode("ascii"))
+r00tpa55
+```
+
+#### Using PowerShell will not provide a UNIX compatible string.
+
+***NEED TO CHECK***
+
+```console
+PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("r00tpa55"))
+cgAwADAAdABwAGEANQA1AA==
+
+PS C:\Users\sjfke> [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('cgAwADAAdABwAGEANQA1AA=='))
+r00tpa55
+```
+
+### Deploying
+
+```console
+PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml                      # podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml                  # podman-default-kube-network
+
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deployment.yaml     # jspnet
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # jspnet
+
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
+PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
+```
 
 ## Useful references
 
