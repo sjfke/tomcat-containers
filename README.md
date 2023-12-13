@@ -1,9 +1,8 @@
-:github_url: https://github.com/sjfke/tomcat-containers/README.md
+# tomcat-containers - [edit on Github](https://github.com/sjfke/tomcat-containers/#readme)
 
-# tomcat-containers
 Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using MariaDB
 
-# Project Objectives
+## Project Objectives
 
 The aim is to deploy a tomcat application that uses MariaDB in a containerized environment.
 
@@ -12,21 +11,21 @@ The working docker-desktop implementation based on docker-compose with then be [
 
 The tomcat application is an implementation of [CodeJava Tutorial - JSP Servlet JDBC MySQL Create Read Update Delete (CRUD) Example](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
-# Project Organization
+## Project Organization
 
-## Wharf - where are the containerization information is stored.
+### Wharf - where are the containerization information is stored
 
 > Wharf
 >> A platform along the side of a waterfront for docking, loading, and unloading ships
 
-## Wharf Documentation Organization
+### Wharf Documentation Organization
 
 * [BUILD](./wharf/BUILD.md)  - Notes on setup and build within Eclipse, plus corrections to the `CodeJava Tutorial`.
 * [DOCKER](./wharf/DOCKER.md) - Notes on how to build and deploy using Docker, Docker Compose.
 * [MAVEN](./wharf/MAVEN.md)  - Notes on how to build using Maven inside Eclipse and deploy.
 * [PODMAN](./wharf/PODMAN.md)  - Notes on how to build using Maven inside Eclipse and deploy.
 
-```
+```text
 C:\USERS\SJFKE\TOMCAT-CONTAINERS\WHARF
 │   BUILD_ME.md
 │   DOCKER_ME.md
