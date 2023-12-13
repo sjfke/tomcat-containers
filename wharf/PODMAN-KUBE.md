@@ -210,29 +210,43 @@ cjAwdHBhNTU=
 r00tpa55
 ```
 
-#### Using PowerShell will not provide a UNIX compatible string.
-
-***NEED TO CHECK***
+#### Using PowerShell will not provide a UNIX compatible string
 
 ```console
+# ASCII - UNIX compatible
+PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("r00tpa55"))
+cjAwdHBhNTU=
+PS C:\Users\sjfke> [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('cjAwdHBhNTU='))
+r00tpa55
+
+# UNICODE version, Windows only
 PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("r00tpa55"))
 cgAwADAAdABwAGEANQA1AA==
-
 PS C:\Users\sjfke> [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('cgAwADAAdABwAGEANQA1AA=='))
 r00tpa55
 ```
 
-### Deploying
+### Building and Deploying
 
 ```console
+PS C:\Users\sjfke> podman build --tag localhost/bookstore:latest --squash -f .\Dockerfile
+
+PS C:\Users\sjfke> podman image list -a **** CHECK ME ****
+REPOSITORY                             TAG                   IMAGE ID      CREATED         SIZE
+localhost/tomcat-containers_bookstore  latest                ac5831c2ddf8  18 seconds ago  489 MB
+docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  10 months ago   482 MB
+
 PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml                      # podman-default-kube-network
 PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml                  # podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\bookstore-deployment.yaml                    # podman-default-kube-network
 
 PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deployment.yaml     # jspnet
 PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # jspnet
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-deployment.yaml   # jspnet
 
 PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
 PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
+PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml                   # network name optional
 ```
 
 ## Useful references
