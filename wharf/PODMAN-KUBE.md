@@ -5,6 +5,7 @@ The `podman-compose` command is a Python script, which for me is installed in a 
 * [Podman Commands](https://docs.podman.io/en/v4.2/Commands.html)
 * [Podman: Tutorials](https://docs.podman.io/en/latest/Tutorials.html)
 * [Podman: Python scripting for Podman services](https://podman-py.readthedocs.io/en/latest/index.html)
+* [Github: Containers/Podman](https://github.com/containers/podman/releases)
 
 Some useful commands
 
@@ -25,7 +26,7 @@ PS C:\Users\sjfke> podman build --tag localhost/tomcat-containers_bookstore --sq
 * [Compose file version 3 reference](https://docs.docker.com/compose/compose-file/compose-file-v3/)
 * [Github: podman-compose](https://github.com/containers/podman-compose)
 
-The `podman-compose` command is a Python script, which supports a subset of [docker compose](https://docs.docker.com/compose/compose-file/03-compose-file/) files, but is not intended as a *plug-in* replacement. It is better to use `podman kube generate` and `podman kube play`, for more details see [Podman Compose or Docker Compose: Which should you use in Podman?](https://www.redhat.com/sysadmin/podman-compose-docker-compose)
+The `podman-compose` command is a Python script, which supports a subset of [docker compose](https://docs.docker.com/compose/compose-file/03-compose-file/) files, but is not intended as a *plug-in* replacement. It is better to use `podman kube play`, for more details see [Podman Compose or Docker Compose: Which should you use in Podman?](https://www.redhat.com/sysadmin/podman-compose-docker-compose)
 
 The results of running `podman kube generate` are stored in [generated](./wharf/Podman/generated) folder.
 To be able to use, some manual editing of the *label* and *name* attributes is needed.
@@ -231,10 +232,15 @@ r00tpa55
 ```console
 PS C:\Users\sjfke> podman build --tag localhost/bookstore:latest --squash -f .\Dockerfile
 
-PS C:\Users\sjfke> podman image list -a **** CHECK ME ****
-REPOSITORY                             TAG                   IMAGE ID      CREATED         SIZE
-localhost/tomcat-containers_bookstore  latest                ac5831c2ddf8  18 seconds ago  489 MB
-docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  10 months ago   482 MB
+PS C:\Users\sjfke> podman image list --all
+REPOSITORY                TAG                   IMAGE ID      CREATED         SIZE
+localhost/bookstore       latest                e59e14df9f4b  50 seconds ago  489 MB
+docker.io/library/tomcat  9.0.71-jdk17-temurin  b07e16b11088  10 months ago   482 MB
+
+PS C:\Users\sjfke> podman kube play .\secrets.yaml
+PS C:\Users\sjfke> podman secret list
+ID                         NAME               DRIVER      CREATED         UPDATED
+8f41fa6116bbd7696d791ea84  bookstore-secrets  file        15 minutes ago  15 minutes ago
 
 PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml                      # podman-default-kube-network
 PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml                  # podman-default-kube-network
@@ -246,7 +252,16 @@ PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-deploym
 
 PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
 PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
-PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml                   # network name optional
+PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml                     # network name optional
+```
+
+Once you are done, do not forget the **final clean up***
+
+```console
+PS C:\Users\sjfke> podman secret list
+PS C:\Users\sjfke> podman secret rm bookstore-secrets
+PS C:\Users\sjfke> podman volume list
+PS C:\Users\sjfke> podman volume rm jsp_bookstoredata
 ```
 
 ## Useful references
@@ -256,4 +271,6 @@ PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml          
 * [Remove - containers and pods based on Kubernetes YAML](https://docs.podman.io/en/latest/markdown/podman-kube-down.1.html)
 * [Generate - Kubernetes YAML containers, pods or volumes](https://docs.podman.io/en/latest/markdown/podman-kube-generate.1.html)
 * [Create - containers, pods and volumes based on Kubernetes YAML](https://docs.podman.io/en/latest/markdown/podman-kube-play.1.html)
+* [Openshift API Index](https://docs.openshift.com/container-platform/4.14/rest_api/index.html) may need to Openshift version
+* [Kubernetes API Overview](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/)
 * [Kubernetes Deployment YAML: Learn by Example](https://codefresh.io/learn/kubernetes-deployment/kubernetes-deployment-yaml/)

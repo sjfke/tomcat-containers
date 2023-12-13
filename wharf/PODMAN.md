@@ -82,6 +82,10 @@ sjfke@host:/mnt/c/Users/sjfke$ exit
 3. Reboot (otherwise 'podman' is not in your path)
 ```
 
+> #### Information
+>
+> `Podman` updates are frequent, so regularly check [podman releases](https://github.com/containers/podman/releases)
+>
 > #### Warning
 >
 > Do not `podman machine set --rootful` because this breaks `podman build`
