@@ -17,8 +17,7 @@ spec:
     spec:
       containers:
         - name: bookstore
-          image: localhost/bookstore:latest
-          imagePullPolicy: Always
+          image: localhost/bookstore # DO NOT use a TAG, the pull will fail
           ports:
             - containerPort: 8080
               hostPort: 8080
