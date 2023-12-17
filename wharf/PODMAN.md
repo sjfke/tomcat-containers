@@ -488,3 +488,9 @@ PS C:\Users\sjfke> wsl --list --verbose
   docker-desktop         Stopped         2
   docker-desktop-data    Stopped         2
 ```
+
+## Podman Backend
+
+* [Eclipse Docker Tooling](https://marketplace.eclipse.org/content/eclipse-docker-tooling)
+* [run eclipse docker tooling with Podman backend on Windows](https://stackoverflow.com/questions/74291646/run-eclipse-docker-tooling-with-podman-backend-on-windows)
+* [Re: Using Eclipse with Podman Engine on Linux](https://lists.podman.io/archives/list/podman@lists.podman.io/message/W26TZQLT5CA6XG5FGMWR7Z6CASTPFYDP/)
