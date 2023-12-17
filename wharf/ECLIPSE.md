@@ -8,16 +8,16 @@ Eclipse set up for [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using 
 
 Download and install
 
-* [Eclipse Installer 2022-12 R](https://www.eclipse.org/downloads/packages/installer)
+* [Eclipse Installer 2023-12 R](https://www.eclipse.org/downloads/packages/installer)
 * [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages/release/2022-12/r/eclipse-ide-enterprise-java-and-web-developers)
 
 Install Eclipse Marketplace plugins
 
 * Java and Web Developer Tools 3.30, accepting the defaults, restart
-`Help` > `Eclipse Marketplace` > `Popular` > `Eclipse Java and Web Developer Tools 3.30`
+`Help` > `Eclipse Marketplace` > `Popular` > `Eclipse Java and Web Developer Tools 3.31`
 
-* LiClipseText 2.4.0, accepting the defaults, restart
-`Help` > `Eclipse Marketplace` > `Search` > `LiClipseText 2.4.0`
+* LiClipseText 2.5.0, accepting the defaults, restart
+`Help` > `Eclipse Marketplace` > `Search` > `LiClipseText`
 
 * Markdown Text Editor 1.2.0, accepting the defaults, restart
 `Help` > `Eclipse Marketplace` > `Search` > `Markdown Text Editor 1.2.0`
