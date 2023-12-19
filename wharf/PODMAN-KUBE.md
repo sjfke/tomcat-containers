@@ -232,55 +232,44 @@ Unlike the `Docker` original where the database password is *hard-coded*, it is 
 
 The documentation covers using the `Secret` approach which uses a standalone `secrets.yaml` file, but it is also possible to do this with a `configMap` which can only be specified in the `bookstoredb-configmap-deployment.yaml` file.
 
-The following section and sub-sections offer some ways of `base64` encode and decode the database password on a Windows platform.
-
-### Base64 encode/decode
-
-To demonstrate using a `secret`, you need to be able to Base64 encode/decode the database password.
-
-#### Using Git Bash, any `wsl` installed UNIX shell or a `Busybox` container image
+Note to create the [secrets.yaml](./Podman/secrets.yaml) file you need [base64](#base64-encodedecode) the `db_root_password` password.
+Having created the [secrets.yaml](./Podman/secrets.yaml) file, add it to `Podman`
 
 ```console
-$ echo -n r00tpa55 | base64
-cjAwdHBhNTU=
-
-$ echo -n cjAwdHBhNTU=| base64 -d
-r00tpa55
-```
-
-#### In Python, the string needs to be converted to bytes then base64 bytes
-
-```python
->>> import base64
->>> _bites = "r00tpa55".encode("ascii")
->>> _b64bytes = base64.b64encode(_bites)
->>> print(_b64bytes.decode("ascii"))
-cjAwdHBhNTU=
-
->>> import base64
->>> _bites = "cjAwdHBhNTU=".encode("ascii")
->>> _b64bytes = base64.b64decode(_bites)
->>> print(_b64bytes.decode("ascii"))
-r00tpa55
-```
-
-#### In PowerShell the string needs to be converted to bytes then base64 bytes
-
-```console
-# ASCII - UNIX compatible
-PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("r00tpa55"))
-cjAwdHBhNTU=
-PS C:\Users\sjfke> [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('cjAwdHBhNTU='))
-r00tpa55
-
-# UNICODE version, BE WARNED works on Windows only
-PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("r00tpa55"))
-cgAwADAAdABwAGEANQA1AA==
-PS C:\Users\sjfke> [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('cgAwADAAdABwAGEANQA1AA=='))
-r00tpa55
+PS C:\Users\sjfke> podman kube play secrets.yaml
+PS C:\Users\sjfke> podman secret list
+PS C:\Users\sjfke> podman secret inspect bookstore-secrets
+[
+    {
+        "ID": "8f41fa6116bbd7696d791ea84",
+        "CreatedAt": "2023-12-13T16:36:16.035042384+01:00",
+        "UpdatedAt": "2023-12-13T16:36:16.035042384+01:00",
+        "Spec": {
+            "Name": "bookstore-secrets",
+            "Driver": {
+                "Name": "file",
+                "Options": {
+                    "path": "/home/user/.local/share/containers/storage/secrets/filedriver"
+                }
+            },
+            "Labels": {}
+        }
+    }
+]
 ```
 
 ### Building and Deploying
+
+To build and deploy the application, the following files were used
+
+1. [Dockerfile](./Podman/Dockerfile)
+2. [adminer-deployment.yaml](./Podman/adminer-deployment.yaml)
+3. [bookstoredb-deployment.yaml](./Podman/bookstoredb-deployment.yaml)
+4. [bookstore-deployment.yaml](./Podman/bookstore-deployment.yaml)
+
+YAML file (3) `bookstoredb-deployment.yaml`, requires that the `secret` and `volume` from [Using Kubernetes files](#using-kubernetes-files) have been created.
+
+YAML files (2), (3), (4) used by the `podman play kube --start` commands, must use the ***same network***, either the `jspnet` network created in [Using Kubernetes files](#using-kubernetes-files) or the default `podman-default-kube-network`.
 
 ```console
 PS C:\Users\sjfke> podman build --tag localhost/bookstore:latest --squash -f .\Dockerfile
@@ -317,9 +306,6 @@ PS C:\Users\sjfke> podman volume list
 PS C:\Users\sjfke> podman volume rm jsp_bookstoredata
 ```
 
-* [How to deploy a Flask API in Kubernetes](https://www.vantage-ai.com/blog/deploy-a-flask-api-in-kubernetes)
-
-
 ## Useful references
 
 * [Overview - Containers, pods or volumes based on the input from YAML file](https://docs.podman.io/en/latest/markdown/podman-kube.1.html)
@@ -327,6 +313,52 @@ PS C:\Users\sjfke> podman volume rm jsp_bookstoredata
 * [Remove - containers and pods based on Kubernetes YAML](https://docs.podman.io/en/latest/markdown/podman-kube-down.1.html)
 * [Generate - Kubernetes YAML containers, pods or volumes](https://docs.podman.io/en/latest/markdown/podman-kube-generate.1.html)
 * [Create - containers, pods and volumes based on Kubernetes YAML](https://docs.podman.io/en/latest/markdown/podman-kube-play.1.html)
-* [Openshift API Index](https://docs.openshift.com/container-platform/4.14/rest_api/index.html) may need to Openshift version
+* [Openshift API Index](https://docs.openshift.com/container-platform/4.14/rest_api/index.html) may need to change `4.14` to a current Openshift version
 * [Kubernetes API Overview](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/)
 * [Kubernetes Deployment YAML: Learn by Example](https://codefresh.io/learn/kubernetes-deployment/kubernetes-deployment-yaml/)
+
+## Base64 encode/decode
+
+How to create a [base64](https://en.wikipedia.org/wiki/Base64) encoded string on Windows.
+
+### Using Git Bash, any `wsl` UNIX shell or a `Busybox` container image
+
+```console
+$ echo -n r00tpa55 | base64
+cjAwdHBhNTU=
+
+$ echo -n cjAwdHBhNTU=| base64 -d
+r00tpa55
+```
+
+### In Python, the string needs to be converted to ASCII then base64 bytes
+
+```python
+>>> import base64
+>>> _ascii = "r00tpa55".encode("ascii")
+>>> _b64bytes = base64.b64encode(_ascii)
+>>> print(_b64bytes.decode("ascii"))
+cjAwdHBhNTU=
+
+>>> import base64
+>>> _ascii = "cjAwdHBhNTU=".encode("ascii")
+>>> _b64bytes = base64.b64decode(_ascii)
+>>> print(_b64bytes.decode("ascii"))
+r00tpa55
+```
+
+### In PowerShell the string needs to be converted to ASCII then base64 bytes
+
+```console
+# ASCII - UNIX compatible
+PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("r00tpa55"))
+cjAwdHBhNTU=
+PS C:\Users\sjfke> [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('cjAwdHBhNTU='))
+r00tpa55
+
+# UNICODE version, BE WARNED works on Windows only
+PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("r00tpa55"))
+cgAwADAAdABwAGEANQA1AA==
+PS C:\Users\sjfke> [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('cgAwADAAdABwAGEANQA1AA=='))
+r00tpa55
+```
