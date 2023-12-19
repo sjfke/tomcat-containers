@@ -10,6 +10,8 @@ The `podman-compose` command is a Python script, which for me is installed in a 
 Some useful commands
 
 ```console
+PS C:\Users\sjfke> podman network ls            # list all networks (NB 'list' no-work)
+PS C:\Users\sjfke> podman volume list           # list all volumes
 PS C:\Users\sjfke> podman image list [-a]       # list all images (alias: podman images)
 PS C:\Users\sjfke> podman image prune           # remove all 'dangling' images
 PS C:\Users\sjfke> podman image rm 720ca5299f68 # delete image by id (alias: podman rmi)
@@ -166,9 +168,11 @@ PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet
 
 ## Using Kubernetes files
 
-* [How to deploy a Flask API in Kubernetes](https://www.vantage-ai.com/blog/deploy-a-flask-api-in-kubernetes)
+Using `podman-compose` allows you to use your `Docker compose` file, to deploy your containers, inspect and generate Kubernetes YAML files from them.
 
-First step is to create the `jspnet` to isolate the work from `podman-default-kube-network`
+However it is probably cleaner to start directly from the Kubernetes YAML files, but to be consistent with the `compose.yaml` by using the same **network** and the **physical volume**, because they do not need to be modified as part of the development.
+
+First create the `jspnet`, [podman-network-create - Create a Podman CNI network](https://docs.podman.io/en/v3.2.0/markdown/podman-network-create.1.html) to isolate the work from `podman-default-kube-network` and remove the `tomcat-containers_jspnet` network which may have been created using `podman-compose`
 
 ```console
 PS C:\Users\sjfke> podman network ls                                   # what networks exist?
@@ -179,55 +183,93 @@ PS C:\Users\sjfke> podman inspect podman-default-kube-network          # 'networ
 PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet          # remove podman-compose network
 PS C:\Users\sjfke> podman network create jspnet                        # create jspnet with the defaults
 PS C:\Users\sjfke> podman network inspect jspnet                       # what was created
+[
+     {
+          "name": "jspnet",
+          "id": "65ae91d5af3205c1407eed6a74c8fb73d0b8165f9dbb5e16e41281441e07c22f",
+          "driver": "bridge",
+          "network_interface": "podman3",
+          "created": "2023-12-12T17:05:52.13265508+01:00",
+          "subnets": [
+               {
+                    "subnet": "10.89.2.0/24",
+                    "gateway": "10.89.2.1"
+               }
+          ],
+          "ipv6_enabled": false,
+          "internal": false,
+          "dns_enabled": true,
+          "ipam_options": {
+               "driver": "host-local"
+          }
+     }
+]
 ```
 
-### Base64 encode/decode
-
-To demonstrate using a `secret`, you need to be able to Base64 encode/decode the database password.
-
-#### Using Git Bash or any `wsl` installed UNIX shell
+Next step would be to create the `jsp_bookstoredata` volume, see [podman-volume-create - Create a new volume](https://docs.podman.io/en/v3.2.0/markdown/podman-volume-create.1.html), but this was created and populated in the [PODMAN, Application Specific Setup](./PODMAN.md#application-specific-setup).
 
 ```console
-$ echo -n r00tpa55 | base64
-cjAwdHBhNTU=
-
-$ echo -n cjAwdHBhNTU=| base64 -d
-r00tpa55
+PS C:\Users\sjfke> podman volume list
+PS C:\Users\sjfke> podman volume create jsp_bookstoredata
+PS C:\Users\sjfke> podman volume inspect jsp_bookstoredata
+[
+     {
+          "Name": "jsp_bookstoredata",
+          "Driver": "local",
+          "Mountpoint": "/home/user/.local/share/containers/storage/volumes/jsp_bookstoredata/_data",
+          "CreatedAt": "2023-08-17T10:27:14.459352827+02:00",
+          "Labels": {},
+          "Scope": "local",
+          "Options": {},
+          "MountCount": 0,
+          "NeedsCopyUp": true,
+          "LockNumber": 0
+     }
+]
 ```
 
-#### In Python, the string needs to be converted to bytes then base64 bytes
+Unlike the `Docker` original where the database password is *hard-coded*, it is possible to do this with a `Kubernetes Secret or ConfigMap`.
 
-```python
->>> import base64
->>> _bites = "r00tpa55".encode("ascii")
->>> _b64bytes = base64.b64encode(_bites)
->>> print(_b64bytes.decode("ascii"))
-cjAwdHBhNTU=
+The documentation covers using the `Secret` approach which uses a standalone `secrets.yaml` file, but it is also possible to do this with a `configMap` which can only be specified in the `bookstoredb-configmap-deployment.yaml` file.
 
->>> import base64
->>> _bites = "cjAwdHBhNTU=".encode("ascii")
->>> _b64bytes = base64.b64decode(_bites)
->>> print(_b64bytes.decode("ascii"))
-r00tpa55
-```
-
-#### Using PowerShell will not provide a UNIX compatible string
+Note to create the [secrets.yaml](./Podman/secrets.yaml) file you need [base64](#base64-encodedecode) the `db_root_password` password.
+Having created the [secrets.yaml](./Podman/secrets.yaml) file, add it to `Podman`
 
 ```console
-# ASCII - UNIX compatible
-PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("r00tpa55"))
-cjAwdHBhNTU=
-PS C:\Users\sjfke> [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('cjAwdHBhNTU='))
-r00tpa55
-
-# UNICODE version, Windows only
-PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("r00tpa55"))
-cgAwADAAdABwAGEANQA1AA==
-PS C:\Users\sjfke> [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('cgAwADAAdABwAGEANQA1AA=='))
-r00tpa55
+PS C:\Users\sjfke> podman kube play secrets.yaml
+PS C:\Users\sjfke> podman secret list
+PS C:\Users\sjfke> podman secret inspect bookstore-secrets
+[
+    {
+        "ID": "8f41fa6116bbd7696d791ea84",
+        "CreatedAt": "2023-12-13T16:36:16.035042384+01:00",
+        "UpdatedAt": "2023-12-13T16:36:16.035042384+01:00",
+        "Spec": {
+            "Name": "bookstore-secrets",
+            "Driver": {
+                "Name": "file",
+                "Options": {
+                    "path": "/home/user/.local/share/containers/storage/secrets/filedriver"
+                }
+            },
+            "Labels": {}
+        }
+    }
+]
 ```
 
 ### Building and Deploying
+
+To build and deploy the application, the following files were used
+
+1. [Dockerfile](./Podman/Dockerfile)
+2. [adminer-deployment.yaml](./Podman/adminer-deployment.yaml)
+3. [bookstoredb-deployment.yaml](./Podman/bookstoredb-deployment.yaml)
+4. [bookstore-deployment.yaml](./Podman/bookstore-deployment.yaml)
+
+YAML file (3) `bookstoredb-deployment.yaml`, requires that the `secret` and `volume` from [Using Kubernetes files](#using-kubernetes-files) have been created.
+
+YAML files (2), (3), (4) used by the `podman play kube --start` commands, must use the ***same network***, either the `jspnet` network created in [Using Kubernetes files](#using-kubernetes-files) or the default `podman-default-kube-network`.
 
 ```console
 PS C:\Users\sjfke> podman build --tag localhost/bookstore:latest --squash -f .\Dockerfile
@@ -271,6 +313,52 @@ PS C:\Users\sjfke> podman volume rm jsp_bookstoredata
 * [Remove - containers and pods based on Kubernetes YAML](https://docs.podman.io/en/latest/markdown/podman-kube-down.1.html)
 * [Generate - Kubernetes YAML containers, pods or volumes](https://docs.podman.io/en/latest/markdown/podman-kube-generate.1.html)
 * [Create - containers, pods and volumes based on Kubernetes YAML](https://docs.podman.io/en/latest/markdown/podman-kube-play.1.html)
-* [Openshift API Index](https://docs.openshift.com/container-platform/4.14/rest_api/index.html) may need to Openshift version
+* [Openshift API Index](https://docs.openshift.com/container-platform/4.14/rest_api/index.html) may need to change `4.14` to a current Openshift version
 * [Kubernetes API Overview](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/)
 * [Kubernetes Deployment YAML: Learn by Example](https://codefresh.io/learn/kubernetes-deployment/kubernetes-deployment-yaml/)
+
+## Base64 encode/decode
+
+How to create a [base64](https://en.wikipedia.org/wiki/Base64) encoded string on Windows.
+
+### Using Git Bash, any `wsl` UNIX shell or a `Busybox` container image
+
+```console
+$ echo -n r00tpa55 | base64
+cjAwdHBhNTU=
+
+$ echo -n cjAwdHBhNTU=| base64 -d
+r00tpa55
+```
+
+### In Python, the string needs to be converted to ASCII then base64 bytes
+
+```python
+>>> import base64
+>>> _ascii = "r00tpa55".encode("ascii")
+>>> _b64bytes = base64.b64encode(_ascii)
+>>> print(_b64bytes.decode("ascii"))
+cjAwdHBhNTU=
+
+>>> import base64
+>>> _ascii = "cjAwdHBhNTU=".encode("ascii")
+>>> _b64bytes = base64.b64decode(_ascii)
+>>> print(_b64bytes.decode("ascii"))
+r00tpa55
+```
+
+### In PowerShell the string needs to be converted to ASCII then base64 bytes
+
+```console
+# ASCII - UNIX compatible
+PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("r00tpa55"))
+cjAwdHBhNTU=
+PS C:\Users\sjfke> [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('cjAwdHBhNTU='))
+r00tpa55
+
+# UNICODE version, BE WARNED works on Windows only
+PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("r00tpa55"))
+cgAwADAAdABwAGEANQA1AA==
+PS C:\Users\sjfke> [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('cgAwADAAdABwAGEANQA1AA=='))
+r00tpa55
+```

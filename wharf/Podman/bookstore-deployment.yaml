@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: bookstore
-          image: localhost/bookstore # DO NOT use a TAG, the pull will fail
+          image: localhost/bookstore # to use the local image DO NOT use a TAG
           ports:
             - containerPort: 8080
               hostPort: 8080
