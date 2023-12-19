@@ -1,13 +1,169 @@
 # Podman Kube for tomcat-containers
 
-The `podman-compose` command is a Python script, which for me is installed in a `virtualenv`.
+This document describes
+
+* `podman-compose` - a Python script supporting a subset of [docker compose](https://docs.docker.com/compose/compose-file/03-compose-file/)
+* `podman kube` - support for a subset of the Kubernetes API YAML files
+
+The `podman-compose` Python script is intended as a convenience method for importing a `Docker Compose` configuration into `Podman`, from which the Kubernetes API YAML files can be generated for use with `podman kube`
+
+## Using Kubernetes Files
+
+While `podman-compose` allows you to use your `Docker compose` file, to deploy your containers, inspect and generate Kubernetes YAML files from them, it is probably cleaner to start directly from the Kubernetes YAML files.
+
+To be consistent with the `compose.yaml` the same ***network name*** and ***physical volume***, are used. They do not need to be modified as part of the development cycle so are setup in the [prerequisites](#prerequisites-for-kubernetes-files)
+
+### Prerequisites for Kubernetes Files
+
+First create the `jspnet`, [podman-network-create - Create a Podman CNI network](https://docs.podman.io/en/v3.2.0/markdown/podman-network-create.1.html) to isolate the work from `podman-default-kube-network` and remove the `tomcat-containers_jspnet` network which may have been created using `podman-compose`
+
+```console
+PS C:\Users\sjfke> podman network ls                                   # what networks exist?
+
+PS C:\Users\sjfke> podman network inspect podman-default-kube-network  # network details
+PS C:\Users\sjfke> podman inspect podman-default-kube-network          # 'network' keyword is optional
+
+PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet          # remove podman-compose network
+PS C:\Users\sjfke> podman network create jspnet                        # create jspnet with the defaults
+PS C:\Users\sjfke> podman network inspect jspnet                       # what was created
+[
+     {
+          "name": "jspnet",
+          "id": "65ae91d5af3205c1407eed6a74c8fb73d0b8165f9dbb5e16e41281441e07c22f",
+          "driver": "bridge",
+          "network_interface": "podman3",
+          "created": "2023-12-12T17:05:52.13265508+01:00",
+          "subnets": [
+               {
+                    "subnet": "10.89.2.0/24",
+                    "gateway": "10.89.2.1"
+               }
+          ],
+          "ipv6_enabled": false,
+          "internal": false,
+          "dns_enabled": true,
+          "ipam_options": {
+               "driver": "host-local"
+          }
+     }
+]
+```
+
+Next step would be to create the `jsp_bookstoredata` volume, see [podman-volume-create - Create a new volume](https://docs.podman.io/en/v3.2.0/markdown/podman-volume-create.1.html), but this was created and populated in the [PODMAN, Application Specific Setup](./PODMAN.md#application-specific-setup).
+
+```console
+PS C:\Users\sjfke> podman volume list
+PS C:\Users\sjfke> podman volume create jsp_bookstoredata
+PS C:\Users\sjfke> podman volume inspect jsp_bookstoredata
+[
+     {
+          "Name": "jsp_bookstoredata",
+          "Driver": "local",
+          "Mountpoint": "/home/user/.local/share/containers/storage/volumes/jsp_bookstoredata/_data",
+          "CreatedAt": "2023-08-17T10:27:14.459352827+02:00",
+          "Labels": {},
+          "Scope": "local",
+          "Options": {},
+          "MountCount": 0,
+          "NeedsCopyUp": true,
+          "LockNumber": 0
+     }
+]
+```
+
+Unlike the `Docker Compose` original where the database password is *hard-coded*, it is possible to do this with a `Kubernetes Secret or ConfigMap`.
+
+The documentation covers using the `Secret` approach which uses a standalone `secrets.yaml` file, but it is also possible to do this with a `configMap` which can only be specified in the ***deployment*** file, see [bookstoredb-configmap-deployment.yaml](./Podman/bookstoredb-configmap-deployment.yaml)
+
+In order to create the [secrets.yaml](./Podman/secrets.yaml) file it is necessary to [base64](#base64-encodedecode) the `db_root_password` password, see [Base64 encode/decode](#base64-encodedecode)
+
+Having created the [secrets.yaml](./Podman/secrets.yaml) file, add it to `Podman`
+
+```console
+PS C:\Users\sjfke> podman kube play secrets.yaml
+PS C:\Users\sjfke> podman secret list
+PS C:\Users\sjfke> podman secret inspect bookstore-secrets
+[
+    {
+        "ID": "8f41fa6116bbd7696d791ea84",
+        "CreatedAt": "2023-12-13T16:36:16.035042384+01:00",
+        "UpdatedAt": "2023-12-13T16:36:16.035042384+01:00",
+        "Spec": {
+            "Name": "bookstore-secrets",
+            "Driver": {
+                "Name": "file",
+                "Options": {
+                    "path": "/home/user/.local/share/containers/storage/secrets/filedriver"
+                }
+            },
+            "Labels": {}
+        }
+    }
+]
+```
+
+### Building and Deploying
+
+To build and deploy the application, the following files were used
+
+1. [Dockerfile](./Podman/Dockerfile)
+2. [adminer-deployment.yaml](./Podman/adminer-deployment.yaml)
+3. [bookstoredb-deployment.yaml](./Podman/bookstoredb-deployment.yaml)
+4. [bookstore-deployment.yaml](./Podman/bookstore-deployment.yaml)
+
+File `bookstoredb-deployment.yaml`, (3), requires that the `secret` and `volume` that were created in [Using Kubernetes files](#using-kubernetes-files)
+
+All the YAML files, (2, 3, 4), used by the `podman play kube --start` commands, must use the ***same network***, either the `jspnet` network created in [Using Kubernetes files](#using-kubernetes-files) or the default `podman-default-kube-network`.
+
+```console
+PS C:\Users\sjfke> podman build --tag localhost/bookstore:latest --squash -f .\Dockerfile
+
+PS C:\Users\sjfke> podman image list --all
+REPOSITORY                TAG                   IMAGE ID      CREATED         SIZE
+localhost/bookstore       latest                e59e14df9f4b  50 seconds ago  489 MB
+docker.io/library/tomcat  9.0.71-jdk17-temurin  b07e16b11088  10 months ago   482 MB
+
+PS C:\Users\sjfke> podman kube play .\secrets.yaml
+PS C:\Users\sjfke> podman secret list
+ID                         NAME               DRIVER      CREATED         UPDATED
+8f41fa6116bbd7696d791ea84  bookstore-secrets  file        15 minutes ago  15 minutes ago
+
+PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml                      # podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml                  # podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\bookstore-deployment.yaml                    # podman-default-kube-network
+
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deployment.yaml     # jspnet
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # jspnet
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-deployment.yaml   # jspnet
+
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
+PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
+PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml                     # network name optional
+```
+
+Once you are done, do not forget the **final clean up***
+
+```console
+PS C:\Users\sjfke> podman secret list
+PS C:\Users\sjfke> podman secret rm bookstore-secrets
+PS C:\Users\sjfke> podman volume list
+PS C:\Users\sjfke> podman volume rm jsp_bookstoredata
+```
+
+## Support for Docker Compose
+
+The `podman-compose` command is a Python script, which for the author is installed in a `virtualenv`.
 
 * [Podman Commands](https://docs.podman.io/en/v4.2/Commands.html)
 * [Podman: Tutorials](https://docs.podman.io/en/latest/Tutorials.html)
 * [Podman: Python scripting for Podman services](https://podman-py.readthedocs.io/en/latest/index.html)
 * [Github: Containers/Podman](https://github.com/containers/podman/releases)
 
-Some useful commands
+Some useful commands.
+
+The prompt indicates if the command can only be executed inside the `virtualenv`.
+
+In practice it would be more normal to run all the commands inside the `virtualenv`.
 
 ```console
 PS C:\Users\sjfke> podman network ls            # list all networks (NB 'list' no-work)
@@ -21,7 +177,7 @@ PS C:\Users\sjfke> podman build --tag localhost/tomcat-containers_bookstore --sq
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down
 ```
 
-## Using Docker compose file
+### Using Docker compose file
 
 * Deprecated [Compose file version 1](https://docs.docker.com/compose/compose-file/compose-versioning/#version-1-deprecated)
 * [Compose file version 2 reference](https://docs.docker.com/compose/compose-file/compose-file-v2/)
@@ -36,7 +192,7 @@ To be able to use, some manual editing of the *label* and *name* attributes is n
 Like `docker compose`, `podman-compose` will generate missing images from the `Dockerfile` or `Containerfile` in the current folder.
 To illustrate this two example `podman-compose` are shown, the first manually build the `Bookstore` image, using `--tag` to supply the name and `--squash` to merge the image’s new layers into a single new layer.
 
-### Manual build
+#### Manual build
 
 ```console
 PS C:\Users\sjfke> podman image list -a
@@ -69,7 +225,7 @@ PS C:\Users\sjfke> start http://localhost:8081              # Adminer
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down
 ```
 
-### Compose build
+#### Compose build
 
 ```console
 PS C:\Users\sjfke> podman image list --all
@@ -164,146 +320,6 @@ Using `podman-compose` will create the `jspnet` but called `tomcat-containers_js
 
 ```console
 PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet
-```
-
-## Using Kubernetes files
-
-Using `podman-compose` allows you to use your `Docker compose` file, to deploy your containers, inspect and generate Kubernetes YAML files from them.
-
-However it is probably cleaner to start directly from the Kubernetes YAML files, but to be consistent with the `compose.yaml` by using the same **network** and the **physical volume**, because they do not need to be modified as part of the development.
-
-First create the `jspnet`, [podman-network-create - Create a Podman CNI network](https://docs.podman.io/en/v3.2.0/markdown/podman-network-create.1.html) to isolate the work from `podman-default-kube-network` and remove the `tomcat-containers_jspnet` network which may have been created using `podman-compose`
-
-```console
-PS C:\Users\sjfke> podman network ls                                   # what networks exist?
-
-PS C:\Users\sjfke> podman network inspect podman-default-kube-network  # network details
-PS C:\Users\sjfke> podman inspect podman-default-kube-network          # 'network' keyword is optional
-
-PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet          # remove podman-compose network
-PS C:\Users\sjfke> podman network create jspnet                        # create jspnet with the defaults
-PS C:\Users\sjfke> podman network inspect jspnet                       # what was created
-[
-     {
-          "name": "jspnet",
-          "id": "65ae91d5af3205c1407eed6a74c8fb73d0b8165f9dbb5e16e41281441e07c22f",
-          "driver": "bridge",
-          "network_interface": "podman3",
-          "created": "2023-12-12T17:05:52.13265508+01:00",
-          "subnets": [
-               {
-                    "subnet": "10.89.2.0/24",
-                    "gateway": "10.89.2.1"
-               }
-          ],
-          "ipv6_enabled": false,
-          "internal": false,
-          "dns_enabled": true,
-          "ipam_options": {
-               "driver": "host-local"
-          }
-     }
-]
-```
-
-Next step would be to create the `jsp_bookstoredata` volume, see [podman-volume-create - Create a new volume](https://docs.podman.io/en/v3.2.0/markdown/podman-volume-create.1.html), but this was created and populated in the [PODMAN, Application Specific Setup](./PODMAN.md#application-specific-setup).
-
-```console
-PS C:\Users\sjfke> podman volume list
-PS C:\Users\sjfke> podman volume create jsp_bookstoredata
-PS C:\Users\sjfke> podman volume inspect jsp_bookstoredata
-[
-     {
-          "Name": "jsp_bookstoredata",
-          "Driver": "local",
-          "Mountpoint": "/home/user/.local/share/containers/storage/volumes/jsp_bookstoredata/_data",
-          "CreatedAt": "2023-08-17T10:27:14.459352827+02:00",
-          "Labels": {},
-          "Scope": "local",
-          "Options": {},
-          "MountCount": 0,
-          "NeedsCopyUp": true,
-          "LockNumber": 0
-     }
-]
-```
-
-Unlike the `Docker` original where the database password is *hard-coded*, it is possible to do this with a `Kubernetes Secret or ConfigMap`.
-
-The documentation covers using the `Secret` approach which uses a standalone `secrets.yaml` file, but it is also possible to do this with a `configMap` which can only be specified in the `bookstoredb-configmap-deployment.yaml` file.
-
-Note to create the [secrets.yaml](./Podman/secrets.yaml) file you need [base64](#base64-encodedecode) the `db_root_password` password.
-Having created the [secrets.yaml](./Podman/secrets.yaml) file, add it to `Podman`
-
-```console
-PS C:\Users\sjfke> podman kube play secrets.yaml
-PS C:\Users\sjfke> podman secret list
-PS C:\Users\sjfke> podman secret inspect bookstore-secrets
-[
-    {
-        "ID": "8f41fa6116bbd7696d791ea84",
-        "CreatedAt": "2023-12-13T16:36:16.035042384+01:00",
-        "UpdatedAt": "2023-12-13T16:36:16.035042384+01:00",
-        "Spec": {
-            "Name": "bookstore-secrets",
-            "Driver": {
-                "Name": "file",
-                "Options": {
-                    "path": "/home/user/.local/share/containers/storage/secrets/filedriver"
-                }
-            },
-            "Labels": {}
-        }
-    }
-]
-```
-
-### Building and Deploying
-
-To build and deploy the application, the following files were used
-
-1. [Dockerfile](./Podman/Dockerfile)
-2. [adminer-deployment.yaml](./Podman/adminer-deployment.yaml)
-3. [bookstoredb-deployment.yaml](./Podman/bookstoredb-deployment.yaml)
-4. [bookstore-deployment.yaml](./Podman/bookstore-deployment.yaml)
-
-YAML file (3) `bookstoredb-deployment.yaml`, requires that the `secret` and `volume` from [Using Kubernetes files](#using-kubernetes-files) have been created.
-
-YAML files (2), (3), (4) used by the `podman play kube --start` commands, must use the ***same network***, either the `jspnet` network created in [Using Kubernetes files](#using-kubernetes-files) or the default `podman-default-kube-network`.
-
-```console
-PS C:\Users\sjfke> podman build --tag localhost/bookstore:latest --squash -f .\Dockerfile
-
-PS C:\Users\sjfke> podman image list --all
-REPOSITORY                TAG                   IMAGE ID      CREATED         SIZE
-localhost/bookstore       latest                e59e14df9f4b  50 seconds ago  489 MB
-docker.io/library/tomcat  9.0.71-jdk17-temurin  b07e16b11088  10 months ago   482 MB
-
-PS C:\Users\sjfke> podman kube play .\secrets.yaml
-PS C:\Users\sjfke> podman secret list
-ID                         NAME               DRIVER      CREATED         UPDATED
-8f41fa6116bbd7696d791ea84  bookstore-secrets  file        15 minutes ago  15 minutes ago
-
-PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml                      # podman-default-kube-network
-PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml                  # podman-default-kube-network
-PS C:\Users\sjfke> podman play kube --start .\bookstore-deployment.yaml                    # podman-default-kube-network
-
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deployment.yaml     # jspnet
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # jspnet
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-deployment.yaml   # jspnet
-
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
-PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
-PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml                     # network name optional
-```
-
-Once you are done, do not forget the **final clean up***
-
-```console
-PS C:\Users\sjfke> podman secret list
-PS C:\Users\sjfke> podman secret rm bookstore-secrets
-PS C:\Users\sjfke> podman volume list
-PS C:\Users\sjfke> podman volume rm jsp_bookstoredata
 ```
 
 ## Useful references
