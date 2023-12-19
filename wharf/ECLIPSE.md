@@ -20,13 +20,7 @@ Install Eclipse Marketplace plugins
 `Help` > `Eclipse Marketplace` > `Search` > `LiClipseText`
 
 * Markdown Text Editor 1.2.0, accepting the defaults, restart
-`Help` > `Eclipse Marketplace` > `Search` > `Markdown Text Editor 1.2.0`
-
-* m2e-connector for maven-remote-resources-plugin 0.0.1
-`Help` > `Eclipse Marketplace` > `Search` > `maven`
-
-* m2e-connector for maven-dependency-plugin 0.0.4
-`Help` > `Eclipse Marketplace` > `Search` > `maven`
+`Help` > `Eclipse Marketplace` > `Search` > `Markdown Text Editor`
 
 * Eclipse Docker Tooling 5.12.0.202309052024
 `Help` > `Eclipse Marketplace` > `Search` > `Docker Tooling`
