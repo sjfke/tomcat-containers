@@ -128,9 +128,12 @@ All the YAML files, (2, 3, 4), used by the `podman play kube --start` commands, 
 PS C:\Users\sjfke> podman build --tag localhost/bookstore:latest --squash -f .\Dockerfile
 
 PS C:\Users\sjfke> podman image list --all
-REPOSITORY                TAG                   IMAGE ID      CREATED         SIZE
-localhost/bookstore       latest                e59e14df9f4b  50 seconds ago  489 MB
-docker.io/library/tomcat  9.0.71-jdk17-temurin  b07e16b11088  10 months ago   482 MB
+REPOSITORY                 TAG                   IMAGE ID      CREATED        SIZE
+docker.io/library/adminer  latest                8485d1424e61  33 hours ago   258 MB
+docker.io/library/mariadb  latest                c74611c2858a  4 days ago     411 MB
+localhost/podman-pause     4.5.0-1681486976      2d395fdc32ec  6 days ago     1.09 MB
+localhost/bookstore        latest                e59e14df9f4b  6 days ago     489 MB
+docker.io/library/tomcat   9.0.71-jdk17-temurin  b07e16b11088  10 months ago  482 MB
 
 PS C:\Users\sjfke> podman kube play .\secrets.yaml
 PS C:\Users\sjfke> podman secret list
@@ -145,18 +148,20 @@ PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deploymen
 PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # jspnet
 PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-deployment.yaml   # jspnet
 
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
-PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
-PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml                     # network name optional
-
-# *** TO CHECK ***
 PS C:\Users\sjfke> podman ps -a --format "{{.ID}}\t{{.Names}}\t {{.Ports}}\t {{.Status}}\t {{.Image}}"
-62882d87dafc    tomcat-containers_bookstoredb_1  0.0.0.0:3306->3306/tcp  Up 21 minutes   docker.io/library/mariadb:latest
-73e91ba5b4b2    tomcat-containers_bookstore_1    0.0.0.0:8080->8080/tcp  Up 21 minutes   localhost/tomcat-containers_bookstore:latest
-df094bcea12a    tomcat-containers_adminer_1      0.0.0.0:8081->8080/tcp  Up 21 minutes   docker.io/library/adminer:latest
+473b28a5f228    6bbad1d1e7ff-infra       0.0.0.0:8081->8080/tcp  Up 2 minutes    localhost/podman-pause:4.5.0-1681486976
+959b5fd53929    adminer-pod-adminer      0.0.0.0:8081->8080/tcp  Up 2 minutes    docker.io/library/adminer:latest
+8c7ffd2caafb    5759a5265178-infra       0.0.0.0:3306->3306/tcp  Up 2 minutes    localhost/podman-pause:4.5.0-1681486976
+e9f8fdf3a4a5    bookstoredb-pod-bookstoredb      0.0.0.0:3306->3306/tcp  Up 2 minutes    docker.io/library/mariadb:latest
+3662396a7652    25f1e479a31f-infra       0.0.0.0:8080->8080/tcp  Up About a minute       localhost/podman-pause:4.5.0-1681486976
+4f08f26111db    bookstore-pod-bookstore  0.0.0.0:8080->8080/tcp  Up About a minute       localhost/bookstore:latest
 
 PS C:\Users\sjfke> start "http://localhost:8080/Bookstore"  # Bookstore Application
 PS C:\Users\sjfke> start http://localhost:8081              # Adminer
+
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
+PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
+PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml                     # network name optional
 ```
 
 Once you are done, do not forget the **final clean up**
