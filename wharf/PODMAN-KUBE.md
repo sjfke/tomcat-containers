@@ -2,20 +2,27 @@
 
 This document describes
 
-* `podman-compose` - a Python script supporting a subset of [docker compose](https://docs.docker.com/compose/compose-file/03-compose-file/)
-* `podman kube` - support for a subset of the Kubernetes API YAML files
+* `podman-compose` a Python script supporting a subset of [docker compose](https://docs.docker.com/compose/compose-file/03-compose-file/)
+* `podman play kube` support for a subset of the Kubernetes API YAML files
 
-The `podman-compose` Python script is intended as a convenience method for importing a `Docker Compose` configuration into `Podman`, from which the Kubernetes API YAML files can be generated for use with `podman kube`
+The `podman-compose` Python script is intended as a convenience for importing a `Docker Compose` configuration into `Podman`, from which the Kubernetes API YAML files can be generated for use with `podman play kube`
+
+## General Podman References
+
+* [Podman Commands](https://docs.podman.io/en/v4.2/Commands.html)
+* [Podman: Tutorials](https://docs.podman.io/en/latest/Tutorials.html)
+* [Podman: Python scripting for Podman services](https://podman-py.readthedocs.io/en/latest/index.html)
+* [Github: Containers/Podman](https://github.com/containers/podman/releases)
 
 ## Using Kubernetes Files
 
-While `podman-compose` allows you to use your `Docker compose` file, to deploy your containers, inspect and generate Kubernetes YAML files from them, it is probably cleaner to start directly from the Kubernetes YAML files.
+While `podman-compose` allows you to use your `Docker Compose` file, to deploy your containers, inspect and generate Kubernetes YAML files from them, it is probably cleaner to start directly from the Kubernetes YAML files.
 
-To be consistent with the `compose.yaml` the same ***network name*** and ***physical volume***, are used. They do not need to be modified as part of the development cycle so are setup in the [prerequisites](#prerequisites-for-kubernetes-files)
+To be consistent with the `compose.yaml`, the same ***network name*** and ***physical volume*** are used, these are setup in the [next section](#prerequisites-for-kubernetes-files)
 
 ### Prerequisites for Kubernetes Files
 
-First create the `jspnet`, [podman-network-create - Create a Podman CNI network](https://docs.podman.io/en/v3.2.0/markdown/podman-network-create.1.html) to isolate the work from `podman-default-kube-network` and remove the `tomcat-containers_jspnet` network which may have been created using `podman-compose`
+First create the `jspnet` network, see [podman-network-create - Create a Podman CNI network](https://docs.podman.io/en/v3.2.0/markdown/podman-network-create.1.html) to isolate the Bookstore application from the `podman-default-kube-network`, removing the `tomcat-containers_jspnet` network if it was created using `podman-compose`
 
 ```console
 PS C:\Users\sjfke> podman network ls                                   # what networks exist?
@@ -71,11 +78,13 @@ PS C:\Users\sjfke> podman volume inspect jsp_bookstoredata
 ]
 ```
 
-Unlike the `Docker Compose` original where the database password is *hard-coded*, it is possible to do this with a `Kubernetes Secret or ConfigMap`.
+The `Docker Compose` original uses a *hard-coded* database password, but with `podman play kube` it is possible to do this with a `Kubernetes Secret or ConfigMap`.
 
-The documentation covers using the `Secret` approach which uses a standalone `secrets.yaml` file, but it is also possible to do this with a `configMap` which can only be specified in the ***deployment*** file, see [bookstoredb-configmap-deployment.yaml](./Podman/bookstoredb-configmap-deployment.yaml)
+This documentation covers assumes using the `Secret` as a standalone `secrets.yaml` file.
 
-In order to create the [secrets.yaml](./Podman/secrets.yaml) file it is necessary to [base64](#base64-encodedecode) the `db_root_password` password, see [Base64 encode/decode](#base64-encodedecode)
+To use a `configMap`, which must be specified in the ***deployment*** file, see [bookstoredb-configmap-deployment.yaml](./Podman/bookstoredb-configmap-deployment.yaml)
+
+In order to create the [secrets.yaml](./Podman/secrets.yaml) file it is necessary to [base64](#base64-encodedecode) encode the `db_root_password` password, see [Base64 encode/decode](#base64-encodedecode) for how this can be done.
 
 Having created the [secrets.yaml](./Podman/secrets.yaml) file, add it to `Podman`
 
@@ -104,7 +113,7 @@ PS C:\Users\sjfke> podman secret inspect bookstore-secrets
 
 ### Building and Deploying
 
-To build and deploy the application, the following files were used
+To build and deploy the application, the following files are used
 
 1. [Dockerfile](./Podman/Dockerfile)
 2. [adminer-deployment.yaml](./Podman/adminer-deployment.yaml)
@@ -139,9 +148,18 @@ PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-deploym
 PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
 PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
 PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml                     # network name optional
+
+# *** TO CHECK ***
+PS C:\Users\sjfke> podman ps -a --format "{{.ID}}\t{{.Names}}\t {{.Ports}}\t {{.Status}}\t {{.Image}}"
+62882d87dafc    tomcat-containers_bookstoredb_1  0.0.0.0:3306->3306/tcp  Up 21 minutes   docker.io/library/mariadb:latest
+73e91ba5b4b2    tomcat-containers_bookstore_1    0.0.0.0:8080->8080/tcp  Up 21 minutes   localhost/tomcat-containers_bookstore:latest
+df094bcea12a    tomcat-containers_adminer_1      0.0.0.0:8081->8080/tcp  Up 21 minutes   docker.io/library/adminer:latest
+
+PS C:\Users\sjfke> start "http://localhost:8080/Bookstore"  # Bookstore Application
+PS C:\Users\sjfke> start http://localhost:8081              # Adminer
 ```
 
-Once you are done, do not forget the **final clean up***
+Once you are done, do not forget the **final clean up**
 
 ```console
 PS C:\Users\sjfke> podman secret list
@@ -152,18 +170,9 @@ PS C:\Users\sjfke> podman volume rm jsp_bookstoredata
 
 ## Support for Docker Compose
 
-The `podman-compose` command is a Python script, which for the author is installed in a `virtualenv`.
+The `podman-compose` command, see [Github: podman-compose](https://github.com/containers/podman-compose), is a Python script, which supports using `Docker Compose` files with `Podman`.
 
-* [Podman Commands](https://docs.podman.io/en/v4.2/Commands.html)
-* [Podman: Tutorials](https://docs.podman.io/en/latest/Tutorials.html)
-* [Podman: Python scripting for Podman services](https://podman-py.readthedocs.io/en/latest/index.html)
-* [Github: Containers/Podman](https://github.com/containers/podman/releases)
-
-Some useful commands.
-
-The prompt indicates if the command can only be executed inside the `virtualenv`.
-
-In practice it would be more normal to run all the commands inside the `virtualenv`.
+It is assumed `podman-compose` is installed in a `virtualenv`, which is indicated in the command prompt.
 
 ```console
 PS C:\Users\sjfke> podman network ls            # list all networks (NB 'list' no-work)
@@ -177,22 +186,24 @@ PS C:\Users\sjfke> podman build --tag localhost/tomcat-containers_bookstore --sq
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down
 ```
 
+Note all of the above commands can be run all the commands inside the `virtualenv`.
+
 ### Using Docker compose file
 
-* Deprecated [Compose file version 1](https://docs.docker.com/compose/compose-file/compose-versioning/#version-1-deprecated)
-* [Compose file version 2 reference](https://docs.docker.com/compose/compose-file/compose-file-v2/)
+* [The Compose Specification](https://github.com/compose-spec/compose-spec/blob/master/spec.md)
 * [Compose file version 3 reference](https://docs.docker.com/compose/compose-file/compose-file-v3/)
-* [Github: podman-compose](https://github.com/containers/podman-compose)
+* [Compose file version 2 reference](https://docs.docker.com/compose/compose-file/compose-file-v2/)
 
-The `podman-compose` command is a Python script, which supports a subset of [docker compose](https://docs.docker.com/compose/compose-file/03-compose-file/) files, but is not intended as a *plug-in* replacement. It is better to use `podman kube play`, for more details see [Podman Compose or Docker Compose: Which should you use in Podman?](https://www.redhat.com/sysadmin/podman-compose-docker-compose)
-
-The results of running `podman kube generate` are stored in [generated](./wharf/Podman/generated) folder.
-To be able to use, some manual editing of the *label* and *name* attributes is needed.
+The `podman-compose` is not intended as a *plug-in* replacement for `podman play kube`, for more details see [Podman Compose or Docker Compose: Which should you use in Podman?](https://www.redhat.com/sysadmin/podman-compose-docker-compose)
 
 Like `docker compose`, `podman-compose` will generate missing images from the `Dockerfile` or `Containerfile` in the current folder.
-To illustrate this two example `podman-compose` are shown, the first manually build the `Bookstore` image, using `--tag` to supply the name and `--squash` to merge the image’s new layers into a single new layer.
+To illustrate this, two example `podman-compose` are shown, the [first](#manual-build) manually builds the `Bookstore` image, and uses prebuilt image, where as the [second](#compose-build) the `Bookstore` image is built *on-the-fly* from the `Docker` file.
+
+The results of running `podman kube generate` on the `Docker Compose` configuration are stored in [generated](./Podman/generated/) folder, see [Extracting `Compose build` containers](#extracting-compose-build-containers).
 
 #### Manual build
+
+Builds the `Bookstore` image, using `--tag` to supply the name and `--squash` to merge the image’s new layers into a single new layer.
 
 ```console
 PS C:\Users\sjfke> podman image list -a
@@ -226,6 +237,8 @@ PS C:\Users\sjfke> start http://localhost:8081              # Adminer
 ```
 
 #### Compose build
+
+In this example the `Bookstore` image is created from [Dockerfile](./Podman/Dockerfile) as specified in the `compose.yaml` in the parent folder.
 
 ```console
 PS C:\Users\sjfke> podman image list --all
@@ -285,7 +298,9 @@ docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  10 mo
 
 ### Extracting `Compose build` containers
 
-To demonstrate the `podman kube generate` all the files in the [generated](./wharf/Podman/generated) folder where created as show below.
+To demonstrate the `podman kube generate` all the files in the [generated](./Podman/generated) folder where created as show below.
+
+To be able to use these with `podman play kube`, some manual editing of the *label* and *name* attributes is needed.
 
 ```console
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml up -d
