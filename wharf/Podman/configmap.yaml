@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb_root_password
+data:
+    MARIADB_ROOT_PASSWORD: r00tpa55
