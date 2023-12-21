@@ -25,10 +25,7 @@ To be consistent with the `compose.yaml`, the same ***network name*** and ***phy
 First create the `jspnet` network, see [podman-network-create - Create a Podman CNI network](https://docs.podman.io/en/v3.2.0/markdown/podman-network-create.1.html) to isolate the Bookstore application from the `podman-default-kube-network`, removing the `tomcat-containers_jspnet` network if it was created using `podman-compose`
 
 ```console
-PS C:\Users\sjfke> podman network ls                                   # what networks exist?
-
-PS C:\Users\sjfke> podman network inspect podman-default-kube-network  # network details
-PS C:\Users\sjfke> podman inspect podman-default-kube-network          # 'network' keyword is optional
+PS C:\Users\sjfke> podman network ls                                   # what networks exist? ('list' not supported)
 
 PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet          # remove podman-compose network
 PS C:\Users\sjfke> podman network create jspnet                        # create jspnet with the defaults
@@ -80,11 +77,11 @@ PS C:\Users\sjfke> podman volume inspect jsp_bookstoredata
 
 The `Docker Compose` original uses a *hard-coded* database password, but with `podman play kube` it is possible to do this with a `Kubernetes Secret or ConfigMap`.
 
-This documentation covers assumes using the `Secret` as a standalone `secrets.yaml` file.
+This documentation describes using the `Secret` as a standalone `secrets.yaml` file.
 
-To use a `configMap`, which must be specified in the ***deployment*** file, see [bookstoredb-configmap-deployment.yaml](./Podman/bookstoredb-configmap-deployment.yaml)
+Using a `configMap`, can be specified in the ***deployment*** file, see [bookstoredb-configmap-deployment.yaml](./Podman/bookstoredb-configmap-deployment.yaml), or via the command line,  see [configmap.yaml](./Podman/configmap.yaml) and [bookstoredb-external-configmap-deployment.yaml](./Podman/bookstoredb-external-configmap-deployment.yaml)
 
-In order to create the [secrets.yaml](./Podman/secrets.yaml) file it is necessary to [base64](#base64-encodedecode) encode the `db_root_password` password, see [Base64 encode/decode](#base64-encodedecode) for how this can be done.
+In order to create the [secrets.yaml](./Podman/secrets.yaml) file it is necessary to [base64](#base64-encodedecode) encode the `MARIADB_ROOT_PASSWORD` password, see [Base64 encode/decode](#base64-encodedecode) for how this can be done.
 
 Having created the [secrets.yaml](./Podman/secrets.yaml) file, add it to `Podman`
 
@@ -124,6 +121,8 @@ File `bookstoredb-deployment.yaml`, (3), requires that the `secret` and `volume`
 
 All the YAML files, (2, 3, 4), used by the `podman play kube --start` commands, must use the ***same network***, either the `jspnet` network created in [Using Kubernetes files](#using-kubernetes-files) or the default `podman-default-kube-network`.
 
+Build the container image in the main folder, `Dockerfile` and the *source code* need to be in the same folder
+
 ```console
 PS C:\Users\sjfke> podman build --tag localhost/bookstore:latest --squash -f .\Dockerfile
 
@@ -134,18 +133,25 @@ docker.io/library/mariadb  latest                c74611c2858a  4 days ago     41
 localhost/podman-pause     4.5.0-1681486976      2d395fdc32ec  6 days ago     1.09 MB
 localhost/bookstore        latest                e59e14df9f4b  6 days ago     489 MB
 docker.io/library/tomcat   9.0.71-jdk17-temurin  b07e16b11088  10 months ago  482 MB
+```
 
-PS C:\Users\sjfke> podman kube play .\secrets.yaml
-PS C:\Users\sjfke> podman secret list
+Now in the [Podman](./Podman/) folder
+
+```console
+PS C:\Users\sjfke> podman secret list                                                      # secret exists
 ID                         NAME               DRIVER      CREATED         UPDATED
 8f41fa6116bbd7696d791ea84  bookstore-secrets  file        15 minutes ago  15 minutes ago
+
+PS C:\Users\sjfke> podman volume list                                                      # PV exists
+DRIVER      VOLUME NAME
+local       jsp_bookstoredata
 
 PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml                      # podman-default-kube-network
 PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml                  # podman-default-kube-network
 PS C:\Users\sjfke> podman play kube --start .\bookstore-deployment.yaml                    # podman-default-kube-network
 
 PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deployment.yaml     # jspnet
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # jspnet
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # jspnet uses secret
 PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-deployment.yaml   # jspnet
 
 PS C:\Users\sjfke> podman ps -a --format "{{.ID}}\t{{.Names}}\t {{.Ports}}\t {{.Status}}\t {{.Image}}"
@@ -156,8 +162,14 @@ e9f8fdf3a4a5    bookstoredb-pod-bookstoredb      0.0.0.0:3306->3306/tcp  Up 2 mi
 3662396a7652    25f1e479a31f-infra       0.0.0.0:8080->8080/tcp  Up About a minute       localhost/podman-pause:4.5.0-1681486976
 4f08f26111db    bookstore-pod-bookstore  0.0.0.0:8080->8080/tcp  Up About a minute       localhost/bookstore:latest
 
-PS C:\Users\sjfke> start "http://localhost:8080/Bookstore"  # Bookstore Application
-PS C:\Users\sjfke> start http://localhost:8081              # Adminer
+# Using ConfigMap instead of Secret
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-configmap-deployment.yaml
+PS C:\Users\sjfke> podman play kube --start --network jspnet --configmap .\configmap.yaml .\bookstoredb-external-configmap-deployment.yaml
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-configmap-deployment.yaml
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-external-configmap-deployment.yaml
+
+PS C:\Users\sjfke> start http://localhost:8081                                             # Adminer
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore                                   # Bookstore Application
 
 PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
 PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
@@ -177,21 +189,24 @@ PS C:\Users\sjfke> podman volume rm jsp_bookstoredata
 
 The `podman-compose` command, see [Github: podman-compose](https://github.com/containers/podman-compose), is a Python script, which supports using `Docker Compose` files with `Podman`.
 
-It is assumed `podman-compose` is installed in a `virtualenv`, which is indicated in the command prompt.
+It is assumed `podman-compose` will be installed in a `virtualenv`, which is indicated in the command prompt.
 
 ```console
 PS C:\Users\sjfke> podman network ls            # list all networks (NB 'list' no-work)
 PS C:\Users\sjfke> podman volume list           # list all volumes
-PS C:\Users\sjfke> podman image list [-a]       # list all images (alias: podman images)
-PS C:\Users\sjfke> podman image prune           # remove all 'dangling' images
-PS C:\Users\sjfke> podman image rm 720ca5299f68 # delete image by id (alias: podman rmi)
+PS C:\Users\sjfke> podman image list --all      # list all images (alias: podman images)
+
 PS C:\Users\sjfke> podman build --tag localhost/tomcat-containers_bookstore --squash -f .\Dockerfile
 
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml up -d
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down
+
+PS C:\Users\sjfke> podman image prune                                     # remove all 'dangling' images
+PS C:\Users\sjfke> podman image rm localhost/tomcat-containers_bookstore  # delete image by name 
+PS C:\Users\sjfke> podman image rm 18f910c2cd10                           # delete image by id (alias: podman rmi)
 ```
 
-Note all of the above commands can be run all the commands inside the `virtualenv`.
+Note all of the above commands can be run in the `virtualenv`.
 
 ### Using Docker compose file
 
