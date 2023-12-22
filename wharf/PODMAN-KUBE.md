@@ -2,8 +2,8 @@
 
 This document describes
 
+* `podman play kube` which supports a subset of the Kubernetes API YAML files
 * `podman-compose` a Python script supporting a subset of [docker compose](https://docs.docker.com/compose/compose-file/03-compose-file/)
-* `podman play kube` support for a subset of the Kubernetes API YAML files
 
 The `podman-compose` Python script is intended as a convenience for importing a `Docker Compose` configuration into `Podman`, from which the Kubernetes API YAML files can be generated for use with `podman play kube`
 
@@ -13,6 +13,12 @@ The `podman-compose` Python script is intended as a convenience for importing a 
 * [Podman: Tutorials](https://docs.podman.io/en/latest/Tutorials.html)
 * [Podman: Python scripting for Podman services](https://podman-py.readthedocs.io/en/latest/index.html)
 * [Github: Containers/Podman](https://github.com/containers/podman/releases)
+
+## Kubernetes API References
+
+* [Openshift API Index](https://docs.openshift.com/container-platform/4.14/rest_api/index.html) may need to change `4.14` to a current Openshift version
+* [Kubernetes API Overview](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/)
+* [Kubernetes Deployment YAML: Learn by Example](https://codefresh.io/learn/kubernetes-deployment/kubernetes-deployment-yaml/)
 
 ## Using Kubernetes Files
 
@@ -24,7 +30,7 @@ To be consistent with the `compose.yaml`, the same ***network name*** and ***phy
 
 First create the `jspnet` network, see [podman-network-create - Create a Podman CNI network](https://docs.podman.io/en/v3.2.0/markdown/podman-network-create.1.html) to isolate the Bookstore application from the `podman-default-kube-network`, removing the `tomcat-containers_jspnet` network if it was created using `podman-compose`
 
-```console
+```powershell
 PS C:\Users\sjfke> podman network ls                                   # what networks exist? ('list' not supported)
 
 PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet          # remove podman-compose network
@@ -55,7 +61,7 @@ PS C:\Users\sjfke> podman network inspect jspnet                       # what wa
 
 Next step would be to create the `jsp_bookstoredata` volume, see [podman-volume-create - Create a new volume](https://docs.podman.io/en/v3.2.0/markdown/podman-volume-create.1.html), but this was created and populated in the [PODMAN, Application Specific Setup](./PODMAN.md#application-specific-setup).
 
-```console
+```powershell
 PS C:\Users\sjfke> podman volume list
 PS C:\Users\sjfke> podman volume create jsp_bookstoredata
 PS C:\Users\sjfke> podman volume inspect jsp_bookstoredata
@@ -85,7 +91,7 @@ In order to create the [secrets.yaml](./Podman/secrets.yaml) file it is necessar
 
 Having created the [secrets.yaml](./Podman/secrets.yaml) file, add it to `Podman`
 
-```console
+```powershell
 PS C:\Users\sjfke> podman kube play secrets.yaml
 PS C:\Users\sjfke> podman secret list
 PS C:\Users\sjfke> podman secret inspect bookstore-secrets
@@ -114,7 +120,7 @@ To build and deploy the application, the following files are used
 
 1. [Dockerfile](./Podman/Dockerfile)
 2. [adminer-deployment.yaml](./Podman/adminer-deployment.yaml)
-3. [bookstoredb-deployment.yaml](./Podman/bookstoredb-deployment.yaml)
+3. [bookstoredb-deployment.yaml](./Podman/bookstoredb-deployment.yaml) uses `Secret`
 4. [bookstore-deployment.yaml](./Podman/bookstore-deployment.yaml)
 
 File `bookstoredb-deployment.yaml`, (3), requires that the `secret` and `volume` that were created in [Using Kubernetes files](#using-kubernetes-files)
@@ -123,7 +129,7 @@ All the YAML files, (2, 3, 4), used by the `podman play kube --start` commands, 
 
 Build the container image in the main folder, `Dockerfile` and the *source code* need to be in the same folder
 
-```console
+```powershell
 PS C:\Users\sjfke> podman build --tag localhost/bookstore:latest --squash -f .\Dockerfile
 
 PS C:\Users\sjfke> podman image list --all
@@ -137,7 +143,7 @@ docker.io/library/tomcat   9.0.71-jdk17-temurin  b07e16b11088  10 months ago  48
 
 Now in the [Podman](./Podman/) folder
 
-```console
+```powershell
 PS C:\Users\sjfke> podman secret list                                                      # secret exists
 ID                         NAME               DRIVER      CREATED         UPDATED
 8f41fa6116bbd7696d791ea84  bookstore-secrets  file        15 minutes ago  15 minutes ago
@@ -151,7 +157,7 @@ PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml       
 PS C:\Users\sjfke> podman play kube --start .\bookstore-deployment.yaml                    # podman-default-kube-network
 
 PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deployment.yaml     # jspnet
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # jspnet uses secret
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # jspnet, uses secret and volume
 PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-deployment.yaml   # jspnet
 
 PS C:\Users\sjfke> podman ps -a --format "{{.ID}}\t{{.Names}}\t {{.Ports}}\t {{.Status}}\t {{.Image}}"
@@ -162,23 +168,24 @@ e9f8fdf3a4a5    bookstoredb-pod-bookstoredb      0.0.0.0:3306->3306/tcp  Up 2 mi
 3662396a7652    25f1e479a31f-infra       0.0.0.0:8080->8080/tcp  Up About a minute       localhost/podman-pause:4.5.0-1681486976
 4f08f26111db    bookstore-pod-bookstore  0.0.0.0:8080->8080/tcp  Up About a minute       localhost/bookstore:latest
 
-# Using ConfigMap instead of Secret
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-configmap-deployment.yaml
-PS C:\Users\sjfke> podman play kube --start --network jspnet --configmap .\configmap.yaml .\bookstoredb-external-configmap-deployment.yaml
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-configmap-deployment.yaml
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-external-configmap-deployment.yaml
-
 PS C:\Users\sjfke> start http://localhost:8081                                             # Adminer
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore                                   # Bookstore Application
 
 PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
 PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
 PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml                     # network name optional
+
+# Using ConfigMap instead of Secret
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-configmap-deployment.yaml
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-configmap-deployment.yaml
+
+PS C:\Users\sjfke> podman play kube --start --network jspnet --configmap .\configmap.yaml .\bookstoredb-external-configmap-deployment.yaml
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-external-configmap-deployment.yaml
 ```
 
 Once you are done, do not forget the **final clean up**
 
-```console
+```powershell
 PS C:\Users\sjfke> podman secret list
 PS C:\Users\sjfke> podman secret rm bookstore-secrets
 PS C:\Users\sjfke> podman volume list
@@ -191,7 +198,7 @@ The `podman-compose` command, see [Github: podman-compose](https://github.com/co
 
 It is assumed `podman-compose` will be installed in a `virtualenv`, which is indicated in the command prompt.
 
-```console
+```powershell
 PS C:\Users\sjfke> podman network ls            # list all networks (NB 'list' no-work)
 PS C:\Users\sjfke> podman volume list           # list all volumes
 PS C:\Users\sjfke> podman image list --all      # list all images (alias: podman images)
@@ -225,7 +232,7 @@ The results of running `podman kube generate` on the `Docker Compose` configurat
 
 Builds the `Bookstore` image, using `--tag` to supply the name and `--squash` to merge the image’s new layers into a single new layer.
 
-```console
+```powershell
 PS C:\Users\sjfke> podman image list -a
 REPOSITORY  TAG         IMAGE ID    CREATED     SIZE
 
@@ -250,8 +257,8 @@ PS C:\Users\sjfke> podman ps -a --format "{{.ID}}\t{{.Names}}\t {{.Ports}}\t {{.
 73e91ba5b4b2    tomcat-containers_bookstore_1    0.0.0.0:8080->8080/tcp  Up 21 minutes   localhost/tomcat-containers_bookstore:latest
 df094bcea12a    tomcat-containers_adminer_1      0.0.0.0:8081->8080/tcp  Up 21 minutes   docker.io/library/adminer:latest
 
-PS C:\Users\sjfke> start "http://localhost:8080/Bookstore"  # Bookstore Application
 PS C:\Users\sjfke> start http://localhost:8081              # Adminer
+PS C:\Users\sjfke> start "http://localhost:8080/Bookstore"  # Bookstore Application
 
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down
 ```
@@ -260,7 +267,7 @@ PS C:\Users\sjfke> start http://localhost:8081              # Adminer
 
 In this example the `Bookstore` image is created from [Dockerfile](./Podman/Dockerfile) as specified in the `compose.yaml` in the parent folder.
 
-```console
+```powershell
 PS C:\Users\sjfke> podman image list --all
 REPOSITORY  TAG         IMAGE ID    CREATED     SIZE
 
@@ -291,8 +298,8 @@ PS C:\Users\sjfke> podman ps -a --format "{{.ID}}\t{{.Names}}\t {{.Ports}}\t {{.
 e308e0ce32ec    tomcat-containers_bookstore_1    0.0.0.0:8080->8080/tcp  Up About a minute       localhost/tomcat-containers_bookstore:latest
 74d7ed4a2500    tomcat-containers_adminer_1      0.0.0.0:8081->8080/tcp  Up About a minute       docker.io/library/adminer:latest
 
-PS C:\Users\sjfke> start http://localhost:8080/Bookstore
-PS C:\Users\sjfke> start http://localhost:8081
+PS C:\Users\sjfke> start http://localhost:8081              # Adminer
+PS C:\Users\sjfke> start "http://localhost:8080/Bookstore"  # Bookstore Application
 
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down
 PS C:\Users\sjfke> podman image list --all
@@ -322,7 +329,7 @@ To demonstrate the `podman kube generate` all the files in the [generated](./Pod
 
 To be able to use these with `podman play kube`, some manual editing of the *label* and *name* attributes is needed.
 
-```console
+```powershell
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml up -d
 
 PS C:\Users\sjfke> podman kube generate --type deployment tomcat-containers_adminer_1 -f adminer-deployment.yaml
@@ -349,11 +356,11 @@ Error: generating YAML: invalid generation type - only pods and deployments are 
 
 The files in the [inspect](./wharf/Podman/inspect) folder were collected at the same time as the `podman kube generate` files were generated.
 
-While this provides an informative starting point, it is cleaner to write the `podman kube play` YAML files from scratch using the output gathered here as a reference source.
+While this provides an informative starting point, it is cleaner to write the `podman play kube` YAML files from scratch using the output gathered here as a reference source.
 
 Using `podman-compose` will create the `jspnet` but called `tomcat-containers_jspnet`, and this is not deleted by the `podman-compose -f .\compose.yaml down`, so it needs to be manually removed.
 
-```console
+```powershell
 PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet
 ```
 
@@ -364,9 +371,6 @@ PS C:\Users\sjfke> podman network rm tomcat-containers_jspnet
 * [Remove - containers and pods based on Kubernetes YAML](https://docs.podman.io/en/latest/markdown/podman-kube-down.1.html)
 * [Generate - Kubernetes YAML containers, pods or volumes](https://docs.podman.io/en/latest/markdown/podman-kube-generate.1.html)
 * [Create - containers, pods and volumes based on Kubernetes YAML](https://docs.podman.io/en/latest/markdown/podman-kube-play.1.html)
-* [Openshift API Index](https://docs.openshift.com/container-platform/4.14/rest_api/index.html) may need to change `4.14` to a current Openshift version
-* [Kubernetes API Overview](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/)
-* [Kubernetes Deployment YAML: Learn by Example](https://codefresh.io/learn/kubernetes-deployment/kubernetes-deployment-yaml/)
 
 ## Base64 encode/decode
 
@@ -400,7 +404,7 @@ r00tpa55
 
 ### In PowerShell the string needs to be converted to ASCII then base64 bytes
 
-```console
+```powershell
 # ASCII - UNIX compatible
 PS C:\Users\sjfke> [Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("r00tpa55"))
 cjAwdHBhNTU=
