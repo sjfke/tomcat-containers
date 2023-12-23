@@ -26,8 +26,30 @@ Assuming you have `MariaDB` running in your chosen container environment.
 
 ### Create the `Bookstore.book` table
 
-* `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container
-* `podman-desktop` open a terminal on the `bookstoredb-1` container
+* `docker compose` open a terminal on the `tomcat-containers-bookstoredb-1` container
+
+```powershell
+PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
+PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh # container interactive shell
+```
+
+* `podman-compose` open a terminal on the `tomcat-containers-bookstoredb-1` container
+
+```powershell
+PS C:\Users\sjfke> .\venv\Scripts\activate
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
+(venv) PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh # container interactive shell
+```
+
+* `podman play kube` open a terminal on the `bookstoredb-pod-bookstoredb` container
+
+```powershell
+PS C:\Users\sjfke> podman secret list                                     # list podman cluster secrets
+PS C:\Users\sjfke> podman kube play secrets.yaml                          # load secret if necessary
+PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml     # adminer using podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml # mariadb using podman-default-kube-network
+PS C:\Users\sjfke> podman exec -it bookstoredb-pod-bookstoredb sh         # container interactive shell
+```
 
 > ***Note:***
 >
@@ -102,16 +124,13 @@ Eclipse: `File` > `New` > `Dynamic Web Project`
 
 Using **Bookstore** as the project name, choosing `Apache Tomcat v9.0`with `tomcat` as the installation folder.
 
-> ***Warning***
+> ***Note***
 >
-> Simply cloning the `tomcat-containers` git repo is insufficient, the `Dynamic Web Project` and `Convert to Maven Project` steps must be done within `Eclipse`.
+> Cloning the `tomcat-containers` git repo should work
 >
-> If the `tomcat-containers` repo has already been cloned:
+> If not you need to convert the `Dynamic Web Project` and `Convert to Maven Project`, see [Converting a Java Project to a Dynamic Web Project](https://stackoverflow.com/questions/838707/converting-a-java-project-to-a-dynamic-web-project)
 >
-> 1. Delete the `Bookstore` folder
-> 2. `File > New > Dynamic Web Project`
-> 3. Use `git restore` to restore the `Bookstore` folder
-> 4. `Configure > Convert to Maven Project`
+> `Project` > `Properties` > `Project Facets` - check `Dynamic Web Module`
 >
 > Failing to do this will mean `Bookstore` cannot be added to the `Tomcat` server within `Eclipse`
 
