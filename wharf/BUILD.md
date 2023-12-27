@@ -192,13 +192,17 @@ Click `Download and install` and then the `tomcat` folder.
 
 Eclipse will be configured to use this copy, and not the one installed earlier.
 
-***Double-click*** on `Tomcat v9.0 Server at localhost [Stopped, Republish]` and then follow *Step 5* in reference (2) above, to ensure the `HTTP/1.1` port is `8080` and `Tomcat admin port` is `8005`, the `AJP` port is ***not displayed***.
+***Double-click*** on `Tomcat v9.0 Server at localhost [Stopped, Republish]` and then follow [*Step-5 of reference (2)*](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/), ensuring
 
-Under `Server Locations` change the ***default*** and check `Use Tomcat installation (takes control of Tomcat installation)`
+* `Tomcat admin port` is `8005`
+* `HTTP/1.1` port is `8080`
+* `AJP port` may not be displayed.
+
+Under `Server Locations` change the ***default*** and check item, `Use Tomcat installation (takes control of Tomcat installation)`
 
 Check `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost`, if the `tomcat-users.xsd` is missing, then download [tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) and add it to the folder.
 
-Follow *Step 6* in reference (2) and `Start` the `Tomcat server`, in a browser open `http:\\localhost:8080`.
+Follow [*Step-6 of reference (2)*](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/) and `Start` the `Tomcat server`, in a browser open `http:\\localhost:8080`.
 
 If it returns a `404 Error`, follow [Tomcat starts but Home Page does NOT open on browser with URL http://localhost:8080](https://crunchify.com/tomcat-starts-but-home-page-does-not-open-on-browser-with-url-http-localhost8080/)
 
@@ -351,10 +355,7 @@ PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.
 
 This permits debugging when following the steps in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
-Follow the instructions in [How to add Tomcat server in Eclipse IDE](https://www.codejava.net/servers/tomcat/how-to-add-tomcat-server-in-eclipse-ide) to setup the `Tomcat` server within `Eclipse`. Eclipse often appears to pick non-existent versions, so it is possible to manually install in the `tomcat` folder and then follow these steps ignoring the download part.
-
-* use the default `conf/tomcat-users.xml` file, do not configure any users.
-* verify that `conf/tomcat-users.xsd` file exists, can be downloaded from [GitHub conf/tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd)
+Follow the instructions in [Configure Eclipse Tomcat Server](#configure-eclipse-tomcat-server) section.
 
 Deployments to `tomcat` require a `war` or `ear` file, which is created using `maven`, see [Building a Maven war file](#building-a-maven-war-file). Once the `war` file is created on the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Add and Remove...`. Select `Bookstore` from `Available:` and `Add >` to `Configured:`.
 
@@ -366,7 +367,7 @@ Start the server within `Eclipse` and test using your browser `http://localhost:
 
 To function `Maven` requires a minimal `settings.xml` which may have to be manually created.
 
-[Maven](./MAVEN.md) details how to create the `settings.xml` and general reference to the `Maven` build process.
+[Building With Maven](./MAVEN.md#building-with-maven) section, details how to create the `settings.xml` and general reference to the `Maven` build process.
 
 ### To execute Maven, create a Run Configuration
 
