@@ -174,6 +174,12 @@ In setting up the project you need to install `tomcat` in the `tomcat` folder in
 
 ### Tomcat Server in Eclipse IDE
 
+This process is ***confusing*** and may take several iterations.
+
+Eventually the ***Tomcat Homepage*** will be displayed, using the `Tomcat application software` installed in the `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost` folder.
+
+These two references are helpful but not 100% accurate.
+
 1. [How to configure tomcat server in Eclipse IDE](https://www.javatpoint.com/how-to-configure-tomcat-server-in-eclipse-ide)
 2. [Setup and Install Apache Tomcat Server in Eclipse IDE](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/)
 
@@ -181,15 +187,20 @@ Create a `tomcat` folder in the Eclipse workspace folder which is used in the `D
 
 On the `Servers` tab, `No servers available. Click this link to create a new server...`.
 
-On the `Tomcat Server` page select `apache-tomcat-9.0.71` and select the `Bookstore` folder, and then the `Download and install` and then the `tomcat` folder.
+On the `Apache` > `Tomcat v9.0 Server` then `Next` button. Select `apache-tomcat-9.0.82` (*maybe later version*) and select the `Project` folder.
+Click `Download and install` and then the `tomcat` folder.
 
-Eclipse will use this copy not the one installed earlier avoiding `Admin`, and `Deployment` configuration.
+Eclipse will be configured to use this copy, and not the one installed earlier.
 
-Look at *Step 5* onwards in reference (2) above, to ensure all is OK.
+***Double-click*** on `Tomcat v9.0 Server at localhost [Stopped, Republish]` and then follow *Step 5* in reference (2) above, to ensure the `HTTP/1.1` port is `8080` and `Tomcat admin port` is `8005`, the `AJP` port is ***not displayed***.
 
-Check `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost` > `conf`, it is likely that the `tomcat-users.xsd` is missing.
+Under `Server Locations` change the ***default*** and check `Use Tomcat installation (takes control of Tomcat installation)`
 
-Download [tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) and add it to the folder.
+Check `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost`, if the `tomcat-users.xsd` is missing, then download [tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) and add it to the folder.
+
+Follow *Step 6* in reference (2) and `Start` the `Tomcat server`, in a browser open `http:\\localhost:8080`.
+
+If it returns a `404 Error`, follow [Tomcat starts but Home Page does NOT open on browser with URL http://localhost:8080](https://crunchify.com/tomcat-starts-but-home-page-does-not-open-on-browser-with-url-http-localhost8080/)
 
 ### 3. Writing Model Class
 
