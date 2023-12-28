@@ -18,34 +18,35 @@ The following applications need to be available or installed.
 
 There are a number of errors in the SQL in the tutorial, and using `root` for an application is problematic.
 
-> ***Note:***
->
-> `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
+> ***Note:*** `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
 
 Assuming you have `MariaDB` running in your chosen container environment.
 
 ### Create the `Bookstore.book` table
 
-* `docker compose` open a terminal on the `tomcat-containers-bookstoredb-1` container
+* `docker compose` open a terminal on the `tomcat-containers-bookstoredb-1` container, see [MariaDB in Docker](./DOCKER.md#mariadb-in-docker)
 
 ```powershell
+PS C:\Users\sjfke> docker volume ls                                   # jsp_bookstoredata volume exists
 PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
 PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh # container interactive shell
 ```
 
-* `podman-compose` open a terminal on the `tomcat-containers-bookstoredb-1` container
+* `podman-compose` open a terminal on the `tomcat-containers-bookstoredb-1` container, volume see [Podman Kube prerequisites](PODMAN-KUBE.md#prerequisites-for-kubernetes-files)
 
 ```powershell
+PS C:\Users\sjfke> podman volume ls                                          # jsp_bookstoredata volume exists
 PS C:\Users\sjfke> .\venv\Scripts\activate
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
 (venv) PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh # container interactive shell
 ```
 
-* `podman play kube` open a terminal on the `bookstoredb-pod-bookstoredb` container
+* `podman play kube` open a terminal on the `bookstoredb-pod-bookstoredb` container, volume see [Podman Kube prerequisites](PODMAN-KUBE.md#prerequisites-for-kubernetes-files)
 
 ```powershell
 PS C:\Users\sjfke> podman secret list                                     # list podman cluster secrets
 PS C:\Users\sjfke> podman kube play secrets.yaml                          # load secret if necessary
+PS C:\Users\sjfke> podman volume ls                                       # jsp_bookstoredata volume exists
 PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml     # adminer using podman-default-kube-network
 PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml # mariadb using podman-default-kube-network
 PS C:\Users\sjfke> podman exec -it bookstoredb-pod-bookstoredb sh         # container interactive shell
@@ -371,7 +372,7 @@ To function `Maven` requires a minimal `settings.xml` which may have to be manua
 
 ### To execute Maven, create a Run Configuration
 
-Eclipse: `Run` > `Run Configurations...` and select `Maven Build` and the `New launch configuration`
+Eclipse: `Run` > `Run Configurations...` and select `Maven Build` and the `New launch configuration`, first icon above filter selector
 
 Create, manage, and run configurations: `Maven Build` > `New_configuration`
 
@@ -380,7 +381,7 @@ Main Tab:
   Name: Package Bookstore
   Base directory > Workspace > Bookstore #  Base directory: ${workspace_loc:/Bookstore}
   Goals: clean package
-  User settings: C:\Users\sjfke\.m2\settings.xml (File System ...)
+  User settings: C:\Users\sjfke\.m2\settings.xml (File System ...) # File System...
 
   * [x] Update Snapshots
   * [x] Resolve Workspace artifacts
@@ -393,6 +394,9 @@ Common Tab:
 ```
 
 This will generate `Bookstore\target\Bookstore-0.0.1-SNAPSHOT.war` which can be deployed manually if you locally installed and configured [Tomcat](./TOMCAT.md).
+
+> ***Note*** a refresh of the `Bookstore\target` folder may be needed for `Bookstore-0.0.1-SNAPSHOT.war` to be visible
+
 To rerun the `Bookstore` configuration it should appear under `Run` > `Run Configurations...` > `Maven Build`
 
 ## Deploying and testing within Eclipse
