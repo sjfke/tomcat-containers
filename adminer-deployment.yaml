@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adminer
+  labels:
+    app: adminer
+spec: # https://github.com/acehko/kubernetes-examples/blob/main/adminer/adminer-deployment.yaml
+  selector:
+    matchLabels:
+      app: adminer
+  template:
+    metadata:
+      labels:
+        app: adminer
+    spec:
+      containers:
+        - name: adminer
+          image: docker.io/library/adminer:latest
+          ports:
+            - containerPort: 8080
+              hostPort: 8081
+          env:
+            - name: ADMINER_DEFAULT_SERVER
+              value: bookstoredb
+            - name: ADMINER_DESIGN
+              value: "dracula"

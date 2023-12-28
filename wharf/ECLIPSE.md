@@ -13,7 +13,7 @@ Download and install
 
 Install Eclipse Marketplace plugins
 
-* Java and Web Developer Tools 3.30, accepting the defaults, restart
+* Java and Web Developer Tools 3.31, accepting the defaults, restart
 `Help` > `Eclipse Marketplace` > `Popular` > `Eclipse Java and Web Developer Tools 3.31`
 
 * LiClipseText 2.5.0, accepting the defaults, restart

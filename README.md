@@ -26,12 +26,29 @@ The tomcat application is an implementation of [CodeJava Tutorial - JSP Servlet 
 * [PODMAN](./wharf/PODMAN.md)  - Notes on how to build using Maven inside Eclipse and deploy.
 
 ```text
-C:\USERS\SJFKE\TOMCAT-CONTAINERS\WHARF
-│   BUILD_ME.md
-│   DOCKER_ME.md
-│   MAVEN_ME.md
-│   PODMAN_ME.md
+C:\USERS\SJFKE\GITHUB\TOMCAT-CONTAINERS\WHARF
+│   .classpath
+│   .gitignore
+│   .project
+│   BUILD.md
+│   DOCKER.md
+│   ECLIPSE.md
+│   MARIADB.md
+│   MAVEN.md
+│   PODMAN-KUBE.md
+│   PODMAN.md
+│   TOMCAT.md
 │
+├───.settings
+│       .jsdtscope
+│       org.eclipse.jdt.core.prefs
+│       org.eclipse.wst.common.component
+│       org.eclipse.wst.common.project.facet.core.xml
+│       org.eclipse.wst.jsdt.ui.superType.container
+│       org.eclipse.wst.jsdt.ui.superType.name
+│
+├───build
+│   └───classes
 ├───Docker
 │   ├───conf
 │   │       tomcat-users.xml
@@ -49,5 +66,49 @@ C:\USERS\SJFKE\TOMCAT-CONTAINERS\WHARF
 │           └───META-INF
 │                   context.xml
 │
-└───Podman
+├───Podman
+│   │   adminer-deployment.yaml
+│   │   bookstore-deployment.yaml
+│   │   bookstoredb-configmap-deployment.yaml
+│   │   bookstoredb-deployment.yaml
+│   │   bookstoredb-external-configmap-deployment.yaml
+│   │   busybox-deployment.yaml
+│   │   configmap.yaml
+│   │   docker-compose.yaml
+│   │   docker-podman-compose.yaml
+│   │   Dockerfile
+│   │   mariadb-deployment.yaml
+│   │   Podman-basics-cheat-sheet-Red-Hat-Developer.pdf
+│   │   podman-for-windows.html
+│   │   secrets.yaml
+│   │
+│   ├───generated
+│   │       adminer-deployment-service.yaml
+│   │       adminer-deployment.yaml
+│   │       adminer-pod-service.yaml
+│   │       adminer-pod.yaml
+│   │       bookstore-deployment-service.yaml
+│   │       bookstore-deployment.yaml
+│   │       bookstore-pod-service.yaml
+│   │       bookstore-pod.yaml
+│   │       bookstoredb-deployment-service.yaml
+│   │       bookstoredb-deployment.yaml
+│   │       bookstoredb-pod-service.yaml
+│   │       bookstoredb-pod.yaml
+│   │
+│   └───inspect
+│           adminer-inspect.json
+│           bookstore-inspect.json
+│           bookstoredb-inspect.json
+│           tomcat-containers_jspnet.yaml
+│
+└───src
+    └───main
+        ├───java
+        └───webapp
+            ├───META-INF
+            │       MANIFEST.MF
+            │
+            └───WEB-INF
+                └───lib
 ```

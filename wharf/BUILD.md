@@ -18,16 +18,39 @@ The following applications need to be available or installed.
 
 There are a number of errors in the SQL in the tutorial, and using `root` for an application is problematic.
 
-> ***Note:***
->
-> `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
+> ***Note:*** `price` should probably be a `decimal(9,2)` and not `float`, but the Java class code is using `float`.
 
 Assuming you have `MariaDB` running in your chosen container environment.
 
 ### Create the `Bookstore.book` table
 
-* `docker-desktop` open a terminal on the `tomcat-containers-bookstoredb-1` container
-* `podman-desktop` open a terminal on the `bookstoredb-1` container
+* `docker compose` open a terminal on the `tomcat-containers-bookstoredb-1` container, see [MariaDB in Docker](./DOCKER.md#mariadb-in-docker)
+
+```powershell
+PS C:\Users\sjfke> docker volume ls                                   # jsp_bookstoredata volume exists
+PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
+PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh # container interactive shell
+```
+
+* `podman-compose` open a terminal on the `tomcat-containers-bookstoredb-1` container, volume see [Podman Kube prerequisites](PODMAN-KUBE.md#prerequisites-for-kubernetes-files)
+
+```powershell
+PS C:\Users\sjfke> podman volume ls                                          # jsp_bookstoredata volume exists
+PS C:\Users\sjfke> .\venv\Scripts\activate
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
+(venv) PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh # container interactive shell
+```
+
+* `podman play kube` open a terminal on the `bookstoredb-pod-bookstoredb` container, volume see [Podman Kube prerequisites](PODMAN-KUBE.md#prerequisites-for-kubernetes-files)
+
+```powershell
+PS C:\Users\sjfke> podman secret list                                     # list podman cluster secrets
+PS C:\Users\sjfke> podman kube play secrets.yaml                          # load secret if necessary
+PS C:\Users\sjfke> podman volume ls                                       # jsp_bookstoredata volume exists
+PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml     # adminer using podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml # mariadb using podman-default-kube-network
+PS C:\Users\sjfke> podman exec -it bookstoredb-pod-bookstoredb sh         # container interactive shell
+```
 
 > ***Note:***
 >
@@ -102,16 +125,13 @@ Eclipse: `File` > `New` > `Dynamic Web Project`
 
 Using **Bookstore** as the project name, choosing `Apache Tomcat v9.0`with `tomcat` as the installation folder.
 
-> ***Warning***
+> ***Note***
 >
-> Simply cloning the `tomcat-containers` git repo is insufficient, the `Dynamic Web Project` and `Convert to Maven Project` steps must be done within `Eclipse`.
+> Cloning the `tomcat-containers` git repo should work
 >
-> If the `tomcat-containers` repo has already been cloned:
+> If not you need to convert the `Dynamic Web Project` and `Convert to Maven Project`, see [Converting a Java Project to a Dynamic Web Project](https://stackoverflow.com/questions/838707/converting-a-java-project-to-a-dynamic-web-project)
 >
-> 1. Delete the `Bookstore` folder
-> 2. `File > New > Dynamic Web Project`
-> 3. Use `git restore` to restore the `Bookstore` folder
-> 4. `Configure > Convert to Maven Project`
+> `Project` > `Properties` > `Project Facets` - check `Dynamic Web Module`
 >
 > Failing to do this will mean `Bookstore` cannot be added to the `Tomcat` server within `Eclipse`
 
@@ -155,6 +175,12 @@ In setting up the project you need to install `tomcat` in the `tomcat` folder in
 
 ### Tomcat Server in Eclipse IDE
 
+This process is ***confusing*** and may take several iterations.
+
+Eventually the ***Tomcat Homepage*** will be displayed, using the `Tomcat application software` installed in the `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost` folder.
+
+These two references are helpful but not 100% accurate.
+
 1. [How to configure tomcat server in Eclipse IDE](https://www.javatpoint.com/how-to-configure-tomcat-server-in-eclipse-ide)
 2. [Setup and Install Apache Tomcat Server in Eclipse IDE](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/)
 
@@ -162,15 +188,24 @@ Create a `tomcat` folder in the Eclipse workspace folder which is used in the `D
 
 On the `Servers` tab, `No servers available. Click this link to create a new server...`.
 
-On the `Tomcat Server` page select `apache-tomcat-9.0.71` and select the `Bookstore` folder, and then the `Download and install` and then the `tomcat` folder.
+On the `Apache` > `Tomcat v9.0 Server` then `Next` button. Select `apache-tomcat-9.0.82` (*maybe later version*) and select the `Project` folder.
+Click `Download and install` and then the `tomcat` folder.
 
-Eclipse will use this copy not the one installed earlier avoiding `Admin`, and `Deployment` configuration.
+Eclipse will be configured to use this copy, and not the one installed earlier.
 
-Look at *Step 5* onwards in reference (2) above, to ensure all is OK.
+***Double-click*** on `Tomcat v9.0 Server at localhost [Stopped, Republish]` and then follow [*Step-5 of reference (2)*](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/), ensuring
 
-Check `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost` > `conf`, it is likely that the `tomcat-users.xsd` is missing.
+* `Tomcat admin port` is `8005`
+* `HTTP/1.1` port is `8080`
+* `AJP port` may not be displayed.
 
-Download [tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) and add it to the folder.
+Under `Server Locations` change the ***default*** and check item, `Use Tomcat installation (takes control of Tomcat installation)`
+
+Check `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost`, if the `tomcat-users.xsd` is missing, then download [tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) and add it to the folder.
+
+Follow [*Step-6 of reference (2)*](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/) and `Start` the `Tomcat server`, in a browser open `http:\\localhost:8080`.
+
+If it returns a `404 Error`, follow [Tomcat starts but Home Page does NOT open on browser with URL http://localhost:8080](https://crunchify.com/tomcat-starts-but-home-page-does-not-open-on-browser-with-url-http-localhost8080/)
 
 ### 3. Writing Model Class
 
@@ -321,10 +356,7 @@ PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.
 
 This permits debugging when following the steps in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
-Follow the instructions in [How to add Tomcat server in Eclipse IDE](https://www.codejava.net/servers/tomcat/how-to-add-tomcat-server-in-eclipse-ide) to setup the `Tomcat` server within `Eclipse`. Eclipse often appears to pick non-existent versions, so it is possible to manually install in the `tomcat` folder and then follow these steps ignoring the download part.
-
-* use the default `conf/tomcat-users.xml` file, do not configure any users.
-* verify that `conf/tomcat-users.xsd` file exists, can be downloaded from [GitHub conf/tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd)
+Follow the instructions in [Configure Eclipse Tomcat Server](#configure-eclipse-tomcat-server) section.
 
 Deployments to `tomcat` require a `war` or `ear` file, which is created using `maven`, see [Building a Maven war file](#building-a-maven-war-file). Once the `war` file is created on the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Add and Remove...`. Select `Bookstore` from `Available:` and `Add >` to `Configured:`.
 
@@ -336,11 +368,11 @@ Start the server within `Eclipse` and test using your browser `http://localhost:
 
 To function `Maven` requires a minimal `settings.xml` which may have to be manually created.
 
-[Maven](./MAVEN.md) details how to create the `settings.xml` and general reference to the `Maven` build process.
+[Building With Maven](./MAVEN.md#building-with-maven) section, details how to create the `settings.xml` and general reference to the `Maven` build process.
 
 ### To execute Maven, create a Run Configuration
 
-Eclipse: `Run` > `Run Configurations...` and select `Maven Build` and the `New launch configuration`
+Eclipse: `Run` > `Run Configurations...` and select `Maven Build` and the `New launch configuration`, first icon above filter selector
 
 Create, manage, and run configurations: `Maven Build` > `New_configuration`
 
@@ -349,7 +381,7 @@ Main Tab:
   Name: Package Bookstore
   Base directory > Workspace > Bookstore #  Base directory: ${workspace_loc:/Bookstore}
   Goals: clean package
-  User settings: C:\Users\sjfke\.m2\settings.xml (File System ...)
+  User settings: C:\Users\sjfke\.m2\settings.xml (File System ...) # File System...
 
   * [x] Update Snapshots
   * [x] Resolve Workspace artifacts
@@ -362,6 +394,9 @@ Common Tab:
 ```
 
 This will generate `Bookstore\target\Bookstore-0.0.1-SNAPSHOT.war` which can be deployed manually if you locally installed and configured [Tomcat](./TOMCAT.md).
+
+> ***Note*** a refresh of the `Bookstore\target` folder may be needed for `Bookstore-0.0.1-SNAPSHOT.war` to be visible
+
 To rerun the `Bookstore` configuration it should appear under `Run` > `Run Configurations...` > `Maven Build`
 
 ## Deploying and testing within Eclipse
