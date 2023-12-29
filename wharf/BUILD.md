@@ -431,49 +431,13 @@ PS C:\Users\sjfke> start http://localhost:8080           # Check Tomcat Server i
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore # Check application is working
 ```
 
-### Configure Eclipse Tomcat Server
-
-Follow the instructions in [Tomcat Server in Eclipse](#tomcat-server-in-eclipse-ide) to configure Tomcat.
-
-Start MariaDB using `docker compose`, `podman-compose` or `podman play kube` as show above.
-
-Start the server within `Eclipse` and test using your browser `http://localhost:8080/Bookstore`.
-
-## Deploying and testing within Eclipse
-
-This can be a real *black art* easiest approach is to do the `Maven build` first.
-
-Test this by manually deploying using the standalone `Tomcat` once working, the dependency list is in `Explorer` > `Bookstore` > `Java Resources` > `Libraries` > `Maven Dependencies`
-
-Once it is working `Run` > `Run configurations` > `apache-tomcat-9.0.71` on the `Classpath` tab.
-
-* [JSTL-1.2](https://mvnrepository.com/artifact/javax.servlet/jstl/1.2)
-* [JSTL Tutorial, JSTL Tags Example](https://www.digitalocean.com/community/tutorials/jstl-tutorial-jstl-tags-example)
-
-```text
-> Bootstrap Entries
-  > JRE System LIbrary [jre]
-> User Entries
-  > bootstrap.jar - Bookstore\tomcat\apache-tomcat-9.0.71\bin\
-  > commons-daemon.jar - Bookstore\tomcat\apache-tomcat-9.0.71\bin\
-  > tomcat-juli.jar - Bookstore\tomcat\apache-tomcat-9.0.7\bin\
-  > javax.servlet-api-3.1.0.jar - C:\Users\sjfke\.m2\repository\javax\servlet\javax.servlet-api\3.1.0\
-  > javax.servlet.jsp-api-2.3.1.jar - C:\Users\sjfke\.m2\repository\javax\servlet\javax.servlet.jsp-api\2.3.1\
-  > jstl-1.2.jar - C:\Users\sjfke\.m2\repository\javax\servlet\jstl\1.2\
-  > standard-1.1.2.jar - C:\Users\sjfke\.m2\repository\taglibs\1.1.2\
-  > mysql-connector-java-5.1.30.jar - C:\Users\sjfke\.m2\repository\mysql\mysql-connector-java\5.1.30\
-  > Bookstore
-```
-
 ## A. Building the Application Image
 
-Having completed steps 1 through 10, we stop following the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example).
+Having completed steps 1 through 10, we stop following the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) and focus on creating and publishing the `Bookstore` container image
+
+> ***Note:*** section needs rewriting to cover creating and publishing the Container image with `Docker` and `Podman`
 
 First build the bookstore container image, using the `Docker` file, see [Docker section](./DOCKER.md).
-
-```console
-  
-```
 
 The `compose.yaml` file, differs from `compose-mariadb.yaml` because contains the `bookstore` stanza which permits building the container using `docker compose` or `podman-compose`.
 
