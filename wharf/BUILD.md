@@ -334,35 +334,14 @@ Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-cre
 
 This section differs from the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) because the database server and the `Bookstore` application will also be deployed to `Docker` or `Podman`. Follow the [Docker](./DOCKER.md) or [Podman](./PODMAN.md) to setup your environment.
 
-To test a `Maven` deployment within `Eclipse` it is necessary to start database server using the `compose` and the `compose-mariadb.yaml` file.
+It permits debugging when following the steps in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
-***Podman*** from within the `Python` virtual environment.
+The steps are as follows:
 
-```console
-(venv) PS C:\Users\sjfke\Github\tomcat-containers> podman-compose -f .\compose-mariadb.yaml up -d # Start MariaDB and Adminer
-(venv) PS C:\Users\sjfke\Github\tomcat-containers> Test-NetConnection localhost -Port 3306        # Check MariDB is up and accessible
-(venv) PS C:\Users\sjfke\Github\tomcat-containers> podman-compose -f .\compose-mariadb.yaml down  # Stop MariaDB and Adminer
-```
-
-***Docker***
-
-```console
-PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.yaml up -d # Start MariaDB and Adminer
-PS C:\Users\sjfke\Github\tomcat-containers> Test-NetConnection localhost -Port 3306        # Check MariDB is up and accessible
-PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.yaml down  # Stop MariaDB and Adminer
-```
-
-### Configure Eclipse Tomcat server
-
-This permits debugging when following the steps in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
-
-Follow the instructions in [Configure Eclipse Tomcat Server](#configure-eclipse-tomcat-server) section.
-
-Deployments to `tomcat` require a `war` or `ear` file, which is created using `maven`, see [Building a Maven war file](#building-a-maven-war-file). Once the `war` file is created on the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Add and Remove...`. Select `Bookstore` from `Available:` and `Add >` to `Configured:`.
-
-Start MariaDB using `docker compose` or `podman-compose` and the `.\compose-mariadb.yaml` file. 
-
-Start the server within `Eclipse` and test using your browser `http://localhost:8080/Bookstore`.
+1. [Build the `Bookstore` war file](#building-a-maven-war-file)
+2. [Deploy the `Bookstore` war file](#deploy-bookstore-war-file-to-tomcat-in-eclipse) to tomcat within eclipse
+3. [Start the MariaDB](#starting-mariadb-server)
+4. [Test the `Bookstore` application](#10-deploying-and-testing-the-application) using tomcat within eclipse
 
 ## Building a Maven war file
 
@@ -398,6 +377,67 @@ This will generate `Bookstore\target\Bookstore-0.0.1-SNAPSHOT.war` which can be 
 > ***Note*** a refresh of the `Bookstore\target` folder may be needed for `Bookstore-0.0.1-SNAPSHOT.war` to be visible
 
 To rerun the `Bookstore` configuration it should appear under `Run` > `Run Configurations...` > `Maven Build`
+
+### Deploy `Bookstore` war file to Tomcat in Eclipse
+
+On the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Add and Remove...`
+
+Select `Bookstore` from `Available:` and `Add >` to `Configured:`
+
+### Starting MariaDB server
+
+***Podman-Compose*** from within the `Python` virtual environment.
+
+```console
+# Folder: C:\Users\sjfke\Github\tomcat-containers
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb.yaml down   # Ensure MariaDB and Adminer are stopped
+
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb.yaml up -d  # Start MariaDB and Adminer
+(venv) PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306         # Check MariDB is up and accessible
+```
+
+***Docker***
+
+```console
+# Folder: C:\Users\sjfke\Github\tomcat-containers
+PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml down          # Ensure MariaDB and Adminer are stopped
+
+PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d         # Start MariaDB and Adminer
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                # Check MariDB is up and accessible
+```
+
+***Podman Kube***
+
+```console
+# Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
+PS C:\Users\sjfke> podman secret list                                     # check secrets are loaded
+PS C:\Users\sjfke> podman play kube --down .\adminer-deployment.yaml      # Ensure Adminer is stopped
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml  # Ensure MariaDB is stopped
+
+PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml     # Start Adminer
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml # Start MariaDB
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                # Check MariDB is up and accessible
+```
+
+### Testing the `Bookstore` application
+
+On the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Start`
+
+Test using your browser or from `Powershell` as shown
+
+```console
+PS C:\Users\sjfke> start http://localhost:8081           # Check Adminer is working
+PS C:\Users\sjfke> start http://localhost:8080           # Check Tomcat Server is working
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore # Check application is working
+```
+
+### Configure Eclipse Tomcat Server
+
+Follow the instructions in [Tomcat Server in Eclipse](#tomcat-server-in-eclipse-ide) to configure Tomcat.
+
+Start MariaDB using `docker compose`, `podman-compose` or `podman play kube` as show above.
+
+Start the server within `Eclipse` and test using your browser `http://localhost:8080/Bookstore`.
 
 ## Deploying and testing within Eclipse
 

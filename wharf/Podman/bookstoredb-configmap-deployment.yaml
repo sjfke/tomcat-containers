@@ -24,7 +24,8 @@ spec: # https://mariadb.org/start-mariadb-in-k8s/
       - name: bookstoredb
         image: docker.io/library/mariadb:latest
         ports:
-        - containerPort: 3306 
+        - containerPort: 3306
+          hostPort: 3306
         env:
         - name: MARIADB_ALLOW_EMPTY_ROOT_PASSWORD
           value: "1" # if it is 1 and root_password is set, 
