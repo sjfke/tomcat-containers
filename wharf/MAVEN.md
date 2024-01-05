@@ -43,3 +43,8 @@ PS C:\Users\sjfke> get-content C:\Users\sjfke\.m2\settings.xml
 * [Apache Maven Project - WAR Plugin Usage](https://maven.apache.org/plugins/maven-war-plugin/usage.html)
 * [Apache Maven Project - WAR Plugin Documentation](https://maven.apache.org/plugins/maven-war-plugin/plugin-info.html)
 * [How to Deploy a WAR File to Tomcat](https://www.baeldung.com/tomcat-deploy-war)
+
+### Installing Maven
+
+* [Installing Apache Maven](https://maven.apache.org/install.html)
+* [How to Install Maven on Windows](https://phoenixnap.com/kb/install-maven-windows)
