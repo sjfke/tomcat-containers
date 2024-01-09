@@ -13,103 +13,51 @@ The tomcat application is an implementation of [CodeJava Tutorial - JSP Servlet 
 
 ## Project Organization
 
+### Application
+
+Folders
+
+* [Bookstore](./Bookstore/) - Folder for Java and JSP source code
+* [Servers](./Servers/) - Folder for Tomcat servers available within Eclipse
+* [tomcat](./tomcat/) - Folder for Tomcat downloaded and installed by Eclipse
+* [wharf](./wharf) - Folder for all the documentation and howto's
+
 ### Wharf - where are the containerization information is stored
 
 > Wharf
 >> A platform along the side of a waterfront for docking, loading, and unloading ships
 
-### Wharf Documentation Organization
+### Wharf Folder
+
+#### HOW-TO Documentation
 
 * [BUILD](./wharf/BUILD.md)  - Setup and build within Eclipse, plus corrections to the `CodeJava Tutorial`.
 * [CONTAINERS](./wharf/CONTAINERS.md) - How to build and deploy `Bookstore` container image to Quay.IO and DockerHub.
 * [DOCKER](./wharf/DOCKER.md) - How to build and test `Bookstore` using Docker, Docker Compose.
 * [MAVEN](./wharf/MAVEN.md)  - How to build and test `Bookstore` using Maven inside Eclipse.
 * [PODMAN](./wharf/PODMAN.md)  - How to test `Bookstore` using Podman Kube Play and podman-compose.py
+* [PODMAN-KUBE](./wharf/PODMAN-KUBE.md) - How to create and use `podman play kube` to test `Bookstore`
+* [TOMCAT](./wharf/TOMCAT.md) - How to setup standalone Tomcat to test `Bokkstore` maven builds
 
-```text
-C:\USERS\SJFKE\GITHUB\TOMCAT-CONTAINERS\WHARF
-│   .classpath
-│   .gitignore
-│   .project
-│   BUILD.md
-│   DOCKER.md
-│   ECLIPSE.md
-│   MARIADB.md
-│   MAVEN.md
-│   PODMAN-KUBE.md
-│   PODMAN.md
-│   TOMCAT.md
-│
-├───.settings
-│       .jsdtscope
-│       org.eclipse.jdt.core.prefs
-│       org.eclipse.wst.common.component
-│       org.eclipse.wst.common.project.facet.core.xml
-│       org.eclipse.wst.jsdt.ui.superType.container
-│       org.eclipse.wst.jsdt.ui.superType.name
-│
-├───build
-│   └───classes
-├───Docker
-│   ├───conf
-│   │       tomcat-users.xml
-│   │
-│   └───webapps
-│       ├───Bookstore
-│       │   └───WEB-INF
-│       │           web.xml
-│       │
-│       ├───host-manager
-│       │   └───META-INF
-│       │           context.xml
-│       │
-│       └───manager
-│           └───META-INF
-│                   context.xml
-│
-├───Podman
-│   │   adminer-deployment.yaml
-│   │   bookstore-deployment.yaml
-│   │   bookstoredb-configmap-deployment.yaml
-│   │   bookstoredb-deployment.yaml
-│   │   bookstoredb-external-configmap-deployment.yaml
-│   │   busybox-deployment.yaml
-│   │   configmap.yaml
-│   │   docker-compose.yaml
-│   │   docker-podman-compose.yaml
-│   │   Dockerfile
-│   │   mariadb-deployment.yaml
-│   │   Podman-basics-cheat-sheet-Red-Hat-Developer.pdf
-│   │   podman-for-windows.html
-│   │   secrets.yaml
-│   │
-│   ├───generated
-│   │       adminer-deployment-service.yaml
-│   │       adminer-deployment.yaml
-│   │       adminer-pod-service.yaml
-│   │       adminer-pod.yaml
-│   │       bookstore-deployment-service.yaml
-│   │       bookstore-deployment.yaml
-│   │       bookstore-pod-service.yaml
-│   │       bookstore-pod.yaml
-│   │       bookstoredb-deployment-service.yaml
-│   │       bookstoredb-deployment.yaml
-│   │       bookstoredb-pod-service.yaml
-│   │       bookstoredb-pod.yaml
-│   │
-│   └───inspect
-│           adminer-inspect.json
-│           bookstore-inspect.json
-│           bookstoredb-inspect.json
-│           tomcat-containers_jspnet.yaml
-│
-└───src
-    └───main
-        ├───java
-        └───webapp
-            ├───META-INF
-            │       MANIFEST.MF
-            │
-            └───WEB-INF
-                └───lib
-```
+##### Folders
+
+* [DOCKER](./wharf/DOCKER) - updates used to deploy `Bookstore` using Docker
+* [PODMAN](./wharf/Podman/) - Podman build and deployment
+* [PODMAN/generated](./wharf/Podman/generated) - `podman kube generate` files from `podman-compose.py` deployment
+* [PODMAN/inspect](./wharf/Podman/inspect) - `podman inspect` from `podman-compose.py` deployment
+
+##### Podman Files
+
+* [adminer-deployment.yaml](./wharf/Podman/adminer-deployment.yaml)
+* [bookstore-deployment.yaml](./wharf/Podman/bookstore-deployment.yaml)
+* [bookstoredb-configmap-deployment.yaml](./wharf/Podman/bookstoredb-configmap-deployment.yaml)
+* [bookstoredb-deployment.yaml](./wharf/Podman/bookstoredb-deployment.yaml)
+* [bookstoredb-external-configmap-deployment.yaml](./wharf/Podman/bookstoredb-external-configmap-deployment.yaml)
+* [busybox-deployment.yaml](./wharf/Podman/busybox-deployment.yaml)
+* [configmap.yaml](./wharf/Podman/configmap.yaml)
+* [docker-bookstore-deployment.yaml](./wharf/Podman/docker-bookstore-deployment.yaml)
+* [docker-compose.yaml](./wharf/Podman/docker-compose.yaml)
+* [docker-podman-compose.yaml](./wharf/Podman/docker-podman-compose.yaml)
+* [mariadb-deployment.yaml](./wharf/Podman/mariadb-deployment.yaml)
+* [quay-io-bookstore-deployment.yaml](./wharf/Podman/quay-io-bookstore-deployment.yaml)
+* [secrets.yaml](./wharf/Podman/secrets.yaml)
