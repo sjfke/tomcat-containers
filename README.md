@@ -20,10 +20,11 @@ The tomcat application is an implementation of [CodeJava Tutorial - JSP Servlet 
 
 ### Wharf Documentation Organization
 
-* [BUILD](./wharf/BUILD.md)  - Notes on setup and build within Eclipse, plus corrections to the `CodeJava Tutorial`.
-* [DOCKER](./wharf/DOCKER.md) - Notes on how to build and deploy using Docker, Docker Compose.
-* [MAVEN](./wharf/MAVEN.md)  - Notes on how to build using Maven inside Eclipse and deploy.
-* [PODMAN](./wharf/PODMAN.md)  - Notes on how to build using Maven inside Eclipse and deploy.
+* [BUILD](./wharf/BUILD.md)  - Setup and build within Eclipse, plus corrections to the `CodeJava Tutorial`.
+* [CONTAINERS](./wharf/CONTAINERS.md) - How to build and deploy `Bookstore` container image to Quay.IO and DockerHub.
+* [DOCKER](./wharf/DOCKER.md) - How to build and test `Bookstore` using Docker, Docker Compose.
+* [MAVEN](./wharf/MAVEN.md)  - How to build and test `Bookstore` using Maven inside Eclipse.
+* [PODMAN](./wharf/PODMAN.md)  - How to test `Bookstore` using Podman Kube Play and podman-compose.py
 
 ```text
 C:\USERS\SJFKE\GITHUB\TOMCAT-CONTAINERS\WHARF
