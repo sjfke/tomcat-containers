@@ -82,10 +82,24 @@ PS C:\Users\sjfke> podman play kube --down .\quay-io-bookstore-deployment.yaml  
 
 #### Podman Cleanup
 
+Pods and container clean up
+
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
-PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml     # Delete Adminer deployment
-PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml # Delete MariaDB deployment
+PS C:\Users\sjfke> podman play kube --down .\adminer-deployment.yaml     # Delete Adminer deployment
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml # Delete MariaDB deployment
+PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml   # Delete Bookstore deployment
+```
+
+Image clean up
+
+```console
+# Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
+PS C:\Users\sjfke> podman image rm quay.io/sjfke/bookstore:1.0
+PS C:\Users\sjfke> podman image rm localhost/bookstore 
+PS C:\Users\sjfke> podman image rm docker.io/library/adminer
+PS C:\Users\sjfke> podman image rm docker.io/library/mariadb
+PS C:\Users\sjfke> podman image rm docker.io/library/tomcat:9.0.71-jdk17-temurin
 ```
 
 ### Docker and DockerHub
