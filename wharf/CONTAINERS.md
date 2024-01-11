@@ -90,9 +90,9 @@ PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml # Dele
 
 ### Docker and DockerHub
 
-#### Docker Start MariaDB and Adminer
+Instructions using [`Docker`](https://docs.docker.com/engine/reference/commandline/cli/), [`Docker Compose`](https://docs.docker.com/compose/compose-file/) and [Dockerhub](https://hub.docker.com/)
 
-Instructions using `Docker` and [Dockerhub](https://hub.docker.com/)
+#### Docker Start MariaDB and Adminer
 
 ```console
 # using compose-mariadb.yaml
@@ -101,27 +101,36 @@ PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306        # Check MariDB
 PS C:\Users\sjfke> start http://localhost:8081                    # Check Adminer is working
 ```
 
-#### Docker Build and Test Local Docker.IO container
+#### Docker Build and Test Local DockerHub container
 
 > ***Note:*** use your login name on docker.io/<user>, not sjfke :-) in the `tag`
 
 ```console
-# Folder: C:\Users\sjfke\Github\tomcat-containers
-PS C:\Users\sjfke> docker image list --all
-REPOSITORY  TAG         IMAGE ID    CREATED     SIZE
-localhost/bookstore       latest                0143f578fd61  26 hours ago    489 MB
-docker.io/library/tomcat  9.0.71-jdk17-temurin  b07e16b11088  11 months ago   482 MB
-
-PS C:\Users\sjfke> docker build --tag docker.io/sjfke/bookstore:1.0 --squash -f .\Dockerfile $PWD
+# Folder: C:\Users\sjfke\github\tomcat-containers
 
 PS C:\Users\sjfke> docker image list --all
-REPOSITORY                TAG                   IMAGE ID      CREATED         SIZE
-docker.io/sjfke/bookstore 1.0                   9d6959dace40  20 seconds ago  489 MB
-localhost/bookstore       latest                0143f578fd61  26 hours ago    489 MB
-docker.io/library/tomcat  9.0.71-jdk17-temurin  b07e16b11088  11 months ago   482 MB
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+adminer      latest    fd3b195a8d79   8 hours ago   250MB
+mariadb      latest    3e87f8bfed4e   7 weeks ago   404MB
+
+PS C:\Users\sjfke> docker build --tag bookstore -f .\Dockerfile $PWD
+PS C:\Users\sjfke> docker image list --all
+REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+adminer      latest    fd3b195a8d79   8 hours ago    250MB
+bookstore    latest    cbf18a39836f   18 hours ago   482MB
+mariadb      latest    3e87f8bfed4e   7 weeks ago    404MB
+
+
+PS C:\Users\sjfke> docker tag bookstore:latest docker.io/sjfke/bookstore:1.0
+PS C:\Users\sjfke> docker image list --all
+REPOSITORY        TAG       IMAGE ID       CREATED        SIZE
+adminer           latest    fd3b195a8d79   8 hours ago    250MB
+bookstore         latest    cbf18a39836f   18 hours ago   482MB
+sjfke/bookstore   1.0       cbf18a39836f   18 hours ago   482MB
+mariadb           latest    3e87f8bfed4e   7 weeks ago    404MB
 ```
 
-#### Docker Push and Test Hosted Quay.IO container
+#### Docker Push and Test Hosted DockerHub container
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
@@ -130,6 +139,12 @@ PS C:\Users\sjfke> start https://docker.io # login using your credentials and cr
 
 PS C:\Users\sjfke> docker push docker.io/sjfke/bookstore:1.0                    # Push container
 PS C:\Users\sjfke> docker image rm docker.io/sjfke/bookstore:1.0                # Remove local container
+PS C:\Users\sjfke> docker image list --all
+REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+adminer      latest    fd3b195a8d79   8 hours ago    250MB
+bookstore    latest    cbf18a39836f   18 hours ago   482MB
+mariadb      latest    3e87f8bfed4e   7 weeks ago    404MB
+
 PS C:\Users\sjfke> docker pull docker.io/sjfke/bookstore:1.0                    # Redundant
 PS C:\Users\sjfke> docker compose -f .\compose-docker-io.yaml up -d             # Deploy Remote Bookstore image
 
@@ -141,7 +156,29 @@ PS C:\Users\sjfke> docker compose -f .\compose-docker-io.yaml down              
 
 #### Docker Cleanup
 
+Container clean up should not be done by `docker compose -f .\compose-docker-io.yaml down`
+
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
 PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml down                # Delete Adminer and MariaDB containers
+```
+
+Image clean up needs to be done manually
+
+```console
+# Folder: C:\Users\sjfke\Github\tomcat-containers
+PS C:\Users\sjfke> docker image list --all
+REPOSITORY        TAG       IMAGE ID       CREATED        SIZE
+adminer           latest    fd3b195a8d79   8 hours ago    250MB
+bookstore         latest    cbf18a39836f   18 hours ago   482MB
+sjfke/bookstore   1.0       cbf18a39836f   18 hours ago   482MB
+mariadb           latest    3e87f8bfed4e   7 weeks ago    404MB
+
+PS C:\Users\sjfke> docker image rm adminer 
+PS C:\Users\sjfke> docker image rm bookstore
+PS C:\Users\sjfke> docker image rm sjfke/bookstore:1.0
+PS C:\Users\sjfke> docker image rm mariadb
+
+docker image list --all
+REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
 ```
