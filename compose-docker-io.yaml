@@ -14,7 +14,7 @@ services:
       - jsp_bookstoredata:/var/lib/mysql
 
   bookstore:
-    image: docker.io/bookstore:1.0
+    image: docker.io/sjfke/bookstore:1.0
     restart: unless-stopped
     ports:
       - "8080:8080"
