@@ -7,8 +7,8 @@ Podman set up for [Containerized Tomcat JSP Servlet JDBC C.R.U.D Example using M
 ## Podman on various platforms
 
 * MacOS `podman` is backed by a QEMU based virtual machine
-* Windows `podman` is backed by a Windows Subsystem for Linux (WSLv2) distribution,
-* Linux distributions `podman` is supplied as an appropriate package.
+* Windows `podman` is backed by a Windows Subsystem for Linux (WSLv2) distribution
+* Linux distributions `podman` is supplied as an appropriate package
 
 The `Windows` environment is the most complex to setup, so let's start with that.
 
@@ -21,7 +21,7 @@ The `Windows` environment is the most complex to setup, so let's start with that
 * [WSL version: 1.2.5.0](https://learn.microsoft.com/en-us/windows/wsl/install)
 
 For this project `WSL` was installed manually, before `Podman` to ensure `WSL` was working correctly.
-However installing `Podman` will also install `WSL` the process is simple, and straighforward.
+However installing `Podman` will also install `WSL` the process is simple, and straightforward.
 
 The `Podman Desktop` installation is also straight forward and installs the required extensions.
 
@@ -36,7 +36,8 @@ Installation sequence is:
 ### Manual WSLv2 Installation
 
 For platform `prerequisites` see [Install Linux on Windows with WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
-While this describes using  `wsl` command in an Administrative PowerShell, it is easier to install using the `Microsoft Store`.
+
+While this describes using  `wsl` command in an Administrative PowerShell, it is easier to install using the `Microsoft Store` as shown.
 
 ```text
 1. Windows -> Settings -> Optional Features -> More Windows Features
@@ -166,7 +167,7 @@ PS C:\Users\sjfke\Github\tomcat-containers> .\venv\Scripts\activate
 * [RealPython - Your Python Coding Environment on Windows: Setup Guide](https://realpython.com/python-coding-setup-windows/)
 * [Python - Using Python on Windows](https://docs.python.org/3/using/windows.html)
 * [Microsoft - Get started using Python on Windows for beginners](https://learn.microsoft.com/en-us/windows/python/beginners)
-* [Microsoft Store - Python 3.11](https://apps.microsoft.com/store/detail/python-311/9NRWMJP3717K)
+* [Microsoft Store - Python 3.12](https://apps.microsoft.com/detail/9NCVDN91XZQP?hl=en-gb&gl=US)
 
 ## Installing Podman-Desktop Windows
 
@@ -375,10 +376,11 @@ COPY ./wharf/Docker/webapps/Bookstore/WEB-INF/web.xml /usr/local/tomcat/webapps/
 ### Typical command usage
 
 ```console
-PS C:\Users\sjfke> podman build -f .\Dockerfile
-PS C:\Users\sjfke> podman images
-REPOSITORY                             TAG                   IMAGE ID      CREATED         SIZE
-localhost/tomcat-containers_bookstore  latest                f75bce11f066  11 seconds ago  489 MB
+PS C:\Users\sjfke> podman build --tag localhost/bookstore:latest --squash -f .\Dockerfile
+PS C:\Users\sjfke> podman image list --all
+REPOSITORY                TAG                   IMAGE ID      CREATED        SIZE
+localhost/bookstore       latest                f2bf9a0dea3b  8 minutes ago  489 MB
+docker.io/library/tomcat  9.0.71-jdk17-temurin  b07e16b11088  11 months ago  482 MB
 
 # 'podman-compose' is a Python script, using (venv) 'virtual environment'
 PS C:\Users\sjfke> venv\Scripts\activate
@@ -386,26 +388,30 @@ PS C:\Users\sjfke> venv\Scripts\activate
 
 # Once compose.yaml is created, see references (3, 4) you can build just like with Docker
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml build
-(venv) PS C:\Users\sjfke> podman images
-REPOSITORY                             TAG                   IMAGE ID      CREATED         SIZE
-localhost/tomcat-containers_bookstore  latest                f75bce11f066   5 minutes ago  489 MB
-docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  8 months ago    482 MB
+(venv) PS C:\Users\sjfke> podman image list
+REPOSITORY                             TAG                   IMAGE ID      CREATED             SIZE
+localhost/tomcat-containers_bookstore  latest                e2ab689255e8  About a minute ago  489 MB
+localhost/bookstore                    latest                f2bf9a0dea3b  28 hours ago        489 MB
+docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  11 months ago       482 MB
 
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml up -d
-(venv) PS C:\Users\sjfke> podman images
-REPOSITORY                             TAG                   IMAGE ID      CREATED       SIZE
-localhost/tomcat-containers_bookstore  latest                f75bce11f066  3 hours ago   489 MB
-docker.io/library/adminer              latest                9b672f480fc7  12 days ago   258 MB
-docker.io/library/mariadb              latest                871a9153c184  4 weeks ago   410 MB
-docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  8 months ago  482 MB
+(venv) PS C:\Users\sjfke> podman image list
+REPOSITORY                             TAG                   IMAGE ID      CREATED        SIZE
+localhost/tomcat-containers_bookstore  latest                e2ab689255e8  4 minutes ago  489 MB
+localhost/bookstore                    latest                f2bf9a0dea3b  28 hours ago   489 MB
+docker.io/library/adminer              latest                fd3b195a8d79  2 days ago     258 MB
+docker.io/library/mariadb              latest                3e87f8bfed4e  7 weeks ago    411 MB
+docker.io/library/tomcat               9.0.71-jdk17-temurin  b07e16b11088  11 months ago  482 MB
 
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml down  # deletes the containers
 
-(venv) PS C:\Users\sjfke> podman images                 # man podman-images
+(venv) PS C:\Users\sjfke> podman image list --all       # man podman-images
 (venv) PS C:\Users\sjfke> podman image prune            # prune dangling images, man podman-image-prune
 (venv) PS C:\Users\sjfke> podman rmi --all              # Delete all images
 (venv) PS C:\Users\sjfke> podman rmi localhost/myimage  
 (venv) PS C:\Users\sjfke> podman rmi e80dffa4ea27
+(venv) PS C:\Users\sjfke> podman image rm localhost/tomcat-containers_bookstore
+(venv) PS C:\Users\sjfke> podman image rm docker.io/library/tomcat:9.0.71-jdk17-temurin
 
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml stop
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose.yaml start
