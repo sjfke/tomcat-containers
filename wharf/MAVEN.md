@@ -48,3 +48,18 @@ PS C:\Users\sjfke> get-content C:\Users\sjfke\.m2\settings.xml
 
 * [Installing Apache Maven](https://maven.apache.org/install.html)
 * [How to Install Maven on Windows](https://phoenixnap.com/kb/install-maven-windows)
+
+Follow [How to Install Maven on Windows](./how-to-install-maven-on-windows) use
+
+* [Download lateste Maven](https://maven.apache.org/download.cgi), such as `apache-maven-3.9.6`
+* Create environment `MAVEN_HOME` = `C:\Program Files\Maven\apache-maven-3.9.6`
+* Update `Path`, add `%MAVEN_HOME%\bin`
+
+```console
+PS C:\Users\sjfke>  mvn -version
+Apache Maven 3.9.6 (bc0240f3c744dd6b6ec2920b3cd08dcc295161ae)
+Maven home: C:\Program Files\Maven\apache-maven-3.9.6
+Java version: 17.0.7, vendor: Eclipse Adoptium, runtime: C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot
+Default locale: en_GB, platform encoding: Cp1252
+OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
+```

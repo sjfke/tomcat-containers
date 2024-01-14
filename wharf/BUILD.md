@@ -378,6 +378,87 @@ This will generate `Bookstore\target\Bookstore-0.0.1-SNAPSHOT.war` which can be 
 
 To rerun the `Bookstore` configuration it should appear under `Run` > `Run Configurations...` > `Maven Build`
 
+### Build Using Maven outside of Eclipse
+
+The [previous section](./to-execute-maven-create-a-run.configuration) will generate a `pom.xml` file like
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>Bookstore</groupId>
+  <artifactId>Bookstore</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>17</release>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.2.3</version>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>javax.servlet.jsp-api</artifactId>
+      <version>2.3.1</version>
+      <scope>provided</scope>
+    </dependency>
+  <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+  </dependency>
+  <dependency>
+    <groupId>taglibs</groupId>
+    <artifactId>standard</artifactId>
+    <version>1.1.2</version>
+  </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.30</version>
+    </dependency>
+  </dependencies>
+</project>
+```
+
+On Windows building from the command line you may see a `File encoding has not been set, using platform encoding Cp1252`, the solution is explained on the *Apache Maven Website*, [**WARNING** Using platform encoding (Cp1252 actually) to copy filtered resources](https://maven.apache.org/general.html#encoding-warning).
+
+For `Bookstore` add the following prior to the `<build>` tag, then command line `mvn package` will build cleanly.
+
+```xml
+  <packaging>war</packaging>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <build>
+    ...
+  </build>
+```
+
+From within the `Bookstore` source folder
+
+```console
+# C:\Users\sjfke\Github\tomcat-containers\Bookstore
+PS C:\Users\sjfke> mvn clean package
+```
+
+Will generate `C:\Users\sjfke\Github\tomcat-containers\Bookstore\target\Bookstore-0.0.1-SNAPSHOT.war`
+
 ### Deploy `Bookstore` war file to Tomcat in Eclipse
 
 On the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Add and Remove...`
@@ -429,59 +510,4 @@ Test using your browser or from `Powershell` as shown
 PS C:\Users\sjfke> start http://localhost:8081           # Check Adminer is working
 PS C:\Users\sjfke> start http://localhost:8080           # Check Tomcat Server is working
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore # Check application is working
-```
-
-## A. Building the Application Image
-
-Having completed steps 1 through 10, we stop following the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) and focus on creating and publishing the `Bookstore` container image
-
-> ***Note:*** section needs rewriting to cover creating and publishing the Container image with `Docker` and `Podman`
-
-First build the bookstore container image, using the `Docker` file, see [Docker section](./DOCKER.md).
-
-The `compose.yaml` file, differs from `compose-mariadb.yaml` because contains the `bookstore` stanza which permits building the container using `docker compose` or `podman-compose`.
-
-```yaml
-version: "3.9"
-services:
-  # Use root/r00tpa55 as user/password credentials
-  bookstoredb:
-    image: mariadb
-    restart: unless-stopped
-    ports:
-      - "3306:3306"
-    environment:
-      MARIADB_ROOT_PASSWORD: r00tpa55
-    networks:
-      - jspnet
-    volumes:
-      - jsp_bookstoredata:/var/lib/mysql
-
-  bookstore:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    ports:
-      - "8080:8080"
-    networks:
-      - jspnet
-    
-  adminer:
-    image: adminer:latest
-    restart: unless-stopped
-    environment:
-      ADMINER_DEFAULT_SERVER: bookstoredb
-      ADMINER_DESIGN: dracula # hever
-    ports:
-      - "8081:8080"
-    networks:
-      - jspnet
-
-networks:
-  jspnet:
-    driver: bridge
-
-volumes:
-  jsp_bookstoredata:
-    external: true
 ```
