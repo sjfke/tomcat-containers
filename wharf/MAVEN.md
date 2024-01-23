@@ -43,16 +43,16 @@ PS C:\Users\sjfke> get-content C:\Users\sjfke\.m2\settings.xml
 * [Apache Maven Project - WAR Plugin Usage](https://maven.apache.org/plugins/maven-war-plugin/usage.html)
 * [Apache Maven Project - WAR Plugin Documentation](https://maven.apache.org/plugins/maven-war-plugin/plugin-info.html)
 * [How to Deploy a WAR File to Tomcat](https://www.baeldung.com/tomcat-deploy-war)
+* [10 best practices to build a Java container with Docker](https://snyk.io/blog/best-practices-to-build-java-containers-with-docker/)
 
 ### Installing Maven
 
 * [Installing Apache Maven](https://maven.apache.org/install.html)
-* [How to Install Maven on Windows](https://phoenixnap.com/kb/install-maven-windows)
 
-Follow [How to Install Maven on Windows](./how-to-install-maven-on-windows) use
+Follow [How to Install Maven on Windows](https://phoenixnap.com/kb/install-maven-windows) instructions
 
-* [Download lateste Maven](https://maven.apache.org/download.cgi), such as `apache-maven-3.9.6`
-* Create environment `MAVEN_HOME` = `C:\Program Files\Maven\apache-maven-3.9.6`
+* [Download latest Maven](https://maven.apache.org/download.cgi), such as `apache-maven-3.9.6`
+* Create `System` environment `MAVEN_HOME` = `C:\Program Files\Maven\apache-maven-3.9.6`
 * Update `Path`, add `%MAVEN_HOME%\bin`
 
 ```console
