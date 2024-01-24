@@ -203,67 +203,80 @@ REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
 * [GitHub - Distribution](https://github.com/distribution/distribution)
 * [Registry - Distribution implementation for storing and distributing of container images and artifacts](https://hub.docker.com/_/registry)
 
-Rewrite this to handle bookstore bit `Ubuntu` example
+Although this permits working locally the `registry` there is no easy way to manage the images. In fact the `/etc/docker/registry/config.yml` does not permit deleting images. So easiest to run the container in an `ephemeral` sense, so when the container is deleted all the contents are lost.
 
-Create a `REGISTRY.md` README and `REGISTRY` folder containing the YAML files and Certificate instructions
+There are some rough notes in the [Registry](./Registry/) folder, which and example `podman play kube` deployment file using a persistent volume.
+
+#### Start local registry
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
-
 PS C:\Users\sjfke> podman run -d -p 5000:5000 --name registry registry:2.8.3
 PS C:\Users\sjfke> podman images
-REPOSITORY                  TAG                   IMAGE ID      CREATED        SIZE
-docker.io/library/registry  2.8.3                 909c3ff012b7  7 weeks ago    26 MB
-
-PS C:\Users\sjfke> podman logs registry
-
-PS C:\Users\sjfke> podman pull ubuntu
-PS C:\Users\sjfke> podman image list --all
 REPOSITORY                  TAG         IMAGE ID      CREATED      SIZE
-docker.io/library/ubuntu    latest      e34e831650c1  12 days ago  80.4 MB
-docker.io/library/registry  2.8.3       909c3ff012b7  7 weeks ago  26 MB
-
-PS C:\Users\sjfke> podman tag ubuntu localhost:5000/ubuntu
-sjfke@Preston> podman image list --all
-REPOSITORY                  TAG         IMAGE ID      CREATED      SIZE
-localhost:5000/ubuntu       latest      e34e831650c1  12 days ago  80.4 MB
-docker.io/library/ubuntu    latest      e34e831650c1  12 days ago  80.4 MB
-docker.io/library/registry  2.8.3       909c3ff012b7  7 weeks ago  26 MB
-
-PS C:\Users\sjfke> podman push --tls-verify=False localhost:5000/ubuntu
-PS C:\Users\sjfke> podman search --tls-verify=False localhost:5000/
-NAME                   DESCRIPTION
-localhost:5000/ubuntu
-
-PS C:\Users\sjfke> podman image rm localhost:5000/ubuntu
-Untagged: localhost:5000/ubuntu:latest
-
-PS C:\Users\sjfke> podman image list --all
-REPOSITORY                  TAG         IMAGE ID      CREATED      SIZE
-docker.io/library/ubuntu    latest      e34e831650c1  12 days ago  80.4 MB
-docker.io/library/registry  2.8.3       909c3ff012b7  7 weeks ago  26 MB
-
-PS C:\Users\sjfke> podman pull --tls-verify=False localhost:5000/ubuntu
-Trying to pull localhost:5000/ubuntu:latest...
-Getting image source signatures
-Copying blob sha256:3e44a6e3ff1ebf307b39428de1aea60c86eab7406322a31bd67f41b5cde8d573
-Copying config sha256:e34e831650c1bb0be9b6f61c6755749cb8ea2053ba91c6cda27fded9e089811f
-Writing manifest to image destination
-e34e831650c1bb0be9b6f61c6755749cb8ea2053ba91c6cda27fded9e089811f
-
-PS C:\Users\sjfke> podman image list --all
-REPOSITORY                  TAG         IMAGE ID      CREATED      SIZE
-localhost:5000/ubuntu       latest      e34e831650c1  12 days ago  80.4 MB
-docker.io/library/ubuntu    latest      e34e831650c1  12 days ago  80.4 MB
 docker.io/library/registry  2.8.3       909c3ff012b7  7 weeks ago  26 MB
 ```
 
+#### Build for local registry
+
 ```console
-PS C:\Users\sjfke> podman generate kube --type deployment registry -f registry-deployment.yaml
+# Folder: C:\Users\sjfke\Github\tomcat-containers
+PS C:\Users\sjfke> podman image list --all
+REPOSITORY  TAG         IMAGE ID    CREATED     SIZE
+localhost/bookstore       latest                0143f578fd61  26 hours ago    489 MB
+docker.io/library/tomcat  9.0.71-jdk17-temurin  b07e16b11088  11 months ago   482 MB
+
+PS C:\Users\sjfke> podman build --tag localhost/bookstore --squash -f .\Dockerfile
+
+PS C:\Users\sjfke> podman image list --all
+REPOSITORY                  TAG                   IMAGE ID      CREATED         SIZE
+localhost/bookstore         latest                dbfa4defcccb  18 minutes ago  489 MB
+docker.io/library/registry  2.8.3                 909c3ff012b7  7 weeks ago     26 MB
+docker.io/library/tomcat    9.0.71-jdk17-temurin  b07e16b11088  11 months ago   482 MB
+
+PS C:\Users\sjfke> podman tag localhost/bookstore localhost:5000/bookstore:1.0
+PS C:\Users\sjfke> podman image list --all
+REPOSITORY                  TAG                   IMAGE ID      CREATED         SIZE
+localhost:5000/bookstore    1.0                   dbfa4defcccb  25 minutes ago  489 MB
+localhost/bookstore         latest                dbfa4defcccb  25 minutes ago  489 MB
+docker.io/library/registry  2.8.3                 909c3ff012b7  7 weeks ago     26 MB
+docker.io/library/tomcat    9.0.71-jdk17-temurin  b07e16b11088  11 months ago   482 MB
+
+PS C:\Users\sjfke> podman push --tls-verify=False localhost:5000/bookstore:1.0
+PS C:\Users\sjfke> podman search --tls-verify=False localhost:5000/
+NAME                      DESCRIPTION
+localhost:5000/bookstore
+
+PS C:\Users\sjfke> podman image rm localhost:5000/bookstore:1.0
+```
+
+#### Start database for local registry test
+
+```console
+PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml     # Start Adminer
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml # Start MariaDB
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                # Check MariDB is up and accessible
+PS C:\Users\sjfke> start http://localhost:8081                            # Check Adminer is working
+```
+
+#### Pull and test local registry
+
+```console
+PS C:\Users\sjfke> podman pull --tls-verify=False localhost:5000/bookstore:1.0
+PS C:\Users\sjfke> podman play kube --start --tls-verify=False .\bookstore-registry-deployment.yaml
+PS C:\Users\sjfke> start http://localhost:8080
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore
+
+PS C:\Users\sjfke> podman play kube --down --tls-verify=False .\bookstore-registry-deployment.yaml  # Delete Bookstore deployment
+PS C:\Users\sjfke> podman play kube --down .\adminer-deployment.yaml
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml
+```
+
+#### Stop and clean-up local registry
+
+```console
 PS C:\Users\sjfke> podman stop registry
 PS C:\Users\sjfke> podman rm registry
-PS C:\Users\sjfke> podman image list --all
-REPOSITORY                  TAG         IMAGE ID      CREATED      SIZE
-docker.io/library/ubuntu    latest      e34e831650c1  12 days ago  80.4 MB
-docker.io/library/registry  2.8.3       909c3ff012b7  7 weeks ago  26 MB
+PS C:\Users\sjfke> podman image rm localhost:5000/bookstore:1.0
+PS C:\Users\sjfke> podman image rm localhost/bookstore
 ```

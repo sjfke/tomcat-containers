@@ -1,0 +1,23 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore
+  labels:
+    app: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore
+  template:
+    metadata:
+      labels:
+        app: bookstore
+    spec:
+      containers:
+        - name: bookstore
+          image: localhost:5000/bookstore:1.0 # to use the local registry
+          ports:
+            - containerPort: 8080
+              hostPort: 8080
