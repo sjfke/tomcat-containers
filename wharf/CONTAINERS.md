@@ -123,25 +123,25 @@ PS C:\Users\sjfke> start http://localhost:8081                    # Check Admine
 # Folder: C:\Users\sjfke\github\tomcat-containers
 
 PS C:\Users\sjfke> docker image list --all
-REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
-adminer      latest    fd3b195a8d79   8 hours ago   250MB
-mariadb      latest    3e87f8bfed4e   7 weeks ago   404MB
+REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+adminer      latest    fd3b195a8d79   2 weeks ago    250MB
+mariadb      latest    2b54778e06a3   2 months ago   404MB
 
 PS C:\Users\sjfke> docker build --tag bookstore -f .\Dockerfile $PWD
+PS C:\Users\sjfke> docker scout quickview  # optionally check image vulnerabilities and recommendations
 PS C:\Users\sjfke> docker image list --all
 REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
-adminer      latest    fd3b195a8d79   8 hours ago    250MB
-bookstore    latest    cbf18a39836f   18 hours ago   482MB
-mariadb      latest    3e87f8bfed4e   7 weeks ago    404MB
-
+bookstore    latest    d20191c70a54   5 days ago     482MB
+adminer      latest    fd3b195a8d79   2 weeks ago    250MB
+mariadb      latest    2b54778e06a3   2 months ago   404MB
 
 PS C:\Users\sjfke> docker tag bookstore:latest docker.io/sjfke/bookstore:1.0
 PS C:\Users\sjfke> docker image list --all
 REPOSITORY        TAG       IMAGE ID       CREATED        SIZE
-adminer           latest    fd3b195a8d79   8 hours ago    250MB
-bookstore         latest    cbf18a39836f   18 hours ago   482MB
-sjfke/bookstore   1.0       cbf18a39836f   18 hours ago   482MB
-mariadb           latest    3e87f8bfed4e   7 weeks ago    404MB
+sjfke/bookstore   1.0       d20191c70a54   5 days ago     482MB
+bookstore         latest    d20191c70a54   5 days ago     482MB
+adminer           latest    fd3b195a8d79   2 weeks ago    250MB
+mariadb           latest    2b54778e06a3   2 months ago   404MB
 ```
 
 #### Docker Push and Test Hosted DockerHub container
@@ -153,11 +153,11 @@ PS C:\Users\sjfke> start https://docker.io # login using your credentials and cr
 
 PS C:\Users\sjfke> docker push docker.io/sjfke/bookstore:1.0                    # Push container
 PS C:\Users\sjfke> docker image rm docker.io/sjfke/bookstore:1.0                # Remove local container
-PS C:\Users\sjfke> docker image list --all
+PS C:\Users\sjfke>  docker image list --all
 REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
-adminer      latest    fd3b195a8d79   8 hours ago    250MB
-bookstore    latest    cbf18a39836f   18 hours ago   482MB
-mariadb      latest    3e87f8bfed4e   7 weeks ago    404MB
+bookstore    latest    d20191c70a54   5 days ago     482MB
+adminer      latest    fd3b195a8d79   2 weeks ago    250MB
+mariadb      latest    2b54778e06a3   2 months ago   404MB
 
 PS C:\Users\sjfke> docker pull docker.io/sjfke/bookstore:1.0                    # Redundant
 PS C:\Users\sjfke> docker compose -f .\compose-docker-io.yaml up -d             # Deploy Remote Bookstore image
@@ -170,10 +170,11 @@ PS C:\Users\sjfke> docker compose -f .\compose-docker-io.yaml down              
 
 #### Docker Cleanup
 
-Container clean up should not be done by `docker compose -f .\compose-docker-io.yaml down`
+Container clean up using `docker compose`
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
+PS C:\Users\sjfke> docker compose -f .\compose-docker-io.yaml down
 PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml down                # Delete Adminer and MariaDB containers
 ```
 
@@ -188,12 +189,10 @@ bookstore         latest    cbf18a39836f   18 hours ago   482MB
 sjfke/bookstore   1.0       cbf18a39836f   18 hours ago   482MB
 mariadb           latest    3e87f8bfed4e   7 weeks ago    404MB
 
-PS C:\Users\sjfke> docker image rm adminer 
-PS C:\Users\sjfke> docker image rm bookstore
+PS C:\Users\sjfke> docker image rm bookstore adminer mariadb
 PS C:\Users\sjfke> docker image rm sjfke/bookstore:1.0
-PS C:\Users\sjfke> docker image rm mariadb
 
-docker image list --all
+PS C:\Users\sjfke> docker image list --all
 REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
 ```
 
@@ -208,7 +207,7 @@ Although this permits working locally the `registry` there is no easy way to man
 
 There are rough notes in the [Registry](./Registry/) folder, for deploying with a persistent volume using `podman` and `docker` to avoid having to repopulate each time it is started.
 
-#### Start local registry
+#### Podman Start local registry
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
@@ -218,7 +217,7 @@ REPOSITORY                  TAG         IMAGE ID      CREATED      SIZE
 docker.io/library/registry  2.8.3                 909c3ff012b7  8 weeks ago    26 MB
 ```
 
-#### Build for local registry
+#### Podman Build for local registry
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
@@ -251,7 +250,7 @@ localhost:5000/bookstore
 PS C:\Users\sjfke> podman image rm localhost:5000/bookstore:1.0
 ```
 
-#### Start database for local registry test
+#### Podman Start database for local registry test
 
 ```console
 PS C:\Users\sjfke> podman secret list                                                      # check secrets are loaded
@@ -263,7 +262,7 @@ PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                      
 PS C:\Users\sjfke> start http://localhost:8081                                             # Check Adminer
 ```
 
-#### Pull and test local registry
+#### Podman Pull and test local registry
 
 ```console
 PS C:\Users\sjfke> podman pull --tls-verify=False localhost:5000/bookstore:1.0
@@ -276,7 +275,7 @@ PS C:\Users\sjfke> podman play kube --down .\adminer-deployment.yaml            
 PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                            # Delete Bookstore database deployment
 ```
 
-#### Stop and clean-up local registry
+#### Podman Stop and clean-up local registry
 
 ```console
 PS C:\Users\sjfke> podman stop registry
@@ -284,4 +283,97 @@ PS C:\Users\sjfke> podman rm registry
 PS C:\Users\sjfke> podman image rm localhost:5000/bookstore:1.0
 PS C:\Users\sjfke> podman image rm localhost/bookstore
 PS C:\Users\sjfke> podman rmi --all
+```
+
+#### Docker Start local registry
+
+Unlike `podman` where the `--tls-verify=False` argument is used, with `Docker Desktop` you have to define `insecure-registries` and restart the `Docker Desktop`.
+
+For `Docker Desktop` on Windows, select `Settings` > `Docker Engine` add the `insecure-registries` entry as **exactly** shown, and then `Apply & restart`
+
+```json
+{
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "20GB",
+      "enabled": true
+    }
+  },
+  "experimental": false,
+  "insecure-registries": [
+    "localhost:5000"
+  ]
+}
+```
+
+Having added the `insecure-registries` and restarted `Docker Desktop`, start the local registry
+
+```console
+# Folder: C:\Users\sjfke\Github\tomcat-containers
+PS C:\Users\sjfke> docker run -d -p 5000:5000 --name registry registry:2.8.3
+PS C:\Users\sjfke> docker image list --all
+REPOSITORY   TAG       IMAGE ID       CREATED      SIZE
+registry     2.8.3     a8781fe3b7a2   2 days ago   25.4MB
+```
+
+##### Docker Build for local registry
+
+```console
+# Folder: C:\Users\sjfke\Github\tomcat-containers
+PS C:\Users\sjfke> docker image list --all
+REPOSITORY   TAG       IMAGE ID       CREATED      SIZE
+registry     2.8.3     a8781fe3b7a2   2 days ago   25.4MB
+
+PS C:\Users\sjfke> mvn -f .\Bookstore\pom.xml clean package
+PS C:\Users\sjfke> docker build --tag localhost/bookstore -f .\Dockerfile $PWD
+PS C:\Users\sjfke> docker scout quickview  # optionally check image vulnerabilities and recommendations
+
+PS C:\Users\sjfke> docker image list --all
+REPOSITORY            TAG       IMAGE ID       CREATED         SIZE
+localhost/bookstore   latest    39b2c55040c3   2 minutes ago   482MB
+registry              2.8.3     a8781fe3b7a2   2 days ago      25.4MB
+
+PS C:\Users\sjfke> docker tag localhost/bookstore localhost:5000/bookstore:1.0
+PS C:\Users\sjfke>  docker image list --all
+REPOSITORY                 TAG       IMAGE ID       CREATED          SIZE
+localhost:5000/bookstore   1.0       39b2c55040c3   10 minutes ago   482MB
+localhost/bookstore        latest    39b2c55040c3   10 minutes ago   482MB
+registry                   2.8.3     a8781fe3b7a2   2 days ago       25.4MB
+
+PS C:\Users\sjfke> docker push localhost:5000/bookstore:1.0
+PS C:\Users\sjfke> docker search localhost:5000/             # returns a 404
+
+PS C:\Users\sjfke> docker image rm localhost:5000/bookstore:1.0
+```
+
+##### Docker Start database for local registry test
+
+```console
+# using compose-mariadb.yaml
+PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d # Start Adminer and MariaDB
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306        # Check MariDB is up and accessible
+PS C:\Users\sjfke> start http://localhost:8081                    # Check Adminer is working
+```
+
+##### Docker Pull and test local registry
+
+```console
+PS C:\Users\sjfke> docker pull localhost:5000/bookstore:1.0         # Redundant
+PS C:\Users\sjfke> docker compose -f .\compose-bookstore.yaml up -d # Deploy Remote Bookstore image
+
+PS C:\Users\sjfke> start http://localhost:8080                      # Check Tomcat Server
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore            # Check application
+
+PS C:\Users\sjfke> docker compose -f .\compose-bookstore.yaml down  # Delete Bookstore container
+PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml down    # Start Adminer and MariaDB
+```
+
+##### Docker Stop and clean-up local registry
+
+```console
+PS C:\Users\sjfke> docker remove --force registry
+PS C:\Users\sjfke> docker image remove adminer mariadb
+PS C:\Users\sjfke> docker image remove localhost/bookstore
+PS C:\Users\sjfke> docker image remove localhost:5000/bookstore:1.0
+PS C:\Users\sjfke> docker image remove registry:2.8.3
 ```
