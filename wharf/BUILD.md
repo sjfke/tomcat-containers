@@ -29,7 +29,7 @@ Assuming you have `MariaDB` running in your chosen container environment.
 ```powershell
 PS C:\Users\sjfke> docker volume ls                                   # jsp_bookstoredata volume exists
 PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
-PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh # container interactive shell
+PS C:\Users\sjfke> docker exec -it tomcat-containers-bookstoredb-1 sh # container interactive shell
 ```
 
 * `podman-compose` open a terminal on the `tomcat-containers-bookstoredb-1` container, volume see [Podman Kube prerequisites](PODMAN-KUBE.md#prerequisites-for-kubernetes-files)
