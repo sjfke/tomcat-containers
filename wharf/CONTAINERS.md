@@ -209,6 +209,23 @@ There are rough notes in the [Registry](./Registry/) folder, for deploying with 
 
 #### Podman Start local registry
 
+While is is possible to use `--tls-verify=False` on `podman push`, `podman pull` and `podman search` commands, it is easier to define an `insecure registry` which is mandatory with `docker`.
+
+```console
+PS C:\Users\sjfke> podman machine ssh
+$ sudo vi /etc/containers/registries.conf.d/007-localhost.conf
+$ cat /etc/containers/registries.conf.d/007-localhost.conf
+[[registry]]
+location = "localhost:5000"
+insecure = true
+$ exit
+
+PS C:\Users\sjfke> podman machine stop
+PS C:\Users\sjfke> podman machine start
+```
+
+Having added an `insecure-registry` and restarted `podman machine`, start the local registry
+
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
 PS C:\Users\sjfke> podman run -d -p 5000:5000 --name registry registry:2.8.3
@@ -235,15 +252,15 @@ docker.io/library/registry  2.8.3                 909c3ff012b7  8 weeks ago    2
 docker.io/library/tomcat    9.0.71-jdk17-temurin  b07e16b11088  11 months ago  482 MB
 
 PS C:\Users\sjfke> podman tag localhost/bookstore localhost:5000/bookstore:1.0
-PS C:\Users\sjfke>  podman image list --all
+PS C:\Users\sjfke> podman image list --all
 REPOSITORY                  TAG                   IMAGE ID      CREATED        SIZE
 localhost:5000/bookstore    1.0                   430a257cdc4b  2 minutes ago  489 MB
 localhost/bookstore         latest                430a257cdc4b  2 minutes ago  489 MB
 docker.io/library/registry  2.8.3                 909c3ff012b7  8 weeks ago    26 MB
 docker.io/library/tomcat    9.0.71-jdk17-temurin  b07e16b11088  11 months ago  482 MB
 
-PS C:\Users\sjfke> podman push --tls-verify=False localhost:5000/bookstore:1.0
-PS C:\Users\sjfke> podman search --tls-verify=False localhost:5000/
+PS C:\Users\sjfke> podman push localhost:5000/bookstore:1.0
+PS C:\Users\sjfke> podman search localhost:5000/
 NAME                      DESCRIPTION
 localhost:5000/bookstore
 
@@ -253,8 +270,8 @@ PS C:\Users\sjfke> podman image rm localhost:5000/bookstore:1.0
 #### Podman Start database for local registry test
 
 ```console
-PS C:\Users\sjfke> podman secret list                                                      # check secrets are loaded
-PS C:\Users\sjfke> podman volume list                                                      # check volume exists
+PS C:\Users\sjfke> podman secret list                                                      # check `bookstore-secrets` exists
+PS C:\Users\sjfke> podman volume list                                                      # check `jsp_bookstoredata` exists
 PS C:\Users\sjfke> podman network ls                                                       # check `jspnet` network exists
 PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deployment.yaml     # Deploy and start Adminer
 PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # Deploy and start MariaDB
@@ -265,31 +282,34 @@ PS C:\Users\sjfke> start http://localhost:8081                                  
 #### Podman Pull and test local registry
 
 ```console
-PS C:\Users\sjfke> podman pull --tls-verify=False localhost:5000/bookstore:1.0
-PS C:\Users\sjfke> podman play kube --start --tls-verify=False --network jspnet .\bookstore-registry-deployment.yaml
+PS C:\Users\sjfke> podman pull localhost:5000/bookstore:1.0
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-registry-deployment.yaml
 PS C:\Users\sjfke> start http://localhost:8080
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore
 
-PS C:\Users\sjfke> podman play kube --down --tls-verify=False .\bookstore-registry-deployment.yaml  # Delete Bookstore deployment
-PS C:\Users\sjfke> podman play kube --down .\adminer-deployment.yaml                                # Delete Adminer deployment
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                            # Delete Bookstore database deployment
+PS C:\Users\sjfke> podman play kube --down .\bookstore-registry-deployment.yaml  # Delete Bookstore deployment
+PS C:\Users\sjfke> podman play kube --down .\adminer-deployment.yaml             # Delete Adminer deployment
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml         # Delete Bookstore database deployment
 ```
 
 #### Podman Stop and clean-up local registry
 
 ```console
-PS C:\Users\sjfke> podman stop registry
-PS C:\Users\sjfke> podman rm registry
+PS C:\Users\sjfke> podman rm --force registry
 PS C:\Users\sjfke> podman image rm localhost:5000/bookstore:1.0
 PS C:\Users\sjfke> podman image rm localhost/bookstore
 PS C:\Users\sjfke> podman rmi --all
+# Clean up `registry` volume, whatever `podman` called it
+PS C:\Users\sjfke> podman volume remove f6b0980061b2291dc0ac2a3bbcc114d44faceba989b2304a72b647863ab91b75
 ```
 
 #### Docker Start local registry
 
-Unlike `podman` where the `--tls-verify=False` argument is used, with `Docker Desktop` you have to define `insecure-registries` and restart the `Docker Desktop`.
+With `Docker Desktop` you have to define `insecure-registries` and restart the `Docker Desktop`.
 
-For `Docker Desktop` on Windows, select `Settings` > `Docker Engine` add the `insecure-registries` entry as **exactly** shown, and then `Apply & restart`
+For `Docker Desktop` on Windows, select `Settings` > `Docker Engine` add the `insecure-registries` entry as shown, and then `Apply & restart`
+
+> **Warning:** syntax errors can cause `Docker Desktop` to lock up and require a `factory reset`
 
 ```json
 {
@@ -334,7 +354,7 @@ localhost/bookstore   latest    39b2c55040c3   2 minutes ago   482MB
 registry              2.8.3     a8781fe3b7a2   2 days ago      25.4MB
 
 PS C:\Users\sjfke> docker tag localhost/bookstore localhost:5000/bookstore:1.0
-PS C:\Users\sjfke>  docker image list --all
+PS C:\Users\sjfke> docker image list --all
 REPOSITORY                 TAG       IMAGE ID       CREATED          SIZE
 localhost:5000/bookstore   1.0       39b2c55040c3   10 minutes ago   482MB
 localhost/bookstore        latest    39b2c55040c3   10 minutes ago   482MB
@@ -365,7 +385,7 @@ PS C:\Users\sjfke> start http://localhost:8080                      # Check Tomc
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore            # Check application
 
 PS C:\Users\sjfke> docker compose -f .\compose-bookstore.yaml down  # Delete Bookstore container
-PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml down    # Start Adminer and MariaDB
+PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml down    # Delete Adminer and MariaDB containers
 ```
 
 ##### Docker Stop and clean-up local registry

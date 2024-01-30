@@ -79,3 +79,43 @@ PS C:\Users\sjfke> podman volume create registry-data
 PS C:\Users\sjfke> podman play kube --start .\registry-deployment.yaml
 PS C:\Users\sjfke> podman play kube --down .\registry-deployment.yaml
 ```
+
+## Creating an insecure registry
+
+### Podman
+
+```console
+PS C:\Users\sjfke> podman machine ssh
+$ cd /etc/containers/registries.conf.d
+$ sudo vi /etc/containers/registries.conf.d/007-localhost.conf
+$ cat /etc/containers/registries.conf.d/007-localhost.conf
+[[registry]]
+location = "localhost:5000"
+insecure = true
+
+PS C:\Users\sjfke> podman machine stop
+PS C:\Users\sjfke> podman machine start
+```
+
+### Docker
+
+With `Docker Desktop` you have to define `insecure-registries` and restart the `Docker Desktop`.
+
+For `Docker Desktop` on Windows, select `Settings` > `Docker Engine` add the `insecure-registries` entry as shown, and then `Apply & restart`
+
+> **Warning:** syntax errors can cause `Docker Desktop` to lock up and require a `factory reset`
+
+```json
+{
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "20GB",
+      "enabled": true
+    }
+  },
+  "experimental": false,
+  "insecure-registries": [
+    "localhost:5000"
+  ]
+}
+```
