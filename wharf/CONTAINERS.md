@@ -371,21 +371,22 @@ PS C:\Users\sjfke> docker image rm localhost:5000/bookstore:1.0
 ```console
 # using compose-mariadb.yaml
 PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d # Start Adminer and MariaDB
-PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306        # Check MariDB is up and accessible
-PS C:\Users\sjfke> start http://localhost:8081                    # Check Adminer is working
+
 ```
 
 ##### Docker Pull and test local registry
 
 ```console
 PS C:\Users\sjfke> docker pull localhost:5000/bookstore:1.0         # Redundant
-PS C:\Users\sjfke> docker compose -f .\compose-bookstore.yaml up -d # Deploy Remote Bookstore image
+PS C:\Users\sjfke> docker compose -f .\compose-local-registry up -d # Deploy Remote Bookstore image
+
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306          # Check MariDB is up and accessible
+PS C:\Users\sjfke> start http://localhost:8081                      # Check Adminer is working
 
 PS C:\Users\sjfke> start http://localhost:8080                      # Check Tomcat Server
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore            # Check application
 
-PS C:\Users\sjfke> docker compose -f .\compose-bookstore.yaml down  # Delete Bookstore container
-PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml down    # Delete Adminer and MariaDB containers
+PS C:\Users\sjfke> docker compose -f .\compose-local-registry down  # Delete Bookstore container
 ```
 
 ##### Docker Stop and clean-up local registry
