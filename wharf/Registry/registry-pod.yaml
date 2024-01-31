@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: registry-pod
+  name: registry-pod
+spec:
+  containers:
+  - args:
+    - /etc/docker/registry/config.yml
+    image: docker.io/library/registry:2.8.3
+    name: registry
+    ports:
+    - containerPort: 5000
+      hostPort: 5000
+    volumeMounts:
+    - mountPath: /var/lib/registry
+      name: registry-data-pvc
+  volumes:
+  - name: registry-data-pvc
+    persistentVolumeClaim:
+      claimName: registry-data
