@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: adminer
+  name: adminer
+spec:
+  containers:
+  - env:
+    - name: ADMINER_DEFAULT_SERVER
+      value: bookstoredb
+    - name: ADMINER_DESIGN
+      value: dracula
+    image: docker.io/library/adminer:latest
+    name: adminer
+    ports:
+    - containerPort: 8080
+      hostPort: 8081
