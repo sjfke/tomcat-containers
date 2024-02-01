@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: bookstore
+  name: bookstore
+spec:
+  containers:
+  - image: localhost/bookstore:latest
+    name: bookstore
+    ports:
+    - containerPort: 8080
+      hostPort: 8080
