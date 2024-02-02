@@ -29,7 +29,7 @@ Assuming you have `MariaDB` running in your chosen container environment.
 ```powershell
 PS C:\Users\sjfke> docker volume ls                                   # jsp_bookstoredata volume exists
 PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
-PS C:\Users\sjfke> docker exec -it tomcat-containers-bookstoredb-1 sh # container interactive shell
+PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh # container interactive shell
 ```
 
 * `podman-compose` open a terminal on the `tomcat-containers-bookstoredb-1` container, volume see [Podman Kube prerequisites](PODMAN-KUBE.md#prerequisites-for-kubernetes-files)
@@ -44,12 +44,12 @@ PS C:\Users\sjfke> .\venv\Scripts\activate
 * `podman play kube` open a terminal on the `bookstoredb-pod-bookstoredb` container, volume see [Podman Kube prerequisites](PODMAN-KUBE.md#prerequisites-for-kubernetes-files)
 
 ```powershell
-PS C:\Users\sjfke> podman secret list                                     # list podman cluster secrets
-PS C:\Users\sjfke> podman kube play secrets.yaml                          # load secret if necessary
-PS C:\Users\sjfke> podman volume ls                                       # jsp_bookstoredata volume exists
-PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml     # adminer using podman-default-kube-network
-PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml # mariadb using podman-default-kube-network
-PS C:\Users\sjfke> podman exec -it bookstoredb-pod-bookstoredb sh         # container interactive shell
+PS C:\Users\sjfke> podman secret list                              # list podman cluster secrets
+PS C:\Users\sjfke> podman kube play secrets.yaml                   # load secret if necessary
+PS C:\Users\sjfke> podman volume ls                                # jsp_bookstoredata volume exists
+PS C:\Users\sjfke> podman play kube --start .\adminer-pod.yaml     # adminer using podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-pod.yaml # mariadb using podman-default-kube-network
+PS C:\Users\sjfke> podman exec -it bookstoredb-pod-bookstoredb sh  # container interactive shell
 ```
 
 > ***Note:***
@@ -105,7 +105,7 @@ MariaDB [Bookstore]> exit;
 
 ## Using *Adminer* Web Interface
 
-All of the above steps can be done and checked using through [adminer](http://localhost:8395/).
+All of the above steps can be done and checked using through [adminer](http://localhost:8081/).
 
 ```yaml
 System: MySQL
@@ -332,7 +332,7 @@ Follow the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-cre
 
 ## 10. Deploying and Testing the Application
 
-This section differs from the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) because the database server and the `Bookstore` application will also be deployed to `Docker` or `Podman`. Follow the [Docker](./DOCKER.md) or [Podman](./PODMAN.md) to setup your environment.
+This section differs from the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example) because the database server and the `Bookstore` application will also be deployed to `Docker` or `Podman`. Follow the [Docker](./DOCKER.md) or [Podman](./PODMAN.md) ReadMe's to setup your environment.
 
 It permits debugging when following the steps in the [tutorial](https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete-crud-example)
 
@@ -486,22 +486,22 @@ sjfke@unix $ nc -i 5 localhost 3306                                       # Chec
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
-PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d         # Start MariaDB and Adminer
-PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                # Check MariDB is up and accessible
-sjfke@unix $ nc -i 5 localhost 3306                                       # Check MariDB is up and accessible
+PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d  # Start MariaDB and Adminer
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306         # Check MariDB is up and accessible
+sjfke@unix$ nc -i 5 localhost 3306                                 # Check MariDB is up and accessible
 ```
 
 ***Podman Kube***
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
-PS C:\Users\sjfke> podman secret list                                     # check secrets are loaded
-PS C:\Users\sjfke> podman volume list                                     # check volume exists
-PS C:\Users\sjfke> podman network ls                                      # check `jspnet` network exists
-PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml     # Start Adminer
-PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml # Start MariaDB
-PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                # Check MariDB is up and accessible
-
+PS C:\Users\sjfke> podman secret list                              # check secrets are loaded
+PS C:\Users\sjfke> podman volume list                              # check volume exists
+PS C:\Users\sjfke> podman network ls                               # check `jspnet` network exists
+PS C:\Users\sjfke> podman play kube --start .\adminer-pod.yaml     # Start Adminer
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-pod.yaml # Start MariaDB
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306         # Check MariDB is up and accessible
+sjfke@unix$ nc -i 5 localhost 3306                                 # Check MariDB is up and accessible
 ```
 
 On the `Servers` tab, *right-click* on the `Tomcat v9 Server at localhost`, and select `Start`
@@ -513,9 +513,9 @@ PS C:\Users\sjfke> start http://localhost:8081           # Check Adminer is work
 PS C:\Users\sjfke> start http://localhost:8080           # Check Tomcat Server is working
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore # Check application is working
 
-sjfke@unix $ firefox http://localhost:8081               # Check Adminer is working
-sjfke@unix $ firefox http://localhost:8080               # Check Tomcat Server is working
-sjfke@unix $ firefox http://localhost:8080/Bookstore     # Check application is working
+sjfke@unix$ firefox http://localhost:8081                # Check Adminer is working
+sjfke@unix$ firefox http://localhost:8080                # Check Tomcat Server is working
+sjfke@unix$ firefox http://localhost:8080/Bookstore      # Check application is working
 ```
 
 Stopping and removing the database deployment
@@ -524,23 +524,22 @@ Stopping and removing the database deployment
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
-(venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb.yaml down   # Ensure MariaDB and Adminer are stopped
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb.yaml down # Ensure MariaDB and Adminer are stopped
 ```
 
 ***Docker***
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
-PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml down          # Ensure MariaDB and Adminer are stopped
+PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml down        # Ensure MariaDB and Adminer are stopped
 ```
 
 ***Podman Kube***
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
-PS C:\Users\sjfke> podman secret list                                     # check secrets are loaded
-PS C:\Users\sjfke> podman play kube --down .\adminer-deployment.yaml      # Ensure Adminer is stopped
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml  # Ensure MariaDB is stopped
+PS C:\Users\sjfke> podman play kube --down .\adminer-pod.yaml           # Ensure Adminer is stopped
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-pod.yaml       # Ensure MariaDB is stopped
 ```
 
 ### Testing the `Bookstore` application using `compose`
@@ -562,31 +561,32 @@ PS C:\Users\sjfke> start http://localhost:8080/Bookstore                   # Che
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
-PS C:\Users\sjfke> docker compose -f .\compose-bookstore.yaml up -d # Start Bookstore, MariaDB and Adminer
-PS C:\Users\sjfke> start http://localhost:8081                      # Check Adminer is working
-PS C:\Users\sjfke> start http://localhost:8080                      # Check Tomcat Server is working
-PS C:\Users\sjfke> start http://localhost:8080/Bookstore            # Check application is working
-PS C:\Users\sjfke> docker compose -f .\compose-bookstore.yaml down  # Start Bookstore, MariaDB and Adminer
+PS C:\Users\sjfke> docker compose -f .\compose-bookstore.yaml up -d        # Start Bookstore, MariaDB and Adminer
+PS C:\Users\sjfke> start http://localhost:8081                             # Check Adminer is working
+PS C:\Users\sjfke> start http://localhost:8080                             # Check Tomcat Server is working
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore                   # Check application is working
+PS C:\Users\sjfke> docker compose -f .\compose-bookstore.yaml down         # Start Bookstore, MariaDB and Adminer
 ```
 
 ### Testing the `Bookstore` application using `Podman Kube`
 
 ```console
-# Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
-PS C:\Users\sjfke> podman secret list                                                      # check secrets are loaded
-PS C:\Users\sjfke> podman volume list                                                      # check volume exists
-PS C:\Users\sjfke> podman network ls                                                       # check `jspnet` network exists
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deployment.yaml     # Deploy and start Adminer
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # Deploy and start MariaDB
-PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                                 # Check MariDB is up and accessible
+# Folder: C:\Users\sjfke\Github\tomcat-containers
+PS C:\Users\sjfke> podman secret list                                               # check secrets are loaded
+PS C:\Users\sjfke> podman volume list                                               # check volume exists
+PS C:\Users\sjfke> podman network ls                                                # check `jspnet` network exists
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-pod.yaml     # Deploy and start Adminer
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-pod.yaml # Deploy and start MariaDB
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                          # Check MariDB is up and accessible
+sjfke@unix$ nc -i 5 localhost 3306                                                  # Check MariDB is up and accessible
 
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-deployment.yaml   # Deploy and start Bookstore
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-pod.yaml   # Deploy and start Bookstore
 
-PS C:\Users\sjfke> start http://localhost:8081                                             # Check Adminer is working
-PS C:\Users\sjfke> start http://localhost:8080                                             # Check Tomcat Server is working
-PS C:\Users\sjfke> start http://localhost:8080/Bookstore                                   # Check application is working
+PS C:\Users\sjfke> start http://localhost:8081                                      # Check Adminer is working
+PS C:\Users\sjfke> start http://localhost:8080                                      # Check Tomcat Server is working
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore                            # Check application is working
 
-PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml                     # Stop and remove Bookstore
-PS C:\Users\sjfke> podman play kube --down .\adminer-deployment.yaml                       # Stop and remove Adminer
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # Stop and remove MariaDB
+PS C:\Users\sjfke> podman play kube --down .\bookstore-pod.yaml                     # Stop and remove Bookstore
+PS C:\Users\sjfke> podman play kube --down .\adminer-pod.yaml                       # Stop and remove Adminer
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-pod.yaml                   # Stop and remove MariaDB
 ```
