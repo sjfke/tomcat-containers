@@ -25,10 +25,10 @@ From the `C:\Users\sjfke\Github\tomcat-containers\wharf\Podman` folder, start Ma
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
-PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml     # Start Adminer
-PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml # Start MariaDB
-PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                # Check MariDB is up and accessible
-PS C:\Users\sjfke> start http://localhost:8081                            # Check Adminer is working
+PS C:\Users\sjfke> podman play kube --start .\adminer-pod.yaml     # Start Adminer
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-pod.yaml # Start MariaDB
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306         # Check MariDB is up and accessible
+PS C:\Users\sjfke> start http://localhost:8081                     # Check Adminer is working
 ```
 
 #### Podman Build and Test Local Quay.IO container
@@ -55,11 +55,11 @@ From the `C:\Users\sjfke\Github\tomcat-containers\wharf\Podman` folder start `Bo
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
-PS C:\Users\sjfke> podman play kube --start .\quay-io-bookstore-deployment.yaml # Deploy local Bookstore image
-PS C:\Users\sjfke> start http://localhost:8080                                  # Check Tomcat Server
-PS C:\Users\sjfke> start http://localhost:8080/Bookstore                        # Check application
+PS C:\Users\sjfke> podman play kube --start .\quay-io-bookstore-pod.yaml # Deploy local Bookstore image
+PS C:\Users\sjfke> start http://localhost:8080                           # Check Tomcat Server
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore                 # Check application
 
-PS C:\Users\sjfke> podman play kube --down .\quay-io-bookstore-deployment.yaml  # delete Bookstore deployment
+PS C:\Users\sjfke> podman play kube --down .\quay-io-bookstore-pod.yaml  # Delete Bookstore deployment
 ```
 
 #### Podman Push and Test Hosted Quay.IO container
@@ -68,16 +68,16 @@ PS C:\Users\sjfke> podman play kube --down .\quay-io-bookstore-deployment.yaml  
 PS C:\Users\sjfke> podman login quay.io  # using your username and password :-)
 PS C:\Users\sjfke> start https://quay.io # login using your credentials and create a bookstore repo
 
-PS C:\Users\sjfke> podman push quay.io/sjfke/bookstore:1.0                      # Push container
-PS C:\Users\sjfke> podman image rm quay.io/sjfke/bookstore:1.0                  # Remove local container
-PS C:\Users\sjfke> podman pull quay.io/sjfke/bookstore:1.0                      # Redundant
+PS C:\Users\sjfke> podman push quay.io/sjfke/bookstore:1.0               # Push container
+PS C:\Users\sjfke> podman image rm quay.io/sjfke/bookstore:1.0           # Remove local container
+PS C:\Users\sjfke> podman pull quay.io/sjfke/bookstore:1.0               # Redundant
 
 # Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
-PS C:\Users\sjfke> podman play kube --start .\quay-io-bookstore-deployment.yaml # Deploy Remote Bookstore image
-PS C:\Users\sjfke> start http://localhost:8080                                  # Check Tomcat Server
-PS C:\Users\sjfke> start http://localhost:8080/Bookstore                        # Check application
+PS C:\Users\sjfke> podman play kube --start .\quay-io-bookstore-pod.yaml # Deploy Remote Bookstore image
+PS C:\Users\sjfke> start http://localhost:8080                           # Check Tomcat Server
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore                 # Check application
 
-PS C:\Users\sjfke> podman play kube --down .\quay-io-bookstore-deployment.yaml  # Delete Bookstore deployment
+PS C:\Users\sjfke> podman play kube --down .\quay-io-bookstore-pod.yaml  # Delete Bookstore deployment
 ```
 
 #### Podman Cleanup
@@ -86,9 +86,9 @@ Pods and container clean up
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
-PS C:\Users\sjfke> podman play kube --down .\adminer-deployment.yaml     # Delete Adminer deployment
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml # Delete MariaDB deployment
-PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml   # Delete Bookstore deployment
+PS C:\Users\sjfke> podman play kube --down .\adminer-pod.yaml     # Delete Adminer deployment
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-pod.yaml # Delete MariaDB deployment
+PS C:\Users\sjfke> podman play kube --down .\bookstore-pod.yaml   # Delete Bookstore deployment
 ```
 
 Image clean up
@@ -270,26 +270,26 @@ PS C:\Users\sjfke> podman image rm localhost:5000/bookstore:1.0
 #### Podman Start database for local registry test
 
 ```console
-PS C:\Users\sjfke> podman secret list                                                      # check `bookstore-secrets` exists
-PS C:\Users\sjfke> podman volume list                                                      # check `jsp_bookstoredata` exists
-PS C:\Users\sjfke> podman network ls                                                       # check `jspnet` network exists
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deployment.yaml     # Deploy and start Adminer
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # Deploy and start MariaDB
-PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                                 # Check MariDB is up and accessible
-PS C:\Users\sjfke> start http://localhost:8081                                             # Check Adminer
+PS C:\Users\sjfke> podman secret list                                               # check `bookstore-secrets` exists
+PS C:\Users\sjfke> podman volume list                                               # check `jsp_bookstoredata` exists
+PS C:\Users\sjfke> podman network ls                                                # check `jspnet` network exists
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-pod.yaml     # Deploy and start Adminer
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-pod.yaml # Deploy and start MariaDB
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                          # Check MariDB is up and accessible
+PS C:\Users\sjfke> start http://localhost:8081                                      # Check Adminer
 ```
 
 #### Podman Pull and test local registry
 
 ```console
 PS C:\Users\sjfke> podman pull localhost:5000/bookstore:1.0
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-registry-deployment.yaml
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-registry-pod.yaml
 PS C:\Users\sjfke> start http://localhost:8080
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore
 
-PS C:\Users\sjfke> podman play kube --down .\bookstore-registry-deployment.yaml  # Delete Bookstore deployment
-PS C:\Users\sjfke> podman play kube --down .\adminer-deployment.yaml             # Delete Adminer deployment
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml         # Delete Bookstore database deployment
+PS C:\Users\sjfke> podman play kube --down .\bookstore-registry-pod.yaml  # Delete Bookstore deployment
+PS C:\Users\sjfke> podman play kube --down .\adminer-pod.yaml             # Delete Adminer deployment
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-pod.yaml         # Delete Bookstore database deployment
 ```
 
 #### Podman Stop and clean-up local registry

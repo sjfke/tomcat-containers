@@ -119,11 +119,11 @@ PS C:\Users\sjfke> podman secret inspect bookstore-secrets
 To build and deploy the application, the following files are used
 
 1. [Dockerfile](./Podman/Dockerfile)
-2. [adminer-deployment.yaml](./Podman/adminer-deployment.yaml)
-3. [bookstoredb-deployment.yaml](./Podman/bookstoredb-deployment.yaml) uses `Secret`
-4. [bookstore-deployment.yaml](./Podman/bookstore-deployment.yaml)
+2. [adminer-pod.yaml](./Podman/adminer-pod.yaml)
+3. [bookstoredb-pod.yaml](./Podman/bookstoredb-pod.yaml) uses `Secret`
+4. [bookstore-pod.yaml](./Podman/bookstore-pod.yaml)
 
-File `bookstoredb-deployment.yaml`, (3), requires that the `secret` and `volume` that were created in [Using Kubernetes files](#using-kubernetes-files)
+File `bookstoredb-pod.yaml`, (3), requires that the `secret` and `volume` that were created in [Using Kubernetes files](#using-kubernetes-files)
 
 All the YAML files, (2, 3, 4), used by the `podman play kube --start` commands, must use the ***same network***, either the `jspnet` network created in [Using Kubernetes files](#using-kubernetes-files) or the default `podman-default-kube-network`.
 
@@ -152,13 +152,13 @@ PS C:\Users\sjfke> podman volume list                                           
 DRIVER      VOLUME NAME
 local       jsp_bookstoredata
 
-PS C:\Users\sjfke> podman play kube --start .\adminer-deployment.yaml                      # podman-default-kube-network
-PS C:\Users\sjfke> podman play kube --start .\bookstoredb-deployment.yaml                  # podman-default-kube-network
-PS C:\Users\sjfke> podman play kube --start .\bookstore-deployment.yaml                    # podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\adminer-pod.yaml                      # podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-pod.yaml                  # podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\bookstore-pod.yaml                    # podman-default-kube-network
 
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-deployment.yaml     # jspnet
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-deployment.yaml # jspnet, uses secret and volume
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-deployment.yaml   # jspnet
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\adminer-pod.yaml     # jspnet
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-pod.yaml # jspnet, uses secret and volume
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstore-pod.yaml   # jspnet
 
 PS C:\Users\sjfke> podman ps -a --format "{{.ID}}\t{{.Names}}\t {{.Ports}}\t {{.Status}}\t {{.Image}}"
 473b28a5f228    6bbad1d1e7ff-infra       0.0.0.0:8081->8080/tcp  Up 2 minutes    localhost/podman-pause:4.5.0-1681486976
@@ -168,12 +168,12 @@ e9f8fdf3a4a5    bookstoredb-pod-bookstoredb      0.0.0.0:3306->3306/tcp  Up 2 mi
 3662396a7652    25f1e479a31f-infra       0.0.0.0:8080->8080/tcp  Up About a minute       localhost/podman-pause:4.5.0-1681486976
 4f08f26111db    bookstore-pod-bookstore  0.0.0.0:8080->8080/tcp  Up About a minute       localhost/bookstore:latest
 
-PS C:\Users\sjfke> start http://localhost:8081                                             # Adminer
-PS C:\Users\sjfke> start http://localhost:8080/Bookstore                                   # Bookstore Application
+PS C:\Users\sjfke> start http://localhost:8081                                      # Adminer
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore                            # Bookstore Application
 
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-deployment.yaml                   # network name optional
-PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-deployment.yaml      # network name optional
-PS C:\Users\sjfke> podman play kube --down .\bookstore-deployment.yaml                     # network name optional
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-pod.yaml                   # network name optional
+PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-pod.yaml      # network name optional
+PS C:\Users\sjfke> podman play kube --down .\bookstore-pod.yaml                     # network name optional
 
 # Using ConfigMap instead of Secret
 PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-configmap-deployment.yaml
