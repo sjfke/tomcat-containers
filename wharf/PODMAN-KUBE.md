@@ -85,7 +85,7 @@ The `Docker Compose` original uses a *hard-coded* database password, but with `p
 
 This documentation describes using the `Secret` as a standalone `secrets.yaml` file.
 
-Using a `configMap`, can be specified in the ***deployment*** file, see [bookstoredb-configmap-deployment.yaml](./Podman/bookstoredb-configmap-deployment.yaml), or via the command line,  see [configmap.yaml](./Podman/configmap.yaml) and [bookstoredb-external-configmap-deployment.yaml](./Podman/bookstoredb-external-configmap-deployment.yaml)
+Using a `configMap`, can be specified in the ***deployment*** file, see [bookstoredb-configmap-pod.yaml](./Podman/bookstoredb-configmap-pod.yaml), or via the command line,  see [configmap.yaml](./Podman/configmap.yaml) and [bookstoredb-external-configmap-deployment.yaml](./Podman/bookstoredb-external-configmap-deployment.yaml)
 
 In order to create the [secrets.yaml](./Podman/secrets.yaml) file it is necessary to [base64](#base64-encodedecode) encode the `MARIADB_ROOT_PASSWORD` password, see [Base64 encode/decode](#base64-encodedecode) for how this can be done.
 
@@ -176,8 +176,8 @@ PS C:\Users\sjfke> podman play kube --down --network jspnet .\adminer-pod.yaml  
 PS C:\Users\sjfke> podman play kube --down .\bookstore-pod.yaml                     # network name optional
 
 # Using ConfigMap instead of Secret
-PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-configmap-deployment.yaml
-PS C:\Users\sjfke> podman play kube --down .\bookstoredb-configmap-deployment.yaml
+PS C:\Users\sjfke> podman play kube --start --network jspnet .\bookstoredb-configmap-pod.yaml
+PS C:\Users\sjfke> podman play kube --down .\bookstoredb-configmap-pod.yaml
 
 PS C:\Users\sjfke> podman play kube --start --network jspnet --configmap .\configmap.yaml .\bookstoredb-external-configmap-deployment.yaml
 PS C:\Users\sjfke> podman play kube --down .\bookstoredb-external-configmap-deployment.yaml
