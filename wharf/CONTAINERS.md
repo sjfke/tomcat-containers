@@ -159,24 +159,16 @@ bookstore    latest    d20191c70a54   5 days ago     482MB
 adminer      latest    fd3b195a8d79   2 weeks ago    250MB
 mariadb      latest    2b54778e06a3   2 months ago   404MB
 
-PS C:\Users\sjfke> docker pull docker.io/sjfke/bookstore:1.0                    # Redundant
-PS C:\Users\sjfke> docker compose -f .\compose-docker-io.yaml up -d             # Deploy Remote Bookstore image
+PS C:\Users\sjfke> docker pull docker.io/sjfke/bookstore:1.0                                   # Redundant
+PS C:\Users\sjfke> docker compose --env-file .\docker-io.env -f .\compose-bookstore.yaml up -d # Deploy Remote Bookstore image
 
 PS C:\Users\sjfke> start http://localhost:8080                                  # Check Tomcat Server
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore                        # Check application
 
-PS C:\Users\sjfke> docker compose -f .\compose-docker-io.yaml down              # Delete Bookstore container
+PS C:\Users\sjfke> docker compose --env-file .\docker-io.env -f .\compose-bookstore.yaml down  # Delete all containers
 ```
 
 #### Docker Cleanup
-
-Container clean up using `docker compose`
-
-```console
-# Folder: C:\Users\sjfke\Github\tomcat-containers
-PS C:\Users\sjfke> docker compose -f .\compose-docker-io.yaml down
-PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml down                # Delete Adminer and MariaDB containers
-```
 
 Image clean up needs to be done manually
 
@@ -366,19 +358,11 @@ PS C:\Users\sjfke> docker search localhost:5000/             # returns a 404
 PS C:\Users\sjfke> docker image rm localhost:5000/bookstore:1.0
 ```
 
-##### Docker Start database for local registry test
-
-```console
-# using compose-mariadb.yaml
-PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d # Start Adminer and MariaDB
-
-```
-
 ##### Docker Pull and test local registry
 
 ```console
-PS C:\Users\sjfke> docker pull localhost:5000/bookstore:1.0         # Redundant
-PS C:\Users\sjfke> docker compose -f .\compose-local-registry up -d # Deploy Remote Bookstore image
+PS C:\Users\sjfke> docker pull localhost:5000/bookstore:1.0                                    # Redundant
+PS C:\Users\sjfke> docker compose --env-file .\local-registry.env -f .\compose-bookstore up -d # Deploy Remote Bookstore image
 
 PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306          # Check MariDB is up and accessible
 PS C:\Users\sjfke> start http://localhost:8081                      # Check Adminer is working
@@ -386,7 +370,7 @@ PS C:\Users\sjfke> start http://localhost:8081                      # Check Admi
 PS C:\Users\sjfke> start http://localhost:8080                      # Check Tomcat Server
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore            # Check application
 
-PS C:\Users\sjfke> docker compose -f .\compose-local-registry down  # Delete Bookstore container
+PS C:\Users\sjfke> docker compose --env-file .\local-registry.env -f .\compose-bookstore down  # Delete Bookstore container
 ```
 
 ##### Docker Stop and clean-up local registry
