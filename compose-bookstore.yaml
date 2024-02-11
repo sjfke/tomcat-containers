@@ -13,8 +13,9 @@ services:
     volumes:
       - jsp_bookstoredata:/var/lib/mysql
 
-  bookstore:
-    image: localhost/bookstore:latest
+  # Use '.env' file to get APP and TAG
+  bookstore: 
+    image: ${APP}:${TAG}
     restart: unless-stopped
     ports:
       - "8080:8080"

@@ -13,11 +13,9 @@ Set up for building containers for [Containerized Tomcat JSP Servlet JDBC C.R.U.
 
 Having [built and tested](./BUILD.md) the `Bookstore` application, it is time to focus on creating and publishing the container image.
 
-> ***Note:*** section needs rewriting to cover creating and publishing the Container image with `Docker` and `Podman`
-
 ### Podman and Quay.IO
 
-Instructions using `Podman` and [Quay IO](https://quay.io/)
+Instructions using `podman`, `podman play kube` and [Quay IO](https://quay.io/)
 
 #### Podman Start MariaDB and Adminer
 
@@ -34,6 +32,8 @@ PS C:\Users\sjfke> start http://localhost:8081                     # Check Admin
 #### Podman Build and Test Local Quay.IO container
 
 > ***Note:*** use your login name on quay.io/<user>, not sjfke :-) in the `tag`
+
+From the `C:\Users\sjfke\Github\tomcat-containers` folder, build and push the image.
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
@@ -106,35 +106,39 @@ PS C:\Users\sjfke> podman image rm docker.io/library/tomcat:9.0.71-jdk17-temurin
 
 Instructions using [`Docker`](https://docs.docker.com/engine/reference/commandline/cli/), [`Docker Compose`](https://docs.docker.com/compose/compose-file/) and [Dockerhub](https://hub.docker.com/)
 
-#### Docker Start MariaDB and Adminer
-
-```console
-# using compose-mariadb.yaml
-PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d # Start Adminer and MariaDB
-PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306        # Check MariDB is up and accessible
-PS C:\Users\sjfke> start http://localhost:8081                    # Check Adminer is working
-```
-
 #### Docker Build and Test Local DockerHub container
-
-> ***Note:*** use your login name on docker.io/<user>, not sjfke :-) in the `tag`
 
 ```console
 # Folder: C:\Users\sjfke\github\tomcat-containers
-
 PS C:\Users\sjfke> docker image list --all
 REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
 adminer      latest    fd3b195a8d79   2 weeks ago    250MB
 mariadb      latest    2b54778e06a3   2 months ago   404MB
 
-PS C:\Users\sjfke> docker build --tag bookstore -f .\Dockerfile $PWD
-PS C:\Users\sjfke> docker scout quickview  # optionally check image vulnerabilities and recommendations
+PS C:\Users\sjfke> docker build --tag bookstore -f .\Dockerfile $PWD # Build the image
+PS C:\Users\sjfke> docker scout quickview                            # Optional vulnerabilities check
 PS C:\Users\sjfke> docker image list --all
 REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
 bookstore    latest    d20191c70a54   5 days ago     482MB
 adminer      latest    fd3b195a8d79   2 weeks ago    250MB
 mariadb      latest    2b54778e06a3   2 months ago   404MB
 
+PS C:\Users\sjfke> get-content .\.env         
+APP=localhost/bookstore
+TAG=latest
+PS C:\Users\sjfke> docker compose -f .\compose-bookstore.yaml up -d
+
+PS C:\Users\sjfke> start http://localhost:8080                       # Check Tomcat Server
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore             # Check application
+
+PS C:\Users\sjfke> docker compose -f .\compose-bookstore.yaml down   # Delete all containers
+```
+
+Assuming the test was successful so `tag` the image
+
+> ***Note:*** in the `docker tag` command use your login name 'docker.io/\<user\>', not 'docker.io/sjfke' :-) 
+
+```console
 PS C:\Users\sjfke> docker tag bookstore:latest docker.io/sjfke/bookstore:1.0
 PS C:\Users\sjfke> docker image list --all
 REPOSITORY        TAG       IMAGE ID       CREATED        SIZE
@@ -146,37 +150,37 @@ mariadb           latest    2b54778e06a3   2 months ago   404MB
 
 #### Docker Push and Test Hosted DockerHub container
 
+> ***Note:*** use your login name 'docker.io/\<user\>', not 'docker.io/sjfke' :-)
+
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
 PS C:\Users\sjfke> docker login docker.io  # using your username and password :-)
 PS C:\Users\sjfke> start https://docker.io # login using your credentials and create a bookstore repo
 
-PS C:\Users\sjfke> docker push docker.io/sjfke/bookstore:1.0                    # Push container
-PS C:\Users\sjfke> docker image rm docker.io/sjfke/bookstore:1.0                # Remove local container
-PS C:\Users\sjfke>  docker image list --all
+PS C:\Users\sjfke> docker push docker.io/sjfke/bookstore:1.0         # Push container
+PS C:\Users\sjfke> docker image remove docker.io/sjfke/bookstore:1.0 # Remove local container
+PS C:\Users\sjfke> docker image list --all
 REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
 bookstore    latest    d20191c70a54   5 days ago     482MB
 adminer      latest    fd3b195a8d79   2 weeks ago    250MB
 mariadb      latest    2b54778e06a3   2 months ago   404MB
 
-PS C:\Users\sjfke> docker pull docker.io/sjfke/bookstore:1.0                    # Redundant
-PS C:\Users\sjfke> docker compose -f .\compose-docker-io.yaml up -d             # Deploy Remote Bookstore image
+PS C:\Users\sjfke> docker pull docker.io/sjfke/bookstore:1.0         # Redundant 'pull'
 
-PS C:\Users\sjfke> start http://localhost:8080                                  # Check Tomcat Server
-PS C:\Users\sjfke> start http://localhost:8080/Bookstore                        # Check application
+# Deploy Remote Bookstore image
+PS C:\Users\sjfke> get-content .\docker-io.env
+APP=docker.io/sjfke/bookstore
+TAG=1.0
+PS C:\Users\sjfke> docker compose --env-file .\docker-io.env -f .\compose-bookstore.yaml up -d
 
-PS C:\Users\sjfke> docker compose -f .\compose-docker-io.yaml down              # Delete Bookstore container
+PS C:\Users\sjfke> start http://localhost:8080                       # Check Tomcat Server
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore             # Check Bookstore application
+
+# Delete all containers
+PS C:\Users\sjfke> docker compose --env-file .\docker-io.env -f .\compose-bookstore.yaml down
 ```
 
 #### Docker Cleanup
-
-Container clean up using `docker compose`
-
-```console
-# Folder: C:\Users\sjfke\Github\tomcat-containers
-PS C:\Users\sjfke> docker compose -f .\compose-docker-io.yaml down
-PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml down                # Delete Adminer and MariaDB containers
-```
 
 Image clean up needs to be done manually
 
@@ -203,7 +207,8 @@ REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
 * [GitHub - Distribution](https://github.com/distribution/distribution)
 * [Registry - Distribution implementation for storing and distributing of container images and artifacts](https://hub.docker.com/_/registry)
 
-Although this permits working locally the `registry` there is no easy way to manage the images. In fact the `/etc/docker/registry/config.yml` does not permit deleting images. So easiest to run the container in an `ephemeral` sense, so when the container is deleted all the contents are lost.
+Although this permits working locally the `registry` there is no easy way to manage the images. In fact the `/etc/docker/registry/config.yml` does not permit deleting images. 
+Suggest running the container using a `docker volume`, so contents are preserved but can be cleared and reset by deleting and recreating `docker volume`.
 
 There are rough notes in the [Registry](./Registry/) folder, for deploying with a persistent volume using `podman` and `docker` to avoid having to repopulate each time it is started.
 
@@ -329,8 +334,8 @@ For `Docker Desktop` on Windows, select `Settings` > `Docker Engine` add the `in
 Having added the `insecure-registries` and restarted `Docker Desktop`, start the local registry
 
 ```console
-# Folder: C:\Users\sjfke\Github\tomcat-containers
-PS C:\Users\sjfke> docker run -d -p 5000:5000 --name registry registry:2.8.3
+# Folder: C:\Users\geoff\Github\tomcat-containers
+PS C:\Users\sjfke> docker compose -f .\wharf\Registry\compose-registry.yaml up -d
 PS C:\Users\sjfke> docker image list --all
 REPOSITORY   TAG       IMAGE ID       CREATED      SIZE
 registry     2.8.3     a8781fe3b7a2   2 days ago   25.4MB
@@ -366,33 +371,28 @@ PS C:\Users\sjfke> docker search localhost:5000/             # returns a 404
 PS C:\Users\sjfke> docker image rm localhost:5000/bookstore:1.0
 ```
 
-##### Docker Start database for local registry test
-
-```console
-# using compose-mariadb.yaml
-PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d # Start Adminer and MariaDB
-
-```
-
 ##### Docker Pull and test local registry
 
 ```console
-PS C:\Users\sjfke> docker pull localhost:5000/bookstore:1.0         # Redundant
-PS C:\Users\sjfke> docker compose -f .\compose-local-registry up -d # Deploy Remote Bookstore image
+PS C:\Users\sjfke> docker pull localhost:5000/bookstore:1.0   # Redundant 'pull'
 
-PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306          # Check MariDB is up and accessible
-PS C:\Users\sjfke> start http://localhost:8081                      # Check Adminer is working
+# Deploy MariaDB, Adminer and remote Bookstore image
+PS C:\Users\sjfke> docker compose --env-file .\local-registry.env -f .\compose-bookstore up -d 
 
-PS C:\Users\sjfke> start http://localhost:8080                      # Check Tomcat Server
-PS C:\Users\sjfke> start http://localhost:8080/Bookstore            # Check application
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306   # Check MariDB is up and accessible
+PS C:\Users\sjfke> start http://localhost:8081               # Check Adminer is working
 
-PS C:\Users\sjfke> docker compose -f .\compose-local-registry down  # Delete Bookstore container
+PS C:\Users\sjfke> start http://localhost:8080               # Check Tomcat Server
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore     # Check application
+
+# Delete All containers
+PS C:\Users\sjfke> docker compose --env-file .\local-registry.env -f .\compose-bookstore down  
 ```
 
 ##### Docker Stop and clean-up local registry
 
-```console
-PS C:\Users\sjfke> docker remove --force registry
+```consoler
+PS C:\Users\sjfke> docker remove --force registry-registry-1
 PS C:\Users\sjfke> docker image remove adminer mariadb
 PS C:\Users\sjfke> docker image remove localhost/bookstore
 PS C:\Users\sjfke> docker image remove localhost:5000/bookstore:1.0
