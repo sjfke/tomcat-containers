@@ -19,10 +19,10 @@ Instructions using `podman`, `podman play kube` and [Quay IO](https://quay.io/)
 
 #### Podman Start MariaDB and Adminer
 
-From the `C:\Users\sjfke\Github\tomcat-containers\wharf\Podman` folder, start MariaDB and Adminer so the container image can be tested.
+From the `C:\Users\sjfke\Github\tomcat-containers` folder, start MariaDB and Adminer so the container image can be tested.
 
 ```console
-# Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
+# Folder: C:\Users\sjfke\Github\tomcat-containers
 PS C:\Users\sjfke> podman play kube --start .\adminer-pod.yaml     # Start Adminer
 PS C:\Users\sjfke> podman play kube --start .\bookstoredb-pod.yaml # Start MariaDB
 PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306         # Check MariDB is up and accessible
@@ -31,7 +31,7 @@ PS C:\Users\sjfke> start http://localhost:8081                     # Check Admin
 
 #### Podman Build and Test Local Quay.IO container
 
-> ***Note:*** use your login name on quay.io/<user>, not sjfke :-) in the `tag`
+> ***Note:*** use your login name on quay.io/<user>, not sjfke :-) in the `podman build --tag` command
 
 From the `C:\Users\sjfke\Github\tomcat-containers` folder, build and push the image.
 
@@ -54,7 +54,7 @@ docker.io/library/tomcat  9.0.71-jdk17-temurin  b07e16b11088  11 months ago   48
 From the `C:\Users\sjfke\Github\tomcat-containers\wharf\Podman` folder start `Bookstore`
 
 ```console
-# Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
+# Folder: C:\Users\sjfke\Github\tomcat-containers
 PS C:\Users\sjfke> podman play kube --start .\quay-io-bookstore-pod.yaml # Deploy local Bookstore image
 PS C:\Users\sjfke> start http://localhost:8080                           # Check Tomcat Server
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore                 # Check application
@@ -73,11 +73,54 @@ PS C:\Users\sjfke> podman image rm quay.io/sjfke/bookstore:1.0           # Remov
 PS C:\Users\sjfke> podman pull quay.io/sjfke/bookstore:1.0               # Redundant
 
 # Folder: C:\Users\sjfke\Github\tomcat-containers\wharf\Podman
+
 PS C:\Users\sjfke> podman play kube --start .\quay-io-bookstore-pod.yaml # Deploy Remote Bookstore image
 PS C:\Users\sjfke> start http://localhost:8080                           # Check Tomcat Server
 PS C:\Users\sjfke> start http://localhost:8080/Bookstore                 # Check application
 
 PS C:\Users\sjfke> podman play kube --down .\quay-io-bookstore-pod.yaml  # Delete Bookstore deployment
+```
+
+#### Podman deploying different images
+
+The `image name` is hard-coded in the above `quay.io` example, so to deploy different images for testing.
+
+On `Windows` using `Powershell`
+
+```console
+# Folder: C:\Users\sjfke\Github\tomcat-containers
+PS C:\Users\sjfke> $image_name = 'localhost/bookstore:latest'
+PS C:\Users\sjfke> $image_name = 'quay.io/sjfke/bookstore:1.0'
+PS C:\Users\sjfke> $image_name = 'docker.io/sjfke/bookstore:1.0'
+PS C:\Users\sjfke> $image_name = 'localhost:5000/bookstore:1.0'
+PS C:\Users\sjfke> (Get-Content .\bookstore-no-image-pod.yaml).replace('IMAGE_NAME', $image_name) | podman play kube -
+
+PS C:\Users\sjfke> podman inspect bookstore-bookstore | jq .[0].ImageName
+
+PS C:\Users\sjfke> (Get-Content .\bookstore-no-image-pod.yaml).replace('IMAGE_NAME', $image_name) | podman play kube --down -
+```
+
+On Linux or other UNIX-like platform.
+
+```console
+# Directory: /home/sjfke/Github/tomcat-containers
+$ IMAGE_NAME='localhost/bookstore:latest'
+$ IMAGE_NAME='quay.io/sjfke/bookstore:1.0'
+$ IMAGE_NAME='docker.io/sjfke/bookstore:1.0'
+$ IMAGE_NAME='localhost:5000/bookstore:1.0'
+$ cat bookstore-no-image-pod.yaml | sed s%IMAGE_NAME%${IMAGE_NAME}% | podman play kube -
+
+$ podman inspect bookstore-bookstore | jq .[0].ImageName
+
+$ cat bookstore-no-image-pod.yaml | sed s%IMAGE_NAME%${IMAGE_NAME}% | podman play kube --down -
+```
+
+Install `jq` (a.k.a `jqlang.jq`) if necessary and for usage see [jq Manual (development version)](https://jqlang.github.io/jq/manual/)
+
+```console
+sudo dnf install jq      # Fedora
+brew install jq          # MacOS
+winget install jqlang.jq # Windows
 ```
 
 #### Podman Cleanup
@@ -207,8 +250,8 @@ REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
 * [GitHub - Distribution](https://github.com/distribution/distribution)
 * [Registry - Distribution implementation for storing and distributing of container images and artifacts](https://hub.docker.com/_/registry)
 
-Although this permits working locally the `registry` there is no easy way to manage the images. In fact the `/etc/docker/registry/config.yml` does not permit deleting images. 
-Suggest running the container using a `docker volume`, so contents are preserved but can be cleared and reset by deleting and recreating `docker volume`.
+Although this permits working locally the `registry` there is no easy way to manage the images. In fact the `/etc/docker/registry/config.yml` does not permit deleting images.
+Suggest running the container using a `docker volume` or `podman volume`, so contents are preserved but can be cleared and reset by deleting and recreating `docker volume` or `podman volume`
 
 There are rough notes in the [Registry](./Registry/) folder, for deploying with a persistent volume using `podman` and `docker` to avoid having to repopulate each time it is started.
 
