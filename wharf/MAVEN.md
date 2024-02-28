@@ -29,12 +29,12 @@ PS C:\Users\sjfke> get-content C:\Users\sjfke\.m2\settings.xml
 </settings>
 ```
 
-1. [Maven plugin in Eclipse - Settings.xml file is missing](https://stackoverflow.com/questions/4626609/maven-plugin-in-eclipse-settings-xml-file-is-missing) very old reference *but* still works!
-2. [Apache Maven Project - Settings Reference](https://maven.apache.org/settings.html)
-
 > ***Note***
 >
-> Easiest way to create the file is using `Eclipse`, but note that opening the file in `Eclipse` will perform a syntax check.
+> Creating or opening the file using `Eclipse`, will perform a syntax check.
+
+1. [Maven plugin in Eclipse - Settings.xml file is missing](https://stackoverflow.com/questions/4626609/maven-plugin-in-eclipse-settings-xml-file-is-missing) very old reference *but* still works!
+2. [Apache Maven Project - Settings Reference](https://maven.apache.org/settings.html)
 
 ### General Maven Packaging questions
 
