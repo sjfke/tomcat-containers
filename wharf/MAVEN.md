@@ -47,7 +47,7 @@ PS C:\Users\sjfke> get-content C:\Users\sjfke\.m2\settings.xml
 
 ### Installing Maven
 
-* [Installing Apache Maven](https://maven.apache.org/install.html)
+#### Windows Platform Setup
 
 Follow [How to Install Maven on Windows](https://phoenixnap.com/kb/install-maven-windows) instructions
 
@@ -62,4 +62,27 @@ Maven home: C:\Program Files\Maven\apache-maven-3.9.6
 Java version: 17.0.7, vendor: Eclipse Adoptium, runtime: C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot
 Default locale: en_GB, platform encoding: Cp1252
 OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
+```
+
+#### MacOS Platform (Intel) Setup
+
+> ##### MacOS Notes
+>
+> Needs to be written and cover `brew install maven` and `brew install --cask temurin`
+
+## Fedora Platform Setup
+
+While possible to use Fedora spin, it has too many dependencies, so manually download and install
+
+* [Download latest Maven](https://maven.apache.org/download.cgi), such as `apache-maven-3.9.6`
+* Unpack into `$HOME/Applications/Maven/`
+* Symlink `$ ln -s $HOME/Applications/Maven/apache-maven-3.9.6/bin/mvn $HOME/bin/mvn`
+
+```console
+$ mvn -version
+Apache Maven 3.9.6 (bc0240f3c744dd6b6ec2920b3cd08dcc295161ae)
+Maven home: /home/sjfke/Applications/Maven/apache-maven-3.9.6
+Java version: 17.0.9, vendor: Red Hat, Inc., runtime: /usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "6.7.6-200.fc39.x86_64", arch: "amd64", family: "unix"
 ```

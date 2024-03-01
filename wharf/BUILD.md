@@ -14,6 +14,14 @@ The following applications need to be available or installed.
   * [Tomcat](./TOMCAT.md)
   * [MariaDB](./MARIADB)
 
+> **Note:** *Fedora does not install the java compiler by default*
+
+```console
+$ sudo dnf list installed | grep openjdk
+java-17-openjdk-headless.x86_64                      1:17.0.9.0.9-3.fc39                 @updates
+$ sudo dnf install java-17-openjdk-devel.x86_64
+```
+
 ## 1. Creating MySQL Database
 
 There are a number of errors in the SQL in the tutorial, and using `root` for an application is problematic.
