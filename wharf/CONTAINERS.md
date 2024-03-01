@@ -9,6 +9,15 @@ Set up for building containers for [Containerized Tomcat JSP Servlet JDBC C.R.U.
 * [Podman Setup](./PODMAN.md)
 * [Build the `Bookstore` application](./BUILD.md)
 
+Install `jq` (a.k.a `jqlang.jq`) and for usage see [jq Manual (development version)](https://jqlang.github.io/jq/manual/)
+
+```console
+# Install 'jq'
+PS C:\Users\sjfke> winget install jqlang.jq # Windows
+$ sudo dnf install jq                       # Fedora
+$ brew install jq                           # MacOS
+```
+
 ## Building the Application Container Image
 
 Having [built and tested](./BUILD.md) the `Bookstore` application, it is time to focus on creating and publishing the container image.
@@ -21,12 +30,24 @@ Instructions using `podman`, `podman play kube` and [Quay IO](https://quay.io/)
 
 From the `C:\Users\sjfke\Github\tomcat-containers` folder, start MariaDB and Adminer so the container image can be tested.
 
+Windows Powershell
+
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
 PS C:\Users\sjfke> podman play kube --start .\adminer-pod.yaml     # Start Adminer
 PS C:\Users\sjfke> podman play kube --start .\bookstoredb-pod.yaml # Start MariaDB
 PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306         # Check MariDB is up and accessible
 PS C:\Users\sjfke> start http://localhost:8081                     # Check Adminer is working
+```
+
+Fedora Bash shell
+
+```shell
+# Folder: /home/sjfke/Github/tomcat-containers
+$ podman play kube --start ./adminer-pod.yaml     # Start Adminer
+$ podman play kube --start ./bookstoredb-pod.yaml # Start MariaDB
+$ nc -zv localhost 3306                           # Check MariDB is up and accessible
+$ firefox http://localhost:8081                   # Check Adminer is working
 ```
 
 #### Podman Build and Test Local Quay.IO container
@@ -55,11 +76,20 @@ From the `C:\Users\sjfke\Github\tomcat-containers\wharf\Podman` folder start `Bo
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
-PS C:\Users\sjfke> podman play kube --start .\quay-io-bookstore-pod.yaml # Deploy local Bookstore image
-PS C:\Users\sjfke> start http://localhost:8080                           # Check Tomcat Server
-PS C:\Users\sjfke> start http://localhost:8080/Bookstore                 # Check application
+PS C:\Users\sjfke> podman play kube --start .\bookstore-pod.yaml # Deploy local Bookstore image
+PS C:\Users\sjfke> start http://localhost:8080                   # Check Tomcat Server
+PS C:\Users\sjfke> start http://localhost:8080/Bookstore         # Check application
 
-PS C:\Users\sjfke> podman play kube --down .\quay-io-bookstore-pod.yaml  # Delete Bookstore deployment
+PS C:\Users\sjfke> podman play kube --down .\bookstore-pod.yaml  # Delete Bookstore deployment
+```
+
+```shell
+# Folder: /home/sjfke/Github/tomcat-containers
+$ podman play kube --start ./bookstore-pod.yaml # Deploy local Bookstore image
+$ firefox http://localhost:8080                 # Check Tomcat Server
+$ firefox http://localhost:8080/Bookstore       # Check application
+
+$ podman play kube --down ./bookstore-pod.yaml  # Delete Bookstore deployment
 ```
 
 #### Podman Push and Test Hosted Quay.IO container
@@ -113,14 +143,6 @@ $ cat bookstore-no-image-pod.yaml | sed s%IMAGE_NAME%${IMAGE_NAME}% | podman pla
 $ podman inspect bookstore-bookstore | jq .[0].ImageName
 
 $ cat bookstore-no-image-pod.yaml | sed s%IMAGE_NAME%${IMAGE_NAME}% | podman play kube --down -
-```
-
-Install `jq` (a.k.a `jqlang.jq`) if necessary and for usage see [jq Manual (development version)](https://jqlang.github.io/jq/manual/)
-
-```console
-sudo dnf install jq      # Fedora
-brew install jq          # MacOS
-winget install jqlang.jq # Windows
 ```
 
 #### Podman Cleanup

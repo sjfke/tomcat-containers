@@ -37,6 +37,26 @@ Under `Window` > `Preferences` > `General` > `Appearance` you can enable `Dark M
 
 ## Fedora Platform Setup
 
-> ### Fedora Notes
->
-> Needs to be written.
+While possible to use Fedora spin, it has too many dependencies, so manually download and install
+
+Download and install
+
+* [Eclipse Installer 2023-12 R](https://www.eclipse.org/downloads/download.php?file=/oomph/epp/2023-12/R/eclipse-inst-jre-win64.exe)
+
+Install Eclipse Marketplace plugins
+
+* Java and Web Developer Tools 3.31, accepting the defaults, restart
+`Help` > `Eclipse Marketplace` > `Popular` > `Eclipse Java and Web Developer Tools 3.31`
+
+* LiClipseText 2.5.0, accepting the defaults, restart
+`Help` > `Eclipse Marketplace` > `Search` > `LiClipseText`
+
+* Markdown Text Editor 1.2.0, accepting the defaults, restart
+`Help` > `Eclipse Marketplace` > `Search` > `Markdown Text Editor`
+
+* Eclipse Docker Tooling 5.12.0.202309052024
+`Help` > `Eclipse Marketplace` > `Search` > `Docker Tooling`
+
+Appearance Preferences
+
+Under `Window` > `Preferences` > `General` > `Appearance` you can enable `Dark Mode` theme
