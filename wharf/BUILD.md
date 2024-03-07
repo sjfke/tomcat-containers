@@ -36,14 +36,16 @@ Assuming you have `MariaDB` running in your chosen container environment.
 
 ```powershell
 PS C:\Users\sjfke> docker volume ls                                   # jsp_bookstoredata volume exists
+PS C:\Users\sjfke> docker volume create jsp_bookstoredata             # create jsp_bookstoredata volume if DOES NOT exist
 PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
-PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh # container interactive shell
+PS C:\Users\sjfke> docker exec -it tomcat-containers-bookstoredb-1 sh # container interactive shell
 ```
 
 * `podman-compose` open a terminal on the `tomcat-containers-bookstoredb-1` container, volume see [Podman Kube prerequisites](PODMAN-KUBE.md#prerequisites-for-kubernetes-files)
 
 ```powershell
 PS C:\Users\sjfke> podman volume ls                                          # jsp_bookstoredata volume exists
+PS C:\Users\sjfke> podman volume create jsp_bookstoredata                    # create jsp_bookstoredata volume if DOES NOT exist
 PS C:\Users\sjfke> .\venv\Scripts\activate
 (venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
 (venv) PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh # container interactive shell
@@ -55,6 +57,7 @@ PS C:\Users\sjfke> .\venv\Scripts\activate
 PS C:\Users\sjfke> podman secret list                              # list podman cluster secrets
 PS C:\Users\sjfke> podman kube play secrets.yaml                   # load secret if necessary
 PS C:\Users\sjfke> podman volume ls                                # jsp_bookstoredata volume exists
+PS C:\Users\sjfke> podman volume create jsp_bookstoredata          # create jsp_bookstoredata volume if DOES NOT exist
 PS C:\Users\sjfke> podman play kube --start .\adminer-pod.yaml     # adminer using podman-default-kube-network
 PS C:\Users\sjfke> podman play kube --start .\bookstoredb-pod.yaml # mariadb using podman-default-kube-network
 PS C:\Users\sjfke> podman exec -it bookstoredb-pod-bookstoredb sh  # container interactive shell
@@ -187,31 +190,43 @@ This process is ***confusing*** and may take several iterations.
 
 Eventually the ***Tomcat Homepage*** will be displayed, using the `Tomcat application software` installed in the `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost` folder.
 
-These two references are helpful but not 100% accurate.
+These two references are helpful but illustrate using earlier version of `Eclipse` so are not 100% accurate.
 
 1. [How to configure tomcat server in Eclipse IDE](https://www.javatpoint.com/how-to-configure-tomcat-server-in-eclipse-ide)
 2. [Setup and Install Apache Tomcat Server in Eclipse IDE](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/)
 
-Create a `tomcat` folder in the Eclipse workspace folder which is used in the `Download and install` step.
+Create a `Bookstore/tomcat` folder which will be used to store the desired `tomcat` server application.
 
-On the `Servers` tab, `No servers available. Click this link to create a new server...`.
+If manually installing
 
-On the `Apache` > `Tomcat v9.0 Server` then `Next` button. Select `apache-tomcat-9.0.82` (*maybe later version*) and select the `Project` folder.
-Click `Download and install` and then the `tomcat` folder.
+* Download [Apache Tomcat 9.0.86 zip](https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.86/bin/apache-tomcat-9.0.86.zip) or later
+* Unzip `apache-tomcat-9.0.86.zip` into `Bookstore\tomcat`
+
+Configure `tomcat` server within `Eclipse`
+
+* On the `Servers` tab, `No servers available. Click this link to create a new server...`.
+* On the `Apache` > `Tomcat v9.0 Server`, set `Server name` then `Next` button.
+* Select `apache-tomcat-9.0.82` (*maybe later version*) and select the `Project` folder.
+* If not installed manually, click `Download and install` and then the `tomcat` folder.
 
 Eclipse will be configured to use this copy, and not the one installed earlier.
 
-***Double-click*** on `Tomcat v9.0 Server at localhost [Stopped, Republish]` and then follow [*Step-5 of reference (2)*](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/), ensuring
+> **Important:** the `tomcat server` needs configuring or it will now work.
 
-* `Tomcat admin port` is `8005`
-* `HTTP/1.1` port is `8080`
-* `AJP port` may not be displayed.
+* ***Double-click*** on `Tomcat v9.0 Server at localhost [Stopped, Republish]` and then follow [*Step-5 of reference (2)*](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/), ensuring
 
-Under `Server Locations` change the ***default*** and check item, `Use Tomcat installation (takes control of Tomcat installation)`
+  * `Tomcat admin port` is `8005`
+  * `HTTP/1.1` port is `8080`
+  * If displayed `AJP port` is `8009`
 
-Check `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost`, if the `tomcat-users.xsd` is missing, then download [tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) and add it to the folder.
+* Under `Server Locations`
+  * Check item, `Use Tomcat installation (takes control of Tomcat installation)`
 
-Follow [*Step-6 of reference (2)*](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/) and `Start` the `Tomcat server`, in a browser open `http:\\localhost:8080`.
+* Check `Project Explorer` > `Tomcat` > `Tomcat v9 Server at localhost`, if the `tomcat-users.xsd` is missing
+  * Download [tomcat-users.xsd](https://github.com/apache/tomcat/blob/main/conf/tomcat-users.xsd) and add it to the folder.
+
+* Follow [*Step-6 of reference (2)*](https://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/)
+* `Start` the `Tomcat server`, in a browser open `http:\\localhost:8080`
 
 If it returns a `404 Error`, follow [Tomcat starts but Home Page does NOT open on browser with URL http://localhost:8080](https://crunchify.com/tomcat-starts-but-home-page-does-not-open-on-browser-with-url-http-localhost8080/)
 
