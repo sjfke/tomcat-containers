@@ -74,8 +74,12 @@ volumes:
 To create, stop/start the `MariaDB` and `Adminer` containers.
 
 ```console
-PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.yaml up -d # Start MariaDB and Adminer
-PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb.yaml down  # Stop MariaDB and Adminer
+PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb-simple.yaml up -d # Start MariaDB and Adminer
+PS C:\Users\sjfke\Github\tomcat-containers> docker compose -f .\compose-mariadb-simple.yaml down  # Stop MariaDB and Adminer
+
+# Using Docker Compose environment variables, 'env/adminer' is optional
+PS C:\Users\sjfke\Github\tomcat-containers> docker compose --env-file env/mariadb --env-file env/adminer -f .\compose-mariadb-simple.yaml up -d
+PS C:\Users\sjfke\Github\tomcat-containers> docker compose --env-file env/mariadb --env-file env/adminer -f .\compose-mariadb-simple.yaml down
 ```
 
 ## Tomcat and Bookstore application in Docker
