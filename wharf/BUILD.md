@@ -35,20 +35,20 @@ Assuming you have `MariaDB` running in your chosen container environment.
 * `docker compose` open a terminal on the `tomcat-containers-bookstoredb-1` container, see [MariaDB in Docker](./DOCKER.md#mariadb-in-docker)
 
 ```powershell
-PS C:\Users\sjfke> docker volume ls                                   # jsp_bookstoredata volume exists
-PS C:\Users\sjfke> docker volume create jsp_bookstoredata             # create jsp_bookstoredata volume if DOES NOT exist
-PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
-PS C:\Users\sjfke> docker exec -it tomcat-containers-bookstoredb-1 sh # container interactive shell
+PS C:\Users\sjfke> docker volume ls                                      # jsp_bookstoredata volume exists
+PS C:\Users\sjfke> docker volume create jsp_bookstoredata                # create jsp_bookstoredata volume if DOES NOT exist
+PS C:\Users\sjfke> docker compose -f .\compose-mariadb-simple.yaml up -d # adminer, mariadb using tomcat-containers_jspnet
+PS C:\Users\sjfke> docker exec -it tomcat-containers-bookstoredb-1 sh    # container interactive shell
 ```
 
 * `podman-compose` open a terminal on the `tomcat-containers-bookstoredb-1` container, volume see [Podman Kube prerequisites](PODMAN-KUBE.md#prerequisites-for-kubernetes-files)
 
 ```powershell
-PS C:\Users\sjfke> podman volume ls                                          # jsp_bookstoredata volume exists
-PS C:\Users\sjfke> podman volume create jsp_bookstoredata                    # create jsp_bookstoredata volume if DOES NOT exist
+PS C:\Users\sjfke> podman volume ls                                             # jsp_bookstoredata volume exists
+PS C:\Users\sjfke> podman volume create jsp_bookstoredata                       # create jsp_bookstoredata volume if DOES NOT exist
 PS C:\Users\sjfke> .\venv\Scripts\activate
-(venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb.yaml up -d     # adminer, mariadb using tomcat-containers_jspnet
-(venv) PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh # container interactive shell
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb-simple.yaml up -d # adminer, mariadb using tomcat-containers_jspnet
+(venv) PS C:\Users\sjfke> podman exec -it tomcat-containers_bookstoredb_1 sh    # container interactive shell
 ```
 
 * `podman play kube` open a terminal on the `bookstoredb-pod-bookstoredb` container, volume see [Podman Kube prerequisites](PODMAN-KUBE.md#prerequisites-for-kubernetes-files)
@@ -65,7 +65,7 @@ PS C:\Users\sjfke> podman exec -it bookstoredb-pod-bookstoredb sh  # container i
 
 > ***Note:***
 >
-> Maria Database root password is in the `compose-mariadb.yaml` and `compose.yaml` files.
+> Maria Database root password is in the `compose-mariadb-simple.yaml`, `env\mariadb`, and `compose.yaml` files.
 
 ```sql
 # mariadb -u root -p
@@ -500,18 +500,18 @@ First the start the database
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
-(venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb.yaml up -d  # Start MariaDB and Adminer
-(venv) PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306         # Check MariDB is up and accessible
-sjfke@unix $ nc -i 5 localhost 3306                                       # Check MariDB is up and accessible
+(venv) PS C:\Users\sjfke> podman-compose -f .\compose-mariadb-simple.yaml up -d  # Start MariaDB and Adminer
+(venv) PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                # Check MariDB is up and accessible
+sjfke@unix $ nc -i 5 localhost 3306                                              # Check MariDB is up and accessible
 ```
 
 ***Docker***
 
 ```console
 # Folder: C:\Users\sjfke\Github\tomcat-containers
-PS C:\Users\sjfke> docker compose -f .\compose-mariadb.yaml up -d  # Start MariaDB and Adminer
-PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306         # Check MariDB is up and accessible
-sjfke@unix$ nc -i 5 localhost 3306                                 # Check MariDB is up and accessible
+PS C:\Users\sjfke> docker compose -f .\compose-mariadb-simple.yaml up -d  # Start MariaDB and Adminer
+PS C:\Users\sjfke> Test-NetConnection localhost -Port 3306                # Check MariDB is up and accessible
+sjfke@unix$ nc -i 5 localhost 3306                                        # Check MariDB is up and accessible
 ```
 
 ***Podman Kube***
