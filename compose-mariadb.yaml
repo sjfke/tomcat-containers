@@ -7,7 +7,7 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MARIADB_ROOT_PASSWORD: r00tpa55
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?check 'mariadb.env'}
     networks:
       - jspnet
     volumes:
@@ -17,10 +17,10 @@ services:
     image: adminer:latest
     restart: unless-stopped
     environment:
-      ADMINER_DEFAULT_SERVER: bookstoredb
-      ADMINER_DESIGN: dracula # hever
+      ADMINER_DEFAULT_SERVER: ${ADMINER_DEFAULT_SERVER:-bookstoredb} 
+      ADMINER_DESIGN: ${ADMINER_DESIGN:-hever}
     ports:
-      - "8081:8080"
+      - "${ADMINER_PORT:-8081}:8080"
     networks:
       - jspnet
 
