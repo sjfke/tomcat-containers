@@ -179,12 +179,46 @@ There is no evidence of any Windows services for `Redhat` or `Podman`.
 
 ## MacOS Platform (Intel)
 
-> ### Section needs a rewrite
->
-> * [Docker-Desktop](https://www.docker.com/products/docker-desktop/) version v4.16.2
-> * [Podman-Desktop](https://github.com/containers/podman-desktop/releases/download/v0.11.0/podman-desktop-0.11.0-x64.dmg) version 0.11.0 or `$ brew install podman-desktop`
-> * MacOS
-> * Kubernetes
+The [Podman Installation Instructions](https://podman.io/docs/installation) **recommends** installing using the pre-build packages
+
+* [podman-installer-macos-amd64.pkg](https://github.com/containers/podman/releases/download/v4.9.3/podman-installer-macos-amd64.pkg)
+* [podman-desktop-1.8.0-universal.dmg](https://github.com/containers/podman-desktop/releases/download/v1.8.0/podman-desktop-1.8.0-universal.dmg)
+
+However it is very difficult to uninstall `podman` because the `podman-installer-macos-amd64.pkg` has no `receipt` which limits the `pkgutil` commands that can be used. Everything appears to be installed in `/opt/podman` which make things a little easier.
+
+```zsh
+# Manual clean-up
+$ pkgutil --files com.redhat.podman
+$ cd /opt
+$ sudo rm -fr podman
+$ sudo pkgutil --forget com.redhat.pod
+```
+
+But it is also possible to use [Homebrew](https://brew.sh/) making it easier to remove these applications.
+
+* [Brew: podman](https://formulae.brew.sh/formula/podman) brew install podman
+* [Brew: podman-desktop](https://formulae.brew.sh/cask/podman-desktop) brew install podman-desktop
+* [Brew: podman-compose](https://formulae.brew.sh/formula/podman-compose) brew install podman-compose
+
+```zsh
+# Brew podman installation
+$ brew install podman  # has a lot of dependencies, so takes some time
+$ podman machine init  # downloads VM image fedora-coreos-39.20240309.2.0-qemu.x86.qcow2.xz
+$ podman machine start # Waiting for VM ... couple of minutes...
+$ podman info
+$ podman ps --all
+$ podman machine info
+$ podman machine ssh
+$ ps -ef | grep qemu
+
+# Brew podman-compose installation
+$ brew install podman-compose
+$ podman compose --help
+
+# Brew podman-desktop installation
+$ brew install podman-desktop # creates a 'Podman Desktop' in Applications
+
+```
 
 ## Fedora 37 Platform
 
