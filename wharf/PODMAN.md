@@ -220,23 +220,84 @@ $ brew install podman-desktop # creates a 'Podman Desktop' in Applications
 
 ```
 
-## Fedora 37 Platform
+## Fedora 39 Platform
 
-> ### Section needs updating
->
-> * [Podman-Desktop](https://github.com/containers/podman-desktop/releases/download/v0.11.0/podman-desktop-0.11.0.flatpak) version 0.11.0
->
->```console
->gcollis@morpheus docker2podman]$ sudo dnf list installed | grep podman
->podman.x86_64                                        4:4.3.1-1.fc37                      @updates                  
->podman-compose.noarch                                1.0.3-6.fc37                        @fedora                   
->podman-gvproxy.x86_64                                4:4.3.1-1.fc37                      @updates                  
->podman-plugins.x86_64                                4:4.3.1-1.fc37                      @updates                
->```
+Podman is installed by default.
 
-## Notes on using Podman and Podman Destop
+```console
+$ podman version
+Client:       Podman Engine
+Version:      4.8.3
+API Version:  4.8.3
+Go Version:   go1.21.5
+Built:        Wed Jan  3 15:11:40 2024
+OS/Arch:      linux/amd64
+```
 
-### Updates
+What other `Podman` related packages exist?
+
+```console
+$ sudo dnf search podman
+Last metadata expiration check: 0:47:25 ago on Thu 18 Jan 2024 05:22:13 PM CET.
+================================= Name Exactly Matched: podman =================================
+podman.x86_64 : Manage Pods, Containers and Container Images
+================================ Name & Summary Matched: podman ================================
+ansible-collection-containers-podman.noarch : Podman Ansible collection for Podman containers
+cockpit-podman.noarch : Cockpit component for Podman containers
+pcp-pmda-podman.x86_64 : Performance Co-Pilot (PCP) metrics for podman containers
+podman-compose.noarch : Run docker-compose.yml using podman
+podman-docker.noarch : Emulate Docker CLI using podman
+podman-plugins.x86_64 : Plugins for podman
+podman-remote.x86_64 : (Experimental) Remote client for managing podman containers
+podman-tests.x86_64 : Tests for podman
+podman-tui.x86_64 : Podman Terminal User Interface
+podmansh.x86_64 : Confined login and user shell using podman
+prometheus-podman-exporter.x86_64 : Prometheus exporter for podman environment
+python3-mrack-podman.noarch : Podman provider plugin for mrack
+python3-podman.noarch : RESTful API for Podman
+python3-podman+progress_bar.noarch : Metapackage for python3-podman: progress_bar extras
+=================================== Summary Matched: podman ====================================
+containers-common-extra.noarch : Extra dependencies for Podman and Buildah
+
+$ sudo dnf search podman-desktop
+Last metadata expiration check: 0:43:11 ago on Thu 18 Jan 2024 05:22:13 PM CET.
+No matches found.
+```
+
+Install a minimal working set of packages
+
+```console
+$ sudo dnf install podman-compose.noarch              # Run docker-compose.yml using podman
+$ sudo dnf install python3-podman.noarch              # RESTful API for Podman
+$ sudo dnf install python3-podman+progress_bar.noarch # A library of bindings to use the RESTful API of Podman.
+
+$ sudo dnf list *podman*
+Installed Packages
+cockpit-podman.noarch                                                   82-1.fc39                                  @updates
+podman.x86_64                                                           5:4.8.3-1.fc39                             @updates
+podman-compose.noarch                                                   1.0.6-3.fc39                               @fedora 
+podman-plugins.x86_64                                                   5:4.8.3-1.fc39                             @updates
+python3-podman.noarch                                                   3:4.8.2-1.fc39                             @updates
+python3-podman+progress_bar.noarch                                      3:4.8.2-1.fc39                             @updates
+Available Packages
+ansible-collection-containers-podman.noarch                             1.10.1-3.fc39                              fedora  
+pcp-pmda-podman.x86_64                                                  6.1.1-1.fc39                               updates 
+podman-docker.noarch                                                    5:4.8.3-1.fc39                             updates 
+podman-remote.x86_64                                                    5:4.8.3-1.fc39                             updates 
+podman-tests.x86_64                                                     5:4.8.3-1.fc39                             updates 
+podman-tui.x86_64                                                       0.15.0-1.fc39                              updates 
+podmansh.x86_64                                                         5:4.8.3-1.fc39                             updates 
+prometheus-podman-exporter.x86_64                                       1.6.0-1.fc39                               updates 
+python3-mrack-podman.noarch                                             1.17.0-1.fc39                              updates 
+```
+
+Terminal UI looks interesting, but not installed for now.
+
+## Podman-Desktop
+
+* [Podman Desktop Downloads](https://podman-desktop.io/downloads) - download flatpack
+
+In file manager, double-click on `podman-desktop-1.6.4.flatpak` and `flatpack` will install it.
 
 * `Podman Desktop` task bar will show if a `Podman Desktop` update is available
 * `Podman Desktop` main panel will show if a `Podman` update is available
