@@ -62,13 +62,14 @@ PS C:\Users\sjfke> .\venv\Scripts\activate
 * `podman play kube` open a terminal on the `bookstoredb-pod-bookstoredb` container, volume see [Podman Kube prerequisites](PODMAN-KUBE.md#prerequisites-for-kubernetes-files)
 
 ```powershell
-PS C:\Users\sjfke> podman secret list                              # list podman cluster secrets
-PS C:\Users\sjfke> podman kube play secrets.yaml                   # load secret if necessary
-PS C:\Users\sjfke> podman volume ls                                # jsp_bookstoredata volume exists
-PS C:\Users\sjfke> podman volume create jsp_bookstoredata          # create jsp_bookstoredata volume if DOES NOT exist
-PS C:\Users\sjfke> podman play kube --start .\adminer-pod.yaml     # adminer using podman-default-kube-network
-PS C:\Users\sjfke> podman play kube --start .\bookstoredb-pod.yaml # mariadb using podman-default-kube-network
-PS C:\Users\sjfke> podman exec -it bookstoredb-pod-bookstoredb sh  # container interactive shell
+PS C:\Users\sjfke> podman secret list                               # list podman cluster secrets
+PS C:\Users\sjfke> podman kube play secrets.yaml                    # load secret if necessary
+PS C:\Users\sjfke> podman volume ls                                 # jsp_bookstoredata volume exists
+PS C:\Users\sjfke> podman volume create jsp_bookstoredata           # create jsp_bookstoredata volume if DOES NOT exist
+PS C:\Users\sjfke> podman play kube --start .\adminer-pod.yaml      # adminer using podman-default-kube-network
+PS C:\Users\sjfke> podman play kube --start .\bookstoredb-pod.yaml  # mariadb using podman-default-kube-network
+PS C:\Users\sjfke> podman exec -it bookstoredb-pod-bookstoredb bash # container interactive shell (podman-v4.x)
+PS C:\Users\sjfke> podman exec -it bookstoredb-bookstoredb bash     # container interactive shell (podman-v5.x)
 ```
 
 > ***Note:***
@@ -371,8 +372,7 @@ The steps are as follows:
 
 1. [Build the `Bookstore` war file](#building-a-maven-war-file)
 2. [Deploy the `Bookstore` war file](#deploy-bookstore-war-file-to-tomcat-in-eclipse) to tomcat within eclipse
-3. [Start the MariaDB](#starting-mariadb-server)
-4. [Test the `Bookstore` application](#10-deploying-and-testing-the-application) using tomcat within eclipse
+3. [Test the `Bookstore` application](#10-deploying-and-testing-the-application) using tomcat within eclipse
 
 ## Building a Maven war file
 
