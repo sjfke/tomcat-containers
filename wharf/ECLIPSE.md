@@ -80,8 +80,6 @@ While possible to use Fedora spin, it has too many dependencies, so manually dow
 
 Download and install
 
-> ***Note:*** download link is **maybe** wrong and needs to be checked!
-
 * [Eclipse Installer 2023-12 R](https://www.eclipse.org/downloads/download.php?file=/oomph/epp/2023-12/R/eclipse-inst-jre-linux64.tar.gz)
 
 Install Eclipse Marketplace plugins
