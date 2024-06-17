@@ -41,3 +41,32 @@ PS> start "http://127.0.0.1:8080"
 > ### Fedora Notes
 >
 > Needs to be written.
+>
+Java JDK installation
+
+```console
+# is a JDK installed?
+$ which javac
+/usr/bin/javac
+$ javac -version
+javac 21.0.3
+
+# install OpenJDK Java-21
+$ sudo dnf install java-21-openjdk-devel.x86_64
+$ javac -version
+javac 21.0.3
+```
+
+Tomcat installation
+
+```console
+$ sudo dnf install tomcat tomcat-admin-webapps.noarch tomcat-docs-webapp.noarch
+
+# start/stop
+$ sudo systemctl start tomcat
+$ sudo systemctl status tomcat # sudo is optional
+
+$ firefox "http://127.0.0.1:8080/docs/"
+
+$ sudo systemctl stop tomcat
+```

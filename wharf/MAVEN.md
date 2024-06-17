@@ -72,17 +72,20 @@ OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
 
 ## Fedora Platform Setup
 
-While possible to use Fedora spin, it has too many dependencies, so manually download and install
+With the Fedora spin, it is easily installed.
 
-* [Download latest Maven](https://maven.apache.org/download.cgi), such as `apache-maven-3.9.6`
-* Unpack into `$HOME/Applications/Maven/`
-* Symlink `$ ln -s $HOME/Applications/Maven/apache-maven-3.9.6/bin/mvn $HOME/bin/mvn`
+```console
+$ sudo dnf search maven
+==================================== Name Exactly Matched: maven ====================================
+maven.noarch : Java project management and project comprehension tool
+$ sudo dnf install maven
+```
 
 ```console
 $ mvn -version
-Apache Maven 3.9.6 (bc0240f3c744dd6b6ec2920b3cd08dcc295161ae)
-Maven home: /home/sjfke/Applications/Maven/apache-maven-3.9.6
-Java version: 17.0.9, vendor: Red Hat, Inc., runtime: /usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64
+Apache Maven 3.9.6 (Red Hat 3.9.6-6)
+Maven home: /usr/share/maven
+Java version: 21.0.3, vendor: Red Hat, Inc., runtime: /usr/lib/jvm/java-21-openjdk-21.0.3.0.9-1.fc40.x86_64
 Default locale: en_US, platform encoding: UTF-8
-OS name: "linux", version: "6.7.6-200.fc39.x86_64", arch: "amd64", family: "unix"
+OS name: "linux", version: "6.9.4-200.fc40.x86_64", arch: "amd64", family: "unix"
 ```
