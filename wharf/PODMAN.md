@@ -179,12 +179,18 @@ There is no evidence of any Windows services for `Redhat` or `Podman`.
 
 ## MacOS Platform (Intel)
 
+> ### Warning
+>> * `MacOS` `podman v5` is only supported on `macOS 13 (Ventura)` or later
+>> * `MacOS` `podman v4` download and install `dmg` from [podman releases](https://github.com/containers/podman/releases)
+
+
 The [Podman Installation Instructions](https://podman.io/docs/installation) **recommends** installing using the pre-build packages
 
 * [podman-installer-macos-amd64.pkg](https://github.com/containers/podman/releases/download/v4.9.3/podman-installer-macos-amd64.pkg)
 * [podman-desktop-1.8.0-universal.dmg](https://github.com/containers/podman-desktop/releases/download/v1.8.0/podman-desktop-1.8.0-universal.dmg)
 
-However it is very difficult to uninstall `podman` because the `podman-installer-macos-amd64.pkg` has no `receipt` which limits the `pkgutil` commands that can be used. Everything appears to be installed in `/opt/podman` which make things a little easier.
+However, it requires a manual uninstall `podman` because the `podman-installer-macos-amd64.pkg` has no `receipt` which limits the `pkgutil` commands that can be used. 
+Everything appears to be installed in `/opt/podman` which make manual uninstall a little easier.
 
 ```zsh
 # Manual clean-up
